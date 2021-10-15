@@ -10,3 +10,5 @@ These applications were built with the objective of implementing a distributed l
 
 - Payment ms: Built in NodeJs
 
+- Mailer ms: Built in GoLang
+
