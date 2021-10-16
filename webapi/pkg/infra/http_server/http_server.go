@@ -4,14 +4,17 @@ import (
 	"errors"
 	"fmt"
 	"os"
+
 	"webapi/pkg/app/interfaces"
+	"webapi/pkg/interfaces/http"
 
 	"github.com/gin-gonic/gin"
 )
 
 type IHttpServer interface {
 	Setup()
-	RegistreRoute(method HttpMethod, path string, handlers ...gin.HandlerFunc) error
+	RegistreRoute(method http.HttpMethod, path string, handlers ...gin.HandlerFunc) error
+	Use(middleware ...gin.HandlerFunc)
 	Run() error
 }
 
@@ -22,35 +25,39 @@ type HttpServer struct {
 
 var httpServerWrapper = gin.New
 
-func (hs *HttpServer) Setup() {
-	hs.server = httpServerWrapper()
-	hs.server.Use(hs.logger.GetHandleFunc())
+func (pst *HttpServer) Setup() {
+	pst.server = httpServerWrapper()
+	pst.server.Use(pst.logger.GetHandleFunc())
 }
 
-func (hs HttpServer) RegistreRoute(method HttpMethod, path string, handlers ...gin.HandlerFunc) error {
+func (pst HttpServer) RegistreRoute(method http.HttpMethod, path string, handlers ...gin.HandlerFunc) error {
 	switch method {
-	case HttpMethod("POST"):
-		hs.server.POST(path, handlers...)
+	case http.HttpMethod("POST"):
+		pst.server.POST(path, handlers...)
 
-	case HttpMethod("GET"):
-		hs.server.GET(path, handlers...)
+	case http.HttpMethod("GET"):
+		pst.server.GET(path, handlers...)
 
-	case HttpMethod("PUT"):
-		hs.server.PUT(path, handlers...)
+	case http.HttpMethod("PUT"):
+		pst.server.PUT(path, handlers...)
 
-	case HttpMethod("DELETE"):
-		hs.server.DELETE(path, handlers...)
+	case http.HttpMethod("DELETE"):
+		pst.server.DELETE(path, handlers...)
 	default:
 		return errors.New("http method not allowed")
 	}
 	return nil
 }
 
-func (hs HttpServer) Run() error {
+func (pst HttpServer) Use(middleware ...gin.HandlerFunc) {
+	pst.server.Use(middleware...)
+}
+
+func (pst HttpServer) Run() error {
 	host := os.Getenv("HOST")
 	port := os.Getenv("PORT")
 
-	return hs.server.Run(fmt.Sprintf("%s:%s", host, port))
+	return pst.server.Run(fmt.Sprintf("%s:%s", host, port))
 }
 
 func NewHttpServer(logger interfaces.ILogger) IHttpServer {

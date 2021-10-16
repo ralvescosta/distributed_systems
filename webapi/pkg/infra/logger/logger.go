@@ -41,12 +41,6 @@ func (l Logger) Error(msg string, fields ...interfaces.LogField) {
 	l.zap.Error(msg, convertLogField(fields)...)
 }
 
-func NewLogger(zap *zap.Logger) interfaces.ILogger {
-	return Logger{
-		zap: zap,
-	}
-}
-
 func (l Logger) ProductionLoggerFormater(ctx *gin.Context) {
 	startTime := time.Now()
 	ctx.Next()
@@ -100,4 +94,46 @@ func convertLogField(fields []interfaces.LogField) []zap.Field {
 	}
 
 	return zapFields
+}
+
+func configureZapInstance() *zap.Logger {
+	goEnv := os.Getenv("GO_ENV")
+	logLevel := os.Getenv("LOG_LEVEL")
+	var zapLogLevel zapcore.Level
+	switch logLevel {
+	case "Debug":
+		zapLogLevel = zap.DebugLevel
+	case "Info":
+		zapLogLevel = zap.InfoLevel
+	case "Warn":
+		zapLogLevel = zap.WarnLevel
+	case "Error":
+		zapLogLevel = zap.ErrorLevel
+	case "Panic":
+		zapLogLevel = zap.PanicLevel
+	default:
+		zapLogLevel = zap.InfoLevel
+	}
+
+	var zapInstance *zap.Logger
+	switch goEnv {
+	case "production":
+		zapInstance, _ = zap.NewProduction(zap.IncreaseLevel(zapLogLevel), zap.AddStacktrace(zap.ErrorLevel))
+	case "staging":
+		zapInstance, _ = zap.NewProduction(zap.IncreaseLevel(zapLogLevel), zap.AddStacktrace(zap.ErrorLevel))
+	case "development":
+		zapInstance, _ = zap.NewDevelopment(zap.IncreaseLevel(zapLogLevel), zap.AddStacktrace(zap.ErrorLevel))
+	case "test":
+		zapInstance, _ = zap.NewDevelopment(zap.IncreaseLevel(zapLogLevel), zap.AddStacktrace(zap.ErrorLevel))
+	default:
+		break
+	}
+
+	return zapInstance
+}
+
+func NewLogger() interfaces.ILogger {
+	return Logger{
+		zap: configureZapInstance(),
+	}
 }
