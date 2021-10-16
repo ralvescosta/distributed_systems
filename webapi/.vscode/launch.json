@@ -1,0 +1,17 @@
+{
+  "version": "0.2.0",
+  "configurations": [
+    {
+      "name": "Launch DebugMode",
+      "type": "go",
+      "request": "launch",
+      "mode": "auto",
+      "program": "${workspaceFolder}",
+      "env": {
+        "GO_ENV": "development",
+        "GIN_MODE": "debug"
+      },
+      "args": ["run", "main.go"]
+    }
+  ]
+}
