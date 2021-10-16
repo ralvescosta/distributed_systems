@@ -1,6 +1,22 @@
-# Distributed Logging Approach
+# Distributed Systems Approach
 
-These applications were built with the objective of implementing a distributed logging strategy. The context here is a simple book store.
+These applications were built with the objective of implementing a distributed systems technics like: 
+ 
+ - Distributed Logging;
+ 
+ - Distributed Tracing;
+ 
+ - Sync Communication;
+ 
+ - Async Communication;
+
+ - CI/CD;
+
+ - Loading Balancer;
+
+ - Auto scale;
+
+The context here is a simple book store.
 
 ## Applications
 
