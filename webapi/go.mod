@@ -6,6 +6,7 @@ require (
 	github.com/gin-gonic/gin v1.7.4
 	github.com/newrelic/go-agent/v3 v3.15.0
 	github.com/newrelic/go-agent/v3/integrations/nrgin v1.1.2
+	github.com/newrelic/go-agent/v3/integrations/nrpq v1.1.1
 	github.com/ralvescosta/dotenv v1.0.4
 	go.uber.org/zap v1.19.1
 )
@@ -18,6 +19,7 @@ require (
 	github.com/golang/protobuf v1.5.2 // indirect
 	github.com/json-iterator/go v1.1.12 // indirect
 	github.com/leodido/go-urn v1.2.1 // indirect
+	github.com/lib/pq v1.1.0 // indirect
 	github.com/mattn/go-isatty v0.0.14 // indirect
 	github.com/modern-go/concurrent v0.0.0-20180306012644-bacd9c7ef1dd // indirect
 	github.com/modern-go/reflect2 v1.0.2 // indirect
