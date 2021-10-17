@@ -33,7 +33,7 @@ func NewContainer() webApiContainer {
 		// newrelic.ConfigDebugLogger(os.Stdout),
 		newrelic.ConfigDistributedTracerEnabled(true),
 		func(cfg *newrelic.Config) {
-			cfg.CustomInsightsEvents.Enabled = true
+			cfg.CustomInsightsEvents.Enabled = false
 		},
 	)
 	if err != nil {

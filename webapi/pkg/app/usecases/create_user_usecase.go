@@ -13,7 +13,7 @@ type createUserUseCase struct {
 }
 
 func (pst createUserUseCase) CreateUser(ctx context.Context, dto dtos.CreateUserDto) (entities.User, error) {
-	pst.repository.Create(ctx)
+	pst.repository.FindByEmail(ctx, dto.Email)
 	return entities.User{}, nil
 }
 

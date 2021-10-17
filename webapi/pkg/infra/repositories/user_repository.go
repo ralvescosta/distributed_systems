@@ -15,28 +15,39 @@ type userRepository struct {
 }
 
 func (pst userRepository) FindByEmail(ctx context.Context, email string) (*entities.User, error) {
-	txn := pst.monitoring.StartTransaction("[UserRepository::FindByEmail]")
-	tnxCtx := newrelic.NewContext(context.Background(), txn)
+	// txn := pst.monitoring.StartTransaction("postgresQuery")
+	// defer txn.End()
+	// tnxCtx := newrelic.NewContext(ctx, txn)
 
 	sql := `SELECT 
+								id as Id,
 								name AS Name, 
 								email AS Email, 
-								password AS Password
+								password AS Password,
+								created_at AS CreatedAt,
+								updated_at AS UpdatedAt,
+								deleted_at AS DeletedAt
 					FROM users
 					WHERE email = $1
-					AND WHERE deleted_at IS NULL`
+					AND deleted_at IS NULL`
 
-	prepare, err := pst.dbConnection.PrepareContext(tnxCtx, sql)
+	prepare, err := pst.dbConnection.PrepareContext(ctx, sql)
 	if err != nil {
 		return nil, err
 	}
 
 	entity := entities.User{}
 
-	if err := prepare.QueryRowContext(tnxCtx).Scan(
+	row := prepare.QueryRowContext(ctx, email)
+	if row == nil {
+		return nil, nil
+	}
+
+	if err := row.Scan(
 		&entity.Id,
 		&entity.Name,
 		&entity.Email,
+		&entity.Password,
 		&entity.CreatedAt,
 		&entity.UpdatedAt,
 		&entity.DeletedAt,
