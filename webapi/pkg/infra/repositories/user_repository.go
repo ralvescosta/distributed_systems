@@ -23,7 +23,9 @@ func (pst userRepository) FindByEmail(ctx context.Context, email string) (*entit
 								email AS Email, 
 								password AS Password
 					FROM users
-					WHERE email = $1`
+					WHERE email = $1
+					AND WHERE deleted_at IS NULL`
+
 	prepare, err := pst.dbConnection.PrepareContext(tnxCtx, sql)
 	if err != nil {
 		return nil, err

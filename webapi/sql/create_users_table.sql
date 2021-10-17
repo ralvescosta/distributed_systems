@@ -1,0 +1,12 @@
+CREATE TABLE public.users (
+  id SERIAL NOT NULL,
+  "name" VARCHAR NOT NULL,
+  email VARCHAR NOT NULL,
+  "password" VARCHAR NOT NULL,
+  created_at TIMESTAMPTZ NOT NULL DEFAULT CURRENT_TIMESTAMP,
+  updated_at TIMESTAMPTZ NOT NULL DEFAULT CURRENT_TIMESTAMP,
+  deleted_at TIMESTAMPTZ,
+  CONSTRAINT users_pkey PRIMARY KEY (id)
+);
+ALTER TABLE public.users OWNER TO postgres;
+GRANT ALL ON TABLE public.users TO postgres;
