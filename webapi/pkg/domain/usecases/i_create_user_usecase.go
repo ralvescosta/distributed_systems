@@ -1,10 +1,11 @@
 package usecases
 
 import (
+	"context"
 	"webapi/pkg/domain/dtos"
 	"webapi/pkg/domain/entities"
 )
 
 type ICreateUserUseCase interface {
-	CreateUser(dto dtos.CreateUserDto) (entities.User, error)
+	CreateUser(ctx context.Context, dto dtos.CreateUserDto) (entities.User, error)
 }
