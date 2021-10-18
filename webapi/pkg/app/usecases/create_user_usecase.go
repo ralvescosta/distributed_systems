@@ -24,12 +24,12 @@ func (pst createUserUseCase) CreateUser(ctx context.Context, dto dtos.CreateUser
 		return entities.User{}, errors.NewConflictError("Email already registered")
 	}
 
-	hasherdPassword, err := pst.hasher.Hahser(dto.Password)
+	hashedPassword, err := pst.hasher.Hahser(dto.Password)
 	if err != nil {
 		return entities.User{}, errors.NewInternalError(err.Error())
 	}
 
-	user.Password = hasherdPassword
+	user.Password = hashedPassword
 	user, err = pst.repository.Create(ctx, dto)
 	if err != nil {
 		return entities.User{}, errors.NewInternalError(err.Error())
