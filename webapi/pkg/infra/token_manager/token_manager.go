@@ -27,13 +27,13 @@ func (pst tokenManager) GenerateToken(tokenData dtos.TokenDataDto) (string, erro
 	privateKeyInBytes, err := fileReader(os.Getenv("RSA_PRIVATE_KEY_DIR"))
 	if err != nil {
 		pst.logger.Error(err.Error())
-		return "", errors.New("error when try to read rsa private key")
+		return "", err
 	}
 
 	privateKey, err := parseRSAPrivateKey(privateKeyInBytes)
 	if err != nil {
 		pst.logger.Error(err.Error())
-		return "", errors.New("error when try to create rsa private key")
+		return "", err
 	}
 
 	claims := jwt.StandardClaims{
@@ -48,7 +48,7 @@ func (pst tokenManager) GenerateToken(tokenData dtos.TokenDataDto) (string, erro
 	token, err := claimsGenerator(jwt.SigningMethodRS256, claims).SignedString(privateKey)
 	if err != nil {
 		pst.logger.Error(err.Error())
-		return "", errors.New("error when try to create jwt")
+		return "", err
 	}
 
 	return token, nil
@@ -58,13 +58,13 @@ func (pst tokenManager) VerifyToken(token string) (*dtos.AuthenticatedUserDto, e
 	publicKeyInBytes, err := fileReader(os.Getenv("RSA_PUBLIC_KEY_DIR"))
 	if err != nil {
 		pst.logger.Error(err.Error())
-		return nil, errors.New("error when try to read rsa public key")
+		return nil, err
 	}
 
 	publicKey, err := parseRSAPublicKey(publicKeyInBytes)
 	if err != nil {
 		pst.logger.Error(err.Error())
-		return nil, errors.New("error when try to create rsa public key")
+		return nil, err
 	}
 
 	tok, err := parseClaims(token, &jwt.StandardClaims{}, func(jwtToken *jwt.Token) (interface{}, error) {
@@ -75,7 +75,7 @@ func (pst tokenManager) VerifyToken(token string) (*dtos.AuthenticatedUserDto, e
 		return publicKey, nil
 	})
 	if err != nil {
-		return nil, errors.New("invalid token")
+		return nil, err
 	}
 
 	claims, ok := tok.Claims.(*jwt.StandardClaims)
@@ -89,7 +89,7 @@ func (pst tokenManager) VerifyToken(token string) (*dtos.AuthenticatedUserDto, e
 
 	return &dtos.AuthenticatedUserDto{
 		AccessToken: token,
-		Kind:        "Bearer",
+		Kind:        os.Getenv("TOKEN_KIND"),
 		ExpireIn:    time.Unix(claims.ExpiresAt, 0),
 	}, nil
 }

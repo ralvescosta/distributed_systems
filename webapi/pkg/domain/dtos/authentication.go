@@ -8,7 +8,7 @@ type AuthenticationDto struct {
 }
 
 type TokenDataDto struct {
-	Id       uint32
+	Id       int
 	ExpireIn time.Time
 	Audience string
 }
