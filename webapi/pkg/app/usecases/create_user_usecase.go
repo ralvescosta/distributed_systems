@@ -11,6 +11,7 @@ import (
 
 type createUserUseCase struct {
 	repository interfaces.IUserRepository
+	hasher     interfaces.IHasher
 }
 
 func (pst createUserUseCase) CreateUser(ctx context.Context, dto dtos.CreateUserDto) (entities.User, error) {
@@ -23,6 +24,12 @@ func (pst createUserUseCase) CreateUser(ctx context.Context, dto dtos.CreateUser
 		return entities.User{}, errors.NewConflictError("Email already registered")
 	}
 
+	hasherdPassword, err := pst.hasher.Hahser(dto.Password)
+	if err != nil {
+		return entities.User{}, errors.NewInternalError(err.Error())
+	}
+
+	user.Password = hasherdPassword
 	user, err = pst.repository.Create(ctx, dto)
 	if err != nil {
 		return entities.User{}, errors.NewInternalError(err.Error())
@@ -31,8 +38,9 @@ func (pst createUserUseCase) CreateUser(ctx context.Context, dto dtos.CreateUser
 	return *user, nil
 }
 
-func NewCreateUserUseCase(repository interfaces.IUserRepository) usecases.ICreateUserUseCase {
+func NewCreateUserUseCase(repository interfaces.IUserRepository, hasher interfaces.IHasher) usecases.ICreateUserUseCase {
 	return createUserUseCase{
 		repository: repository,
+		hasher:     hasher,
 	}
 }

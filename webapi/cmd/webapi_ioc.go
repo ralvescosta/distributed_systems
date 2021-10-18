@@ -6,6 +6,7 @@ import (
 	appUseCases "webapi/pkg/app/usecases"
 	domainUseCases "webapi/pkg/domain/usecases"
 	"webapi/pkg/infra/database"
+	"webapi/pkg/infra/hasher"
 	httpServer "webapi/pkg/infra/http_server"
 	"webapi/pkg/infra/logger"
 	"webapi/pkg/infra/repositories"
@@ -55,7 +56,8 @@ func NewContainer() webApiContainer {
 	httpServer := httpServer.NewHttpServer(logger)
 
 	userRepository := repositories.NewUserRepository(logger, dbConnection, monitoring)
-	createUserUseCase := appUseCases.NewCreateUserUseCase(userRepository)
+	hasher := hasher.NewHahser(logger)
+	createUserUseCase := appUseCases.NewCreateUserUseCase(userRepository, hasher)
 	usersHandler := handlers.NewUsersHandler(logger, createUserUseCase)
 	usersRoutes := presenters.NewUsersRoutes(logger, usersHandler)
 
