@@ -4,6 +4,7 @@ import (
 	"context"
 	"database/sql"
 	"webapi/pkg/app/interfaces"
+	"webapi/pkg/domain/dtos"
 	"webapi/pkg/domain/entities"
 
 	"github.com/newrelic/go-agent/v3/newrelic"
@@ -52,13 +53,44 @@ func (pst userRepository) FindByEmail(ctx context.Context, email string) (*entit
 		&entity.UpdatedAt,
 		&entity.DeletedAt,
 	); err != nil {
+		if err.Error() == "sql: no rows in result set" {
+			return nil, nil
+		}
 		return nil, err
 	}
 	return &entity, nil
 }
 
-func (userRepository) Create(ctx context.Context) (*entities.User, error) {
-	return nil, nil
+func (pst userRepository) Create(ctx context.Context, dto dtos.CreateUserDto) (*entities.User, error) {
+	sql := `INSERT INTO users
+								(name, email, password) VALUES
+								($1, $2, $3) RETURNING *`
+
+	prepare, err := pst.dbConnection.PrepareContext(ctx, sql)
+	if err != nil {
+		return nil, err
+	}
+
+	entity := entities.User{}
+
+	row := prepare.QueryRowContext(ctx, dto.Name, dto.Email, dto.Password)
+	if row == nil {
+		return nil, nil
+	}
+
+	if err = row.Scan(
+		&entity.Id,
+		&entity.Name,
+		&entity.Email,
+		&entity.Password,
+		&entity.CreatedAt,
+		&entity.UpdatedAt,
+		&entity.DeletedAt,
+	); err != nil {
+		return nil, err
+	}
+
+	return &entity, nil
 }
 
 func NewUserRepository(dbConnection *sql.DB, monitoring *newrelic.Application) interfaces.IUserRepository {
