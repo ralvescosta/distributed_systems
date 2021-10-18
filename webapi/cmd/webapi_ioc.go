@@ -54,7 +54,7 @@ func NewContainer() webApiContainer {
 	logger := logger.NewLogger()
 	httpServer := httpServer.NewHttpServer(logger)
 
-	userRepository := repositories.NewUserRepository(dbConnection, monitoring)
+	userRepository := repositories.NewUserRepository(logger, dbConnection, monitoring)
 	createUserUseCase := appUseCases.NewCreateUserUseCase(userRepository)
 	usersHandler := handlers.NewUsersHandler(logger, createUserUseCase)
 	usersRoutes := presenters.NewUsersRoutes(logger, usersHandler)

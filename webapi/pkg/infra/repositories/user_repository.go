@@ -11,6 +11,7 @@ import (
 )
 
 type userRepository struct {
+	logger       interfaces.ILogger
 	dbConnection *sql.DB
 	monitoring   *newrelic.Application
 }
@@ -34,6 +35,7 @@ func (pst userRepository) FindByEmail(ctx context.Context, email string) (*entit
 
 	prepare, err := pst.dbConnection.PrepareContext(ctx, sql)
 	if err != nil {
+		pst.logger.Error(err.Error())
 		return nil, err
 	}
 
@@ -56,6 +58,8 @@ func (pst userRepository) FindByEmail(ctx context.Context, email string) (*entit
 		if err.Error() == "sql: no rows in result set" {
 			return nil, nil
 		}
+
+		pst.logger.Error(err.Error())
 		return nil, err
 	}
 	return &entity, nil
@@ -68,6 +72,7 @@ func (pst userRepository) Create(ctx context.Context, dto dtos.CreateUserDto) (*
 
 	prepare, err := pst.dbConnection.PrepareContext(ctx, sql)
 	if err != nil {
+		pst.logger.Error(err.Error())
 		return nil, err
 	}
 
@@ -87,14 +92,16 @@ func (pst userRepository) Create(ctx context.Context, dto dtos.CreateUserDto) (*
 		&entity.UpdatedAt,
 		&entity.DeletedAt,
 	); err != nil {
+		pst.logger.Error(err.Error())
 		return nil, err
 	}
 
 	return &entity, nil
 }
 
-func NewUserRepository(dbConnection *sql.DB, monitoring *newrelic.Application) interfaces.IUserRepository {
+func NewUserRepository(logger interfaces.ILogger, dbConnection *sql.DB, monitoring *newrelic.Application) interfaces.IUserRepository {
 	return userRepository{
+		logger:       logger,
 		dbConnection: dbConnection,
 		monitoring:   monitoring,
 	}
