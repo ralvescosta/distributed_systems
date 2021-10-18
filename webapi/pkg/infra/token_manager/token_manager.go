@@ -7,7 +7,7 @@ import (
 	"os"
 	"time"
 
-	"github.com/dgrijalva/jwt-go"
+	"github.com/golang-jwt/jwt/v4"
 
 	"webapi/pkg/app/interfaces"
 	"webapi/pkg/domain/dtos"
