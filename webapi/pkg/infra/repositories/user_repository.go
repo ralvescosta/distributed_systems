@@ -67,8 +67,10 @@ func (pst userRepository) FindByEmail(ctx context.Context, email string) (*entit
 
 func (pst userRepository) Create(ctx context.Context, dto dtos.CreateUserDto) (*entities.User, error) {
 	sql := `INSERT INTO users
-								(name, email, password) VALUES
-								($1, $2, $3) RETURNING *`
+								(name, email, password) 
+					VALUES
+								($1, $2, $3) 
+					RETURNING *`
 
 	prepare, err := pst.dbConnection.PrepareContext(ctx, sql)
 	if err != nil {

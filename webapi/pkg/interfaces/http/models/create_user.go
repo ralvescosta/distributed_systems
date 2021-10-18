@@ -2,7 +2,6 @@ package models
 
 import (
 	"webapi/pkg/domain/dtos"
-	"webapi/pkg/domain/entities"
 )
 
 type CreateUserRequest struct {
@@ -25,13 +24,16 @@ type CreateUserResponse struct {
 	Email       string `json:"email"`
 	AccessToken string `json:"access_token"`
 	Kind        string `json:"kind"`
-	ExpiredAt   string `json:"expired_at"`
+	ExpireIn    string `json:"expire_in"`
 }
 
-func ToCreateUserResponse(user entities.User) CreateUserResponse {
+func ToCreateUserResponse(user dtos.CreatedUserDto) CreateUserResponse {
 	return CreateUserResponse{
-		Id:    user.Id,
-		Name:  user.Name,
-		Email: user.Email,
+		Id:          user.Id,
+		Name:        user.Name,
+		Email:       user.Email,
+		AccessToken: user.AccessToken,
+		Kind:        user.Kind,
+		ExpireIn:    user.ExpireIn.String(),
 	}
 }

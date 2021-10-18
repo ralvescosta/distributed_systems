@@ -10,6 +10,7 @@ import (
 	httpServer "webapi/pkg/infra/http_server"
 	"webapi/pkg/infra/logger"
 	"webapi/pkg/infra/repositories"
+	tokenManager "webapi/pkg/infra/token_manager"
 	"webapi/pkg/interfaces/http/handlers"
 	"webapi/pkg/interfaces/http/presenters"
 
@@ -57,7 +58,8 @@ func NewContainer() webApiContainer {
 
 	userRepository := repositories.NewUserRepository(logger, dbConnection, monitoring)
 	hasher := hasher.NewHahser(logger)
-	createUserUseCase := appUseCases.NewCreateUserUseCase(userRepository, hasher)
+	accessTokenManager := tokenManager.NewTokenManager(logger)
+	createUserUseCase := appUseCases.NewCreateUserUseCase(userRepository, hasher, accessTokenManager)
 	usersHandler := handlers.NewUsersHandler(logger, createUserUseCase)
 	usersRoutes := presenters.NewUsersRoutes(logger, usersHandler)
 
