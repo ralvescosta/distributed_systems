@@ -26,10 +26,10 @@ func (pst usersHandler) Create(httpRequest http.HttpRequest) http.HttpResponse {
 
 	result, err := pst.useCases.CreateUser(httpRequest.Ctx, model.ToCreateUserDto())
 	if err != nil {
-		return http.BadRequest("some error occur", nil)
+		return http.ErrorResponseMapper(err, nil)
 	}
 
-	return http.Created(result, nil)
+	return http.Created(models.ToCreateUserResponse(result), nil)
 }
 
 func NewUsersHandler(logger interfaces.ILogger, useCases usecases.ICreateUserUseCase) IUsersHandler {
