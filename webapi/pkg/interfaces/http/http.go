@@ -3,6 +3,7 @@ package http
 import (
 	"context"
 	"net/http"
+	"webapi/pkg/app/errors"
 )
 
 type HttpMethod string
@@ -22,7 +23,7 @@ type HttpRequest struct {
 }
 
 type ErrorMessage struct {
-	StatusCode int    `json:"statusCode`
+	StatusCode int    `json:"status_code"`
 	Message    string `json:"message"`
 }
 
@@ -112,5 +113,14 @@ func InternalServerError(msg string, headers http.Header) HttpResponse {
 			Message:    msg,
 		},
 		Headers: headers,
+	}
+}
+
+func ErrorResponseMapper(err error, headers http.Header) HttpResponse {
+	switch err.(type) {
+	case errors.ConflictError:
+		return Conflict(err.Error(), headers)
+	default:
+		return InternalServerError(err.Error(), headers)
 	}
 }
