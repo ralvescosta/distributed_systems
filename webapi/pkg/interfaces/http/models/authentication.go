@@ -17,9 +17,13 @@ func (pst AuthenticationRequest) ToAuthenticationDto() dtos.AuthenticationDto {
 type AuthenticationResponse struct {
 	AccessToken string `json:"access_token"`
 	Kind        string `json:"kind"`
-	ExpiredAt   string `json:"expired_at"`
+	ExpiredIn   string `json:"expired_in"`
 }
 
-func ToAuthenticationResponse(dot dtos.AuthenticatedUserDto) AuthenticationResponse {
-	return AuthenticationResponse{}
+func ToAuthenticationResponse(dto dtos.AuthenticatedUserDto) AuthenticationResponse {
+	return AuthenticationResponse{
+		AccessToken: dto.AccessToken,
+		Kind:        dto.Kind,
+		ExpiredIn:   dto.ExpireIn.Format(("2006-01-02 15:04:05")),
+	}
 }
