@@ -16,7 +16,7 @@ type createUserUseCase struct {
 	tokenManager interfaces.ITokenManager
 }
 
-func (pst createUserUseCase) CreateUser(ctx context.Context, dto dtos.CreateUserDto) (dtos.CreatedUserDto, error) {
+func (pst createUserUseCase) Perform(ctx context.Context, dto dtos.CreateUserDto) (dtos.CreatedUserDto, error) {
 	user, err := pst.repository.FindByEmail(ctx, dto.Email)
 	if err != nil {
 		return dtos.CreatedUserDto{}, errors.NewInternalError(err.Error())

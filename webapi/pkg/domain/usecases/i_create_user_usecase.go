@@ -6,5 +6,5 @@ import (
 )
 
 type ICreateUserUseCase interface {
-	CreateUser(ctx context.Context, dto dtos.CreateUserDto) (dtos.CreatedUserDto, error)
+	Perform(ctx context.Context, dto dtos.CreateUserDto) (dtos.CreatedUserDto, error)
 }
