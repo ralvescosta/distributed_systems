@@ -20,6 +20,6 @@ type AuthenticationResponse struct {
 	ExpiredAt   string `json:"expired_at"`
 }
 
-func ToAuthenticationResponse() AuthenticationResponse {
+func ToAuthenticationResponse(dot dtos.AuthenticatedUserDto) AuthenticationResponse {
 	return AuthenticationResponse{}
 }
