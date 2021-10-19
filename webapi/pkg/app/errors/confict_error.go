@@ -1,13 +1,13 @@
 package errors
 
-type ConflictError struct {
+type BadRequestError struct {
 	Message string
 }
 
-func (e ConflictError) Error() string {
+func (e BadRequestError) Error() string {
 	return e.Message
 }
 
-func NewConflictError(m string) error {
-	return ConflictError{Message: m}
+func NewBadRequestError(m string) error {
+	return BadRequestError{Message: m}
 }
