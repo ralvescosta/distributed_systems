@@ -25,6 +25,8 @@ type webApiContainer struct {
 	usersHandler      handlers.IUsersHandler
 	usersRoutes       presenters.IUsersRoutes
 
+	authenticationRoutes presenters.IAuthenticationRoutes
+
 	monitoring *newrelic.Application
 }
 
@@ -63,6 +65,10 @@ func NewContainer() webApiContainer {
 	usersHandler := handlers.NewUsersHandler(logger, createUserUseCase)
 	usersRoutes := presenters.NewUsersRoutes(logger, usersHandler)
 
+	authenticationUseCase := appUseCases.NewAuthenticationUseCase(userRepository, hasher, accessTokenManager)
+	authenticationHandler := handlers.NewAuthenticationHandler(logger, authenticationUseCase)
+	authenticationRoutes := presenters.NewAuthenticationRoutes(logger, authenticationHandler)
+
 	return webApiContainer{
 		logger:     logger,
 		httpServer: httpServer,
@@ -70,6 +76,8 @@ func NewContainer() webApiContainer {
 		createUserUseCase: createUserUseCase,
 		usersHandler:      usersHandler,
 		usersRoutes:       usersRoutes,
+
+		authenticationRoutes: authenticationRoutes,
 
 		monitoring: monitoring,
 	}
