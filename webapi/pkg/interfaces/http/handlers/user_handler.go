@@ -24,7 +24,7 @@ func (pst usersHandler) Create(httpRequest http.HttpRequest) http.HttpResponse {
 		return http.BadRequest("body is required", nil)
 	}
 
-	result, err := pst.useCases.Perform(httpRequest.Ctx, model.ToCreateUserDto())
+	result, err := pst.useCases.Perform(httpRequest.Ctx, httpRequest.Txn, model.ToCreateUserDto())
 	if err != nil {
 		return http.ErrorResponseMapper(err, nil)
 	}

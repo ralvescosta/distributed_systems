@@ -9,6 +9,7 @@ import (
 	internalHttp "webapi/pkg/interfaces/http"
 
 	"github.com/gin-gonic/gin"
+	"github.com/newrelic/go-agent/v3/integrations/nrgin"
 )
 
 var readAllBody = ioutil.ReadAll
@@ -33,6 +34,7 @@ func HandlerAdapt(handler func(httpRequest internalHttp.HttpRequest) internalHtt
 			Headers: ctx.Request.Header,
 			Params:  params,
 			Ctx:     ctx.Request.Context(),
+			Txn:     nrgin.Transaction(ctx),
 		}
 
 		result := handler(request)
