@@ -16,10 +16,8 @@ type userRepository struct {
 	monitoring   *newrelic.Application
 }
 
-func (pst userRepository) FindByEmail(ctx context.Context, email string) (*entities.User, error) {
-	// txn := pst.monitoring.StartTransaction("postgresQuery")
-	// defer txn.End()
-	// tnxCtx := newrelic.NewContext(ctx, txn)
+func (pst userRepository) FindByEmail(ctx context.Context, txn interface{}, email string) (*entities.User, error) {
+	tnxCtx := newrelic.NewContext(ctx, txn.(*newrelic.Transaction))
 
 	sql := `SELECT 
 								id as Id,
@@ -33,7 +31,7 @@ func (pst userRepository) FindByEmail(ctx context.Context, email string) (*entit
 					WHERE email = $1
 					AND deleted_at IS NULL`
 
-	prepare, err := pst.dbConnection.PrepareContext(ctx, sql)
+	prepare, err := pst.dbConnection.PrepareContext(tnxCtx, sql)
 	if err != nil {
 		pst.logger.Error(err.Error())
 		return nil, err
@@ -41,7 +39,7 @@ func (pst userRepository) FindByEmail(ctx context.Context, email string) (*entit
 
 	entity := entities.User{}
 
-	row := prepare.QueryRowContext(ctx, email)
+	row := prepare.QueryRowContext(tnxCtx, email)
 	if row == nil {
 		return nil, nil
 	}
@@ -65,14 +63,16 @@ func (pst userRepository) FindByEmail(ctx context.Context, email string) (*entit
 	return &entity, nil
 }
 
-func (pst userRepository) Create(ctx context.Context, dto dtos.CreateUserDto) (*entities.User, error) {
+func (pst userRepository) Create(ctx context.Context, txn interface{}, dto dtos.CreateUserDto) (*entities.User, error) {
+	tnxCtx := newrelic.NewContext(ctx, txn.(*newrelic.Transaction))
+
 	sql := `INSERT INTO users
 								(name, email, password) 
 					VALUES
 								($1, $2, $3) 
 					RETURNING *`
 
-	prepare, err := pst.dbConnection.PrepareContext(ctx, sql)
+	prepare, err := pst.dbConnection.PrepareContext(tnxCtx, sql)
 	if err != nil {
 		pst.logger.Error(err.Error())
 		return nil, err
@@ -80,7 +80,7 @@ func (pst userRepository) Create(ctx context.Context, dto dtos.CreateUserDto) (*
 
 	entity := entities.User{}
 
-	row := prepare.QueryRowContext(ctx, dto.Name, dto.Email, dto.Password)
+	row := prepare.QueryRowContext(tnxCtx, dto.Name, dto.Email, dto.Password)
 	if row == nil {
 		return nil, nil
 	}

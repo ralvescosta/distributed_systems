@@ -20,6 +20,7 @@ type HttpRequest struct {
 	Params  map[string]string
 	Auth    interface{}
 	Ctx     context.Context
+	Txn     interface{}
 }
 
 type ErrorMessage struct {
