@@ -4,7 +4,6 @@ import (
 	"os"
 	"webapi/pkg/app/interfaces"
 	appUseCases "webapi/pkg/app/usecases"
-	domainUseCases "webapi/pkg/domain/usecases"
 	"webapi/pkg/infra/database"
 	"webapi/pkg/infra/hasher"
 	httpServer "webapi/pkg/infra/http_server"
@@ -21,10 +20,7 @@ type webApiContainer struct {
 	logger     interfaces.ILogger
 	httpServer httpServer.IHttpServer
 
-	createUserUseCase domainUseCases.ICreateUserUseCase
-	usersHandler      handlers.IUsersHandler
-	usersRoutes       presenters.IUsersRoutes
-
+	usersRoutes          presenters.IUsersRoutes
 	authenticationRoutes presenters.IAuthenticationRoutes
 
 	monitoring *newrelic.Application
@@ -38,6 +34,7 @@ func NewContainer() webApiContainer {
 		newrelic.ConfigDistributedTracerEnabled(true),
 		func(cfg *newrelic.Config) {
 			cfg.CustomInsightsEvents.Enabled = false
+			cfg.TransactionTracer.Segments.Threshold = 1
 		},
 	)
 	if err != nil {
@@ -73,10 +70,7 @@ func NewContainer() webApiContainer {
 		logger:     logger,
 		httpServer: httpServer,
 
-		createUserUseCase: createUserUseCase,
-		usersHandler:      usersHandler,
-		usersRoutes:       usersRoutes,
-
+		usersRoutes:          usersRoutes,
 		authenticationRoutes: authenticationRoutes,
 
 		monitoring: monitoring,

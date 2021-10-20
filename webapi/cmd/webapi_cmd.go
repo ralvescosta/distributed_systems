@@ -16,8 +16,8 @@ func WebApi() error {
 	// Server setup
 	container.httpServer.Setup()
 
-	//
-	container.httpServer.Use(nrgin.Middleware(container.monitoring))
+	//middlewares
+	container.httpServer.RegisterMiddleware(nrgin.Middleware(container.monitoring))
 
 	// Router register
 	container.usersRoutes.Register(container.httpServer)
