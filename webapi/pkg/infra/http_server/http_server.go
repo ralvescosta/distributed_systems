@@ -14,7 +14,7 @@ import (
 type IHttpServer interface {
 	Setup()
 	RegistreRoute(method http.HttpMethod, path string, handlers ...gin.HandlerFunc) error
-	Use(middleware ...gin.HandlerFunc)
+	RegisterMiddleware(middleware ...gin.HandlerFunc)
 	Run() error
 }
 
@@ -49,7 +49,7 @@ func (pst HttpServer) RegistreRoute(method http.HttpMethod, path string, handler
 	return nil
 }
 
-func (pst HttpServer) Use(middleware ...gin.HandlerFunc) {
+func (pst HttpServer) RegisterMiddleware(middleware ...gin.HandlerFunc) {
 	pst.server.Use(middleware...)
 }
 
