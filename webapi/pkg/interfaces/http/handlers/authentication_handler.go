@@ -24,7 +24,7 @@ func (pst authenticationHandler) Create(httpRequest http.HttpRequest) http.HttpR
 		return http.BadRequest("body is required", nil)
 	}
 
-	result, err := pst.useCases.Perform(httpRequest.Ctx, model.ToAuthenticationDto())
+	result, err := pst.useCases.Perform(httpRequest.Ctx, httpRequest.Txn, model.ToAuthenticationDto())
 	if err != nil {
 		return http.ErrorResponseMapper(err, nil)
 	}
