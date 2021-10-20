@@ -16,8 +16,8 @@ type authenticationUsecase struct {
 	tokenManager interfaces.ITokenManager
 }
 
-func (pst authenticationUsecase) Perform(ctx context.Context, dto dtos.AuthenticationDto) (dtos.AuthenticatedUserDto, error) {
-	user, err := pst.repository.FindByEmail(ctx, dto.Email)
+func (pst authenticationUsecase) Perform(ctx context.Context, txn interface{}, dto dtos.AuthenticationDto) (dtos.AuthenticatedUserDto, error) {
+	user, err := pst.repository.FindByEmail(ctx, txn, dto.Email)
 	if err != nil {
 		return dtos.AuthenticatedUserDto{}, err
 	}
