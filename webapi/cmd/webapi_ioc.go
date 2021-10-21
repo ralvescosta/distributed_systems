@@ -11,6 +11,7 @@ import (
 	"webapi/pkg/infra/repositories"
 	tokenManager "webapi/pkg/infra/token_manager"
 	"webapi/pkg/interfaces/http/handlers"
+	"webapi/pkg/interfaces/http/middlewares"
 	"webapi/pkg/interfaces/http/presenters"
 
 	"github.com/newrelic/go-agent/v3/newrelic"
@@ -22,6 +23,7 @@ type webApiContainer struct {
 
 	usersRoutes          presenters.IUsersRoutes
 	authenticationRoutes presenters.IAuthenticationRoutes
+	inventoryRoutes      presenters.IInventoryRoutes
 
 	monitoring *newrelic.Application
 }
@@ -62,9 +64,15 @@ func NewContainer() webApiContainer {
 	usersHandler := handlers.NewUsersHandler(logger, createUserUseCase)
 	usersRoutes := presenters.NewUsersRoutes(logger, usersHandler)
 
-	authenticationUseCase := appUseCases.NewAuthenticationUseCase(userRepository, hasher, accessTokenManager)
-	authenticationHandler := handlers.NewAuthenticationHandler(logger, authenticationUseCase)
+	authenticationUserUseCase := appUseCases.NewAuthenticateUserUseCase(userRepository, hasher, accessTokenManager)
+	authenticationHandler := handlers.NewAuthenticationHandler(logger, authenticationUserUseCase)
 	authenticationRoutes := presenters.NewAuthenticationRoutes(logger, authenticationHandler)
+
+	authenticationUseCase := appUseCases.NewAuthenticationUseCase(userRepository, accessTokenManager)
+	authenticationMiddleware := middlewares.NewAuthMiddleware(authenticationUseCase)
+
+	inventoryHandler := handlers.NewInventoryHandler(logger)
+	inventoryRoutes := presenters.NewInventoryRoutes(logger, authenticationMiddleware, inventoryHandler)
 
 	return webApiContainer{
 		logger:     logger,
@@ -72,6 +80,7 @@ func NewContainer() webApiContainer {
 
 		usersRoutes:          usersRoutes,
 		authenticationRoutes: authenticationRoutes,
+		inventoryRoutes:      inventoryRoutes,
 
 		monitoring: monitoring,
 	}

@@ -22,6 +22,7 @@ func WebApi() error {
 	// Router register
 	container.usersRoutes.Register(container.httpServer)
 	container.authenticationRoutes.Register(container.httpServer)
+	container.inventoryRoutes.Register(container.httpServer)
 
 	if err := container.httpServer.Run(); err != nil {
 		return err
