@@ -5,6 +5,7 @@ import (
 	"fmt"
 	"io/ioutil"
 	"os"
+	"strconv"
 	"time"
 
 	"github.com/golang-jwt/jwt/v4"
@@ -36,13 +37,15 @@ func (pst tokenManager) GenerateToken(tokenData dtos.TokenDataDto) (string, erro
 		return "", err
 	}
 
-	claims := jwt.StandardClaims{
-		Audience:  tokenData.Audience,
+	claims := jwt.RegisteredClaims{
+		Audience: jwt.ClaimStrings{
+			tokenData.Audience,
+		},
 		Issuer:    os.Getenv("APP_ISSUER"),
-		ExpiresAt: tokenData.ExpireIn.Unix(),
-		Id:        fmt.Sprintf("%d", tokenData.Id),
-		IssuedAt:  time.Now().Unix(),
-		NotBefore: tokenData.ExpireIn.Unix(),
+		ExpiresAt: jwt.NewNumericDate(tokenData.ExpireIn),
+		ID:        fmt.Sprintf("%d", tokenData.Id),
+		IssuedAt:  jwt.NewNumericDate(time.Now()),
+		NotBefore: jwt.NewNumericDate(time.Now()),
 	}
 
 	token, err := claimsGenerator(jwt.SigningMethodRS256, claims).SignedString(privateKey)
@@ -54,7 +57,7 @@ func (pst tokenManager) GenerateToken(tokenData dtos.TokenDataDto) (string, erro
 	return token, nil
 }
 
-func (pst tokenManager) VerifyToken(token string) (*dtos.AuthenticatedUserDto, error) {
+func (pst tokenManager) VerifyToken(accessToken string) (*dtos.AuthenticatedUserDto, error) {
 	publicKeyInBytes, err := fileReader(os.Getenv("RSA_PUBLIC_KEY_DIR"))
 	if err != nil {
 		pst.logger.Error(err.Error())
@@ -67,30 +70,37 @@ func (pst tokenManager) VerifyToken(token string) (*dtos.AuthenticatedUserDto, e
 		return nil, err
 	}
 
-	tok, err := parseClaims(token, &jwt.StandardClaims{}, func(jwtToken *jwt.Token) (interface{}, error) {
-		if _, ok := jwtToken.Method.(*jwt.SigningMethodRSA); !ok {
-			pst.logger.Error(err.Error())
-			return nil, errors.New("unexpected method")
-		}
-		return publicKey, nil
-	})
+	token, err := parseClaims(
+		accessToken,
+		&jwt.RegisteredClaims{},
+		func(jwtToken *jwt.Token) (interface{}, error) {
+			if _, ok := jwtToken.Method.(*jwt.SigningMethodRSA); !ok {
+				pst.logger.Error(err.Error())
+				return nil, errors.New("unexpected method")
+			}
+			return publicKey, nil
+		},
+	)
 	if err != nil {
 		return nil, err
 	}
 
-	claims, ok := tok.Claims.(*jwt.StandardClaims)
-	if !ok || !tok.Valid {
+	claims, ok := token.Claims.(*jwt.RegisteredClaims)
+	if !ok || !token.Valid {
 		return nil, errors.New("invalid token")
 	}
 
-	if claims.ExpiresAt < time.Now().UTC().Unix() {
+	if claims.ExpiresAt.Unix() < time.Now().UTC().Unix() {
 		return nil, errors.New("jwt is expired")
 	}
 
+	id, _ := strconv.Atoi(claims.ID)
+
 	return &dtos.AuthenticatedUserDto{
-		AccessToken: token,
+		Id:          id,
+		AccessToken: accessToken,
 		Kind:        os.Getenv("TOKEN_KIND"),
-		ExpireIn:    time.Unix(claims.ExpiresAt, 0),
+		ExpireIn:    claims.ExpiresAt.Time,
 	}, nil
 }
 
