@@ -6,5 +6,5 @@ import (
 )
 
 type IAuthenticationUseCase interface {
-	Perform(ctx context.Context, txn interface{}, dto dtos.AuthenticationDto) (dtos.AuthenticatedUserDto, error)
+	Perform(ctx context.Context, txn interface{}, accessToken string) (dtos.AuthenticatedUserDto, error)
 }

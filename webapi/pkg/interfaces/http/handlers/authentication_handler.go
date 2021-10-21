@@ -15,7 +15,7 @@ type IAuthenticationHandler interface {
 
 type authenticationHandler struct {
 	logger   interfaces.ILogger
-	useCases usecases.IAuthenticationUseCase
+	useCases usecases.IAuthenticateUserUseCase
 }
 
 func (pst authenticationHandler) Create(httpRequest http.HttpRequest) http.HttpResponse {
@@ -24,7 +24,7 @@ func (pst authenticationHandler) Create(httpRequest http.HttpRequest) http.HttpR
 		return http.BadRequest("body is required", nil)
 	}
 
-	result, err := pst.useCases.Perform(httpRequest.Ctx, httpRequest.Txn, model.ToAuthenticationDto())
+	result, err := pst.useCases.Perform(httpRequest.Ctx, httpRequest.Txn, model.ToAuthenticateUserDto())
 	if err != nil {
 		return http.ErrorResponseMapper(err, nil)
 	}
@@ -32,7 +32,7 @@ func (pst authenticationHandler) Create(httpRequest http.HttpRequest) http.HttpR
 	return http.Ok(models.ToAuthenticationResponse(result), nil)
 }
 
-func NewAuthenticationHandler(logger interfaces.ILogger, useCases usecases.IAuthenticationUseCase) IAuthenticationHandler {
+func NewAuthenticationHandler(logger interfaces.ILogger, useCases usecases.IAuthenticateUserUseCase) IAuthenticationHandler {
 	return authenticationHandler{
 		logger:   logger,
 		useCases: useCases,
