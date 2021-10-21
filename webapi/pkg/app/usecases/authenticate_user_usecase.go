@@ -10,13 +10,13 @@ import (
 	"webapi/pkg/domain/usecases"
 )
 
-type authenticationUsecase struct {
+type authenticateUserUsecase struct {
 	repository   interfaces.IUserRepository
 	hasher       interfaces.IHasher
 	tokenManager interfaces.ITokenManager
 }
 
-func (pst authenticationUsecase) Perform(ctx context.Context, txn interface{}, dto dtos.AuthenticationDto) (dtos.AuthenticatedUserDto, error) {
+func (pst authenticateUserUsecase) Perform(ctx context.Context, txn interface{}, dto dtos.AuthenticateUserDto) (dtos.AuthenticatedUserDto, error) {
 	user, err := pst.repository.FindByEmail(ctx, txn, dto.Email)
 	if err != nil {
 		return dtos.AuthenticatedUserDto{}, err
@@ -26,10 +26,10 @@ func (pst authenticationUsecase) Perform(ctx context.Context, txn interface{}, d
 		return dtos.AuthenticatedUserDto{}, errors.NewBadRequestError("Wrong password")
 	}
 
-	expireIn := time.Now().Add(time.Hour)
+	expireIn := time.Now().Add(time.Hour * 1)
 	accessToken, err := pst.tokenManager.GenerateToken(dtos.TokenDataDto{
 		Id:       user.Id,
-		Audience: os.Getenv("WebApi"),
+		Audience: os.Getenv("APP_ISSUER"),
 		ExpireIn: expireIn,
 	})
 	if err != nil {
@@ -44,8 +44,8 @@ func (pst authenticationUsecase) Perform(ctx context.Context, txn interface{}, d
 
 }
 
-func NewAuthenticationUseCase(repository interfaces.IUserRepository, hasher interfaces.IHasher, tokenManager interfaces.ITokenManager) usecases.IAuthenticationUseCase {
-	return authenticationUsecase{
+func NewAuthenticateUserUseCase(repository interfaces.IUserRepository, hasher interfaces.IHasher, tokenManager interfaces.ITokenManager) usecases.IAuthenticateUserUseCase {
+	return authenticateUserUsecase{
 		repository:   repository,
 		hasher:       hasher,
 		tokenManager: tokenManager,
