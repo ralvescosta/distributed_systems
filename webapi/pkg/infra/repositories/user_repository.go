@@ -16,6 +16,53 @@ type userRepository struct {
 	monitoring   *newrelic.Application
 }
 
+func (pst userRepository) FindById(ctx context.Context, txn interface{}, id int) (*entities.User, error) {
+	tnxCtx := newrelic.NewContext(ctx, txn.(*newrelic.Transaction))
+
+	sql := `SELECT 
+								id as Id,
+								name AS Name, 
+								email AS Email, 
+								password AS Password,
+								created_at AS CreatedAt,
+								updated_at AS UpdatedAt,
+								deleted_at AS DeletedAt
+					FROM users
+					WHERE id = $1
+					AND deleted_at IS NULL`
+
+	prepare, err := pst.dbConnection.PrepareContext(tnxCtx, sql)
+	if err != nil {
+		pst.logger.Error(err.Error())
+		return nil, err
+	}
+
+	entity := entities.User{}
+
+	row := prepare.QueryRowContext(tnxCtx, id)
+	if row == nil {
+		return nil, nil
+	}
+
+	if err := row.Scan(
+		&entity.Id,
+		&entity.Name,
+		&entity.Email,
+		&entity.Password,
+		&entity.CreatedAt,
+		&entity.UpdatedAt,
+		&entity.DeletedAt,
+	); err != nil {
+		if err.Error() == "sql: no rows in result set" {
+			return nil, nil
+		}
+
+		pst.logger.Error(err.Error())
+		return nil, err
+	}
+	return &entity, nil
+}
+
 func (pst userRepository) FindByEmail(ctx context.Context, txn interface{}, email string) (*entities.User, error) {
 	tnxCtx := newrelic.NewContext(ctx, txn.(*newrelic.Transaction))
 
