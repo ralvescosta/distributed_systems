@@ -2,7 +2,7 @@ package dtos
 
 import "time"
 
-type AuthenticationDto struct {
+type AuthenticateUserDto struct {
 	Email    string
 	Password string
 }
@@ -14,6 +14,7 @@ type TokenDataDto struct {
 }
 
 type AuthenticatedUserDto struct {
+	Id          int
 	AccessToken string
 	Kind        string
 	ExpireIn    time.Time

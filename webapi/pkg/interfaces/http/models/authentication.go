@@ -7,8 +7,8 @@ type AuthenticationRequest struct {
 	Password string `json:"password"`
 }
 
-func (pst AuthenticationRequest) ToAuthenticationDto() dtos.AuthenticationDto {
-	return dtos.AuthenticationDto{
+func (pst AuthenticationRequest) ToAuthenticateUserDto() dtos.AuthenticateUserDto {
+	return dtos.AuthenticateUserDto{
 		Email:    pst.Email,
 		Password: pst.Password,
 	}
