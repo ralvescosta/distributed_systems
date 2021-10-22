@@ -18,6 +18,6 @@ jobs:
           go-version: '1.17'
       - name: Run coverage
         working-directory: ./webapi
-        run: GO_ENV=development go test ./... -coverprofile=coverage.out -covermode=atomic
+        run: GO_ENV=development go test ./... -race -coverprofile=coverage.out -covermode=atomic
       - name: Upload coverage to Codecov
         run: bash <(curl -s https://codecov.io/bash)

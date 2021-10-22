@@ -2,6 +2,8 @@ package adapters
 
 import (
 	"bytes"
+	"errors"
+	"io"
 	"io/ioutil"
 	"net/http"
 	"net/http/httptest"
@@ -13,9 +15,22 @@ import (
 	"github.com/gin-gonic/gin"
 )
 
-func CreateMockedHttpRequest() *http.Request {
+type customReader struct{}
+
+func (customReader) Read(p []byte) (int, error) {
+	return 0, errors.New("some error")
+}
+
+func CreateMockedHttpRequest(readerWithError bool) *http.Request {
+	var reader io.ReadCloser
+	if readerWithError {
+		reader = ioutil.NopCloser(customReader{})
+	} else {
+		reader = ioutil.NopCloser(bytes.NewBuffer([]byte(nil)))
+	}
+
 	return &http.Request{
-		Body: ioutil.NopCloser(bytes.NewBuffer([]byte(nil))),
+		Body: reader,
 		Header: http.Header{
 			"op": []string{"op"},
 		},
@@ -39,7 +54,7 @@ type HandlerAdaptToTest struct {
 	ctx                *gin.Context
 }
 
-func NewHandlerAdaptToTest() HandlerAdaptToTest {
+func NewHandlerAdaptToTest(readerWithError bool) HandlerAdaptToTest {
 	handlerCalledTimes := 0
 	handlerMock := func(httpRequest internalHttp.HttpRequest) internalHttp.HttpResponse {
 		handlerCalledTimes++
@@ -47,7 +62,7 @@ func NewHandlerAdaptToTest() HandlerAdaptToTest {
 	}
 
 	loggerMock := logger.NewLoggerSpy()
-	req := CreateMockedHttpRequest()
+	req := CreateMockedHttpRequest(readerWithError)
 	sut := HandlerAdapt(handlerMock, loggerMock)
 
 	return HandlerAdaptToTest{
@@ -69,7 +84,7 @@ type MiddlewareAdaptToTest struct {
 	ctx                *gin.Context
 }
 
-func NewMiddlewareAdaptToTest() MiddlewareAdaptToTest {
+func NewMiddlewareAdaptToTest(readerWithError bool) MiddlewareAdaptToTest {
 	handlerCalledTimes := 0
 	handlerMock := func(httpRequest internalHttp.HttpRequest) internalHttp.HttpResponse {
 		handlerCalledTimes++
@@ -77,7 +92,7 @@ func NewMiddlewareAdaptToTest() MiddlewareAdaptToTest {
 	}
 
 	loggerMock := logger.NewLoggerSpy()
-	req := CreateMockedHttpRequest()
+	req := CreateMockedHttpRequest(readerWithError)
 	sut := MiddlewareAdapt(handlerMock, loggerMock)
 
 	return MiddlewareAdaptToTest{
