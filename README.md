@@ -16,7 +16,7 @@ These applications were built with the objective of studding a distributed syste
 ## Application Mapping
 
 - WebApi:
-  - Responsible for create a user, authenticate a user and communicate with the others applications using gRPC.
+  - Responsible for create a user, authenticate a user, communicate with the others applications using gRPC and RabbitMQ.
   - Used Technologies: 
     - Built in GoLang
     - PostgreSQL
