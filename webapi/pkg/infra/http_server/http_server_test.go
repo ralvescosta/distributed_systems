@@ -97,12 +97,5 @@ func Test_Should_Execute_Run_Correctly(t *testing.T) {
 		assert.NoError(t, err, "Server should run without panic")
 	}(t)
 
-	time.Sleep(time.Microsecond * 5)
-}
-
-func Test_Should_Execute_RegisterMiddleware_Correctly(t *testing.T) {
-	sut := NewHttpServerToTest()
-	sut.server.Setup()
-
-	sut.server.RegisterMiddleware(func(ctx *gin.Context) {})
+	time.Sleep(time.Microsecond * 1)
 }

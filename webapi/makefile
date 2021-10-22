@@ -4,8 +4,8 @@ migrate:
 run:
 	GO_ENV=development GIN_MODE=debug go run main.go
 
-test:
-	GO_ENV=development GIN_MODE=debug go test ./pkg/... -v
+unit-test:
+	GO_ENV=development GIN_MODE=debug go test -race ./pkg/... -v
 
 test-cov:
 	if ! [ -d "coverage" ]; then \

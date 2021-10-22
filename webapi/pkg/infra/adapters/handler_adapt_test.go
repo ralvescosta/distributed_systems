@@ -1,8 +1,6 @@
 package adapters
 
-import (
-	"testing"
-)
+import "testing"
 
 func Test_Should_Exec_Handler_Successfully(t *testing.T) {
 	sut := NewHandlerAdaptToTest()
