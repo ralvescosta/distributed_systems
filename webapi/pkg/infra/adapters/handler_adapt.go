@@ -15,6 +15,7 @@ func HandlerAdapt(handler func(httpRequest internalHttp.HttpRequest) internalHtt
 		if err != nil {
 			logger.Error("error while read request bytes")
 			ctx.JSON(http.StatusInternalServerError, gin.H{})
+			return
 		}
 
 		result := handler(request)
