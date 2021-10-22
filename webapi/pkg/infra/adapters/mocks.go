@@ -59,3 +59,33 @@ func NewHandlerAdaptToTest() HandlerAdaptToTest {
 		ctx:                CreateMockedGinContext(req),
 	}
 }
+
+type MiddlewareAdaptToTest struct {
+	adapt              gin.HandlerFunc
+	loggerMock         interfaces.ILogger
+	handlerCalledTimes *int
+	handlerMock        func(httpRequest internalHttp.HttpRequest) internalHttp.HttpResponse
+	request            *http.Request
+	ctx                *gin.Context
+}
+
+func NewMiddlewareAdaptToTest() HandlerAdaptToTest {
+	handlerCalledTimes := 0
+	handlerMock := func(httpRequest internalHttp.HttpRequest) internalHttp.HttpResponse {
+		handlerCalledTimes++
+		return internalHttp.HttpResponse{}
+	}
+
+	loggerMock := logger.NewLoggerSpy()
+	req := CreateMockedHttpRequest()
+	sut := MiddlewareAdapt(handlerMock, loggerMock)
+
+	return HandlerAdaptToTest{
+		handlerMock:        handlerMock,
+		handlerCalledTimes: &handlerCalledTimes,
+		loggerMock:         loggerMock,
+		request:            req,
+		adapt:              sut,
+		ctx:                CreateMockedGinContext(req),
+	}
+}
