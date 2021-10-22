@@ -3,7 +3,7 @@ package adapters
 import "testing"
 
 func Test_Should_Exec_Middleware_Successfully(t *testing.T) {
-	sut := NewMiddlewareAdaptToTest()
+	sut := NewMiddlewareAdaptToTest(false)
 
 	sut.adapt(sut.ctx)
 
@@ -12,16 +12,12 @@ func Test_Should_Exec_Middleware_Successfully(t *testing.T) {
 	}
 }
 
-// func Test_Should_Exec_Middleware_With_Body_Error(t *testing.T) {
-// 	sut := NewMiddlewareAdaptToTest()
+func Test_Should_Exec_Middleware_With_Body_Error(t *testing.T) {
+	sut := NewMiddlewareAdaptToTest(true)
 
-// 	readAll = func(r io.ReadCloser) ([]byte, error) {
-// 		return []byte{}, errors.New("Error")
-// 	}
+	sut.adapt(sut.ctx)
 
-// 	sut.adapt(sut.ctx)
-
-// 	if *sut.handlerCalledTimes != 0 {
-// 		t.Error("Shouldn't call handler when body is unformatted")
-// 	}
-// }
+	if *sut.handlerCalledTimes != 0 {
+		t.Error("Shouldn't call handler when body is unformatted")
+	}
+}
