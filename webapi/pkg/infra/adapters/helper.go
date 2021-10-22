@@ -9,10 +9,8 @@ import (
 	"github.com/newrelic/go-agent/v3/integrations/nrgin"
 )
 
-var readAllBody = ioutil.ReadAll
-
 func GetHttpRequest(ctx *gin.Context) (internalHttp.HttpRequest, error) {
-	body, err := readAllBody(ctx.Request.Body)
+	body, err := ioutil.ReadAll(ctx.Request.Body)
 	if err != nil {
 		return internalHttp.HttpRequest{}, err
 	}

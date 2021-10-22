@@ -69,7 +69,7 @@ type MiddlewareAdaptToTest struct {
 	ctx                *gin.Context
 }
 
-func NewMiddlewareAdaptToTest() HandlerAdaptToTest {
+func NewMiddlewareAdaptToTest() MiddlewareAdaptToTest {
 	handlerCalledTimes := 0
 	handlerMock := func(httpRequest internalHttp.HttpRequest) internalHttp.HttpResponse {
 		handlerCalledTimes++
@@ -80,7 +80,7 @@ func NewMiddlewareAdaptToTest() HandlerAdaptToTest {
 	req := CreateMockedHttpRequest()
 	sut := MiddlewareAdapt(handlerMock, loggerMock)
 
-	return HandlerAdaptToTest{
+	return MiddlewareAdaptToTest{
 		handlerMock:        handlerMock,
 		handlerCalledTimes: &handlerCalledTimes,
 		loggerMock:         loggerMock,
