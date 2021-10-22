@@ -12,7 +12,7 @@ test-cov:
 		echo "Creating covorage folder" ; \
 		mkdir coverage; \
 	fi
-	GO_ENV=dev go test ./... -cover -v -coverprofile ./coverage/c.out && go tool cover -html=./coverage/c.out -o ./coverage/coverage.html
+	GO_ENV=development go test ./... -cover -v -coverprofile ./coverage/c.out && go tool cover -html=./coverage/c.out -o ./coverage/coverage.html
 
 build:
 	go build -ldflags "-s -w" main.go
