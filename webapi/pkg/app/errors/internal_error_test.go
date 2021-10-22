@@ -1,11 +1,13 @@
 package errors
 
-import "testing"
+import (
+	"testing"
 
-func Test_InternalError_Creation(t *testing.T) {
+	"github.com/stretchr/testify/assert"
+)
+
+func Test_Should_Create_InternalError(t *testing.T) {
 	err := NewInternalError("internal error")
 
-	if err.Error() != "internal error" {
-		t.Error("the error message must be the same message when the error was created")
-	}
+	assert.EqualError(t, err, "conflict error", "the error message must be the same message when the error was created")
 }
