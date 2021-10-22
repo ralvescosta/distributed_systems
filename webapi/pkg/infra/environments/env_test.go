@@ -5,7 +5,7 @@ import (
 	"testing"
 )
 
-func Test_Configure_Env_Without_GoEnv(t *testing.T) {
+func Test_Should_Configure_Env_Without_GoEnv(t *testing.T) {
 	os.Setenv("GO_ENV", "")
 	var envFile string
 	dotEnvConfig = func(arg string) error {
@@ -23,7 +23,7 @@ func Test_Configure_Env_Without_GoEnv(t *testing.T) {
 	}
 }
 
-func Test_Configure_Env_With_GoEnv(t *testing.T) {
+func Test_Should_Configure_Env_With_GoEnv(t *testing.T) {
 	os.Setenv("GO_ENV", "production")
 	var envFile string
 	dotEnvConfig = func(arg string) error {
