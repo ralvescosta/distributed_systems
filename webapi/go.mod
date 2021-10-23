@@ -3,6 +3,7 @@ module webapi
 go 1.17
 
 require (
+	github.com/DATA-DOG/go-sqlmock v1.5.0
 	github.com/gin-gonic/gin v1.7.4
 	github.com/golang-jwt/jwt/v4 v4.1.0
 	github.com/newrelic/go-agent/v3 v3.15.0

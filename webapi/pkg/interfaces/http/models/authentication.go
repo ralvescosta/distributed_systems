@@ -3,8 +3,8 @@ package models
 import "webapi/pkg/domain/dtos"
 
 type AuthenticationRequest struct {
-	Email    string `json:"email"`
-	Password string `json:"password"`
+	Email    string `json:"email" validate:"required,email"`
+	Password string `json:"password" validate:"required"`
 }
 
 func (pst AuthenticationRequest) ToAuthenticateUserDto() dtos.AuthenticateUserDto {

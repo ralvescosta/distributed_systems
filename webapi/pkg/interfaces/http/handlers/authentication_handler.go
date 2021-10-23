@@ -3,6 +3,8 @@ package handlers
 import (
 	"encoding/json"
 
+	"github.com/go-playground/validator/v10"
+
 	"webapi/pkg/app/interfaces"
 	"webapi/pkg/domain/usecases"
 	"webapi/pkg/interfaces/http"
@@ -22,6 +24,12 @@ func (pst authenticationHandler) Create(httpRequest http.HttpRequest) http.HttpR
 	model := models.AuthenticationRequest{}
 	if err := json.Unmarshal(httpRequest.Body, &model); err != nil {
 		return http.BadRequest("body is required", nil)
+	}
+
+	v := validator.New()
+	err := v.Struct(model)
+	if err != nil {
+		pst.logger.Info(err.Error())
 	}
 
 	result, err := pst.useCases.Perform(httpRequest.Ctx, httpRequest.Txn, model.ToAuthenticateUserDto())
