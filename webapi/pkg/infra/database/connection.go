@@ -2,16 +2,15 @@ package database
 
 import (
 	"database/sql"
-	"fmt"
 	"log"
 
 	_ "github.com/newrelic/go-agent/v3/integrations/nrpq"
 )
 
-func GetConnection(host string, port string, user, password, dbName string) (*sql.DB, error) {
-	connectionString := fmt.Sprintf("host=%s port=%s user=%s password=%s dbname=%s sslmode=disable",
-		host, port, user, password, dbName)
-	db, err := sql.Open("nrpostgres", connectionString)
+var openConnetion = sql.Open
+
+func GetConnection(driver, connectionString string) (*sql.DB, error) {
+	db, err := openConnetion(driver, connectionString)
 	if err != nil {
 		log.Printf("error while connect to database: %v", err)
 		return nil, err
