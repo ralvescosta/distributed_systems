@@ -2,6 +2,7 @@ package database
 
 import (
 	"database/sql"
+	"errors"
 	"testing"
 
 	"github.com/DATA-DOG/go-sqlmock"
@@ -21,6 +22,9 @@ func Test_Should_Connection_Successfully(t *testing.T) {
 }
 
 func Test_Should_Return_Error_When_Try_To_Connection(t *testing.T) {
+	openConnetion = func(driver, connectionString string) (*sql.DB, error) {
+		return nil, errors.New("error")
+	}
 	_, err := GetConnection("some driver", "some connection string")
 
 	assert.Error(t, err)
