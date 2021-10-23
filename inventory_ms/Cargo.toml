@@ -1,8 +1,10 @@
-[package]
-name = "inventory_ms"
-version = "0.1.0"
-edition = "2018"
+[workspace]
 
-# See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
+members = [
+    "domain",
+    "application",
+    "infra",
+    "webapi"
+]
 
-[dependencies]
+default-members = ["webapi"]

@@ -3,5 +3,29 @@
 version = 3
 
 [[package]]
-name = "inventory_ms"
+name = "application"
 version = "0.1.0"
+dependencies = [
+ "domain",
+]
+
+[[package]]
+name = "domain"
+version = "0.1.0"
+
+[[package]]
+name = "infra"
+version = "0.1.0"
+dependencies = [
+ "application",
+ "domain",
+]
+
+[[package]]
+name = "webapi"
+version = "0.1.0"
+dependencies = [
+ "application",
+ "domain",
+ "infra",
+]
