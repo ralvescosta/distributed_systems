@@ -105,6 +105,8 @@ func ErrorResponseMapper(err error, headers http.Header) HttpResponse {
 	switch err.(type) {
 	case errors.BadRequestError:
 		return BadRequest(models.ErrorResponse{Message: err.Error()}, headers)
+	case errors.UnauthorizeError:
+		return Unauthorized(models.ErrorResponse{Message: err.Error()}, headers)
 	case errors.NotFoundError:
 		return NotFound(models.ErrorResponse{Message: err.Error()}, headers)
 	case errors.ConflictError:
