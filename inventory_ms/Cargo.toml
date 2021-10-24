@@ -4,7 +4,7 @@ members = [
     "domain",
     "application",
     "infra",
-    "webapi"
+    "grpc"
 ]
 
-default-members = ["webapi"]
+default-members = ["grpc"]
