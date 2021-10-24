@@ -4,6 +4,7 @@ import (
 	"strings"
 	"webapi/pkg/domain/usecases"
 	"webapi/pkg/interfaces/http"
+	"webapi/pkg/interfaces/http/models"
 )
 
 type IAuthMiddleware interface {
@@ -19,12 +20,12 @@ func (pst authMiddleware) Perform(httpRequest http.HttpRequest) http.HttpRespons
 
 	token := strings.Split(authHeader, " ")
 	if token[0] != "Bearer" || len(token) < 2 {
-		return http.Unauthorized("Authorization header unformatted", httpRequest.Headers)
+		return http.Unauthorized(models.StringToErrorResponse("Authorization header unformatted"), httpRequest.Headers)
 	}
 
 	authenticatedUser, err := pst.usecase.Perform(httpRequest.Ctx, httpRequest.Txn, token[1])
 	if err != nil {
-		return http.Unauthorized("Invalid token", httpRequest.Headers)
+		return http.Unauthorized(models.StringToErrorResponse("Invalid token"), httpRequest.Headers)
 	}
 
 	return http.Ok(&authenticatedUser, httpRequest.Headers)
