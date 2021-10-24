@@ -1,0 +1,16 @@
+[package]
+name = "grpc"
+version = "0.1.0"
+edition = "2018"
+
+[dependencies]
+domain = { path = "../domain" }
+application = { path = "../application" }
+infra = { path = "../infra" }
+
+tonic = { version = "0.5.0", features = ["transport", "codegen", "tls", "tls-roots", "prost", "compression"] }
+prost = { version = "0.8" }
+tokio = { version = "1.0", features = ["full"] }
+
+[build-dependencies]
+tonic-build = { version = "0.5.0", features = ["prost", "compression"] }
