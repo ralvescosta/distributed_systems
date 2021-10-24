@@ -4,6 +4,7 @@ import (
 	"context"
 	"net/http"
 	"webapi/pkg/app/errors"
+	"webapi/pkg/interfaces/http/models"
 )
 
 type HttpMethod string
@@ -21,11 +22,6 @@ type HttpRequest struct {
 	Auth    interface{}
 	Ctx     context.Context
 	Txn     interface{}
-}
-
-type ErrorMessage struct {
-	StatusCode int    `json:"status_code"`
-	Message    string `json:"message"`
 }
 
 func Ok(body interface{}, headers http.Header) HttpResponse {
@@ -51,77 +47,69 @@ func NoContent(headers http.Header) HttpResponse {
 	}
 }
 
-func BadRequest(msg string, headers http.Header) HttpResponse {
+func BadRequest(body models.ErrorResponse, headers http.Header) HttpResponse {
+	body.StatusCode = 400
 	return HttpResponse{
 		StatusCode: 400,
-		Body: ErrorMessage{
-			StatusCode: 400,
-			Message:    msg,
-		},
-		Headers: headers,
+		Body:       body,
+		Headers:    headers,
 	}
 }
 
-func Unauthorized(msg string, headers http.Header) HttpResponse {
+func Unauthorized(body models.ErrorResponse, headers http.Header) HttpResponse {
+	body.StatusCode = 401
 	return HttpResponse{
 		StatusCode: 401,
-		Body: ErrorMessage{
-			StatusCode: 401,
-			Message:    msg,
-		},
-		Headers: headers,
+		Body:       body,
+		Headers:    headers,
 	}
 }
 
-func Forbiden(msg string, headers http.Header) HttpResponse {
+func Forbiden(body models.ErrorResponse, headers http.Header) HttpResponse {
+	body.StatusCode = 403
 	return HttpResponse{
 		StatusCode: 403,
-		Body: ErrorMessage{
-			StatusCode: 403,
-			Message:    msg,
-		},
-		Headers: headers,
+		Body:       body,
+		Headers:    headers,
 	}
 }
 
-func NotFound(msg string, headers http.Header) HttpResponse {
+func NotFound(body models.ErrorResponse, headers http.Header) HttpResponse {
+	body.StatusCode = 404
 	return HttpResponse{
 		StatusCode: 404,
-		Body: ErrorMessage{
-			StatusCode: 404,
-			Message:    msg,
-		},
-		Headers: headers,
+		Body:       body,
+		Headers:    headers,
 	}
 }
 
-func Conflict(msg string, headers http.Header) HttpResponse {
+func Conflict(body models.ErrorResponse, headers http.Header) HttpResponse {
+	body.StatusCode = 409
 	return HttpResponse{
 		StatusCode: 409,
-		Body: ErrorMessage{
-			StatusCode: 409,
-			Message:    msg,
-		},
-		Headers: headers,
+		Body:       body,
+		Headers:    headers,
 	}
 }
 
-func InternalServerError(msg string, headers http.Header) HttpResponse {
+func InternalServerError(body models.ErrorResponse, headers http.Header) HttpResponse {
+	body.StatusCode = 500
 	return HttpResponse{
 		StatusCode: 500,
-		Body: ErrorMessage{
-			StatusCode: 500,
-			Message:    msg,
-		},
-		Headers: headers,
+		Body:       body,
+		Headers:    headers,
 	}
 }
 
 func ErrorResponseMapper(err error, headers http.Header) HttpResponse {
 	switch err.(type) {
+	case errors.BadRequestError:
+		return BadRequest(models.ErrorResponse{Message: err.Error()}, headers)
+	case errors.NotFoundError:
+		return NotFound(models.ErrorResponse{Message: err.Error()}, headers)
 	case errors.ConflictError:
-		return Conflict(err.Error(), headers)
+		return Conflict(models.ErrorResponse{Message: err.Error()}, headers)
 	default:
-		return InternalServerError(err.Error(), headers)
+		return InternalServerError(models.ErrorResponse{Message: err.Error()}, headers)
 	}
 }

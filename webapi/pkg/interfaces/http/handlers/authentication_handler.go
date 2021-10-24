@@ -23,12 +23,12 @@ func (pst authenticationHandler) Create(httpRequest http.HttpRequest) http.HttpR
 	model := models.AuthenticationRequest{}
 	if err := json.Unmarshal(httpRequest.Body, &model); err != nil {
 		pst.logger.Error(err.Error())
-		return http.BadRequest("body is required", nil)
+		return http.BadRequest(models.StringToErrorResponse("body is required"), nil)
 	}
 
 	if validationErrs := pst.validator.ValidateStruct(model); validationErrs != nil {
-		pst.logger.Error("")
-		return http.BadRequest("", nil)
+		pst.logger.Error(validationErrs[0].Message)
+		return http.BadRequest(models.StringToErrorResponse(validationErrs[0].Message), nil)
 	}
 
 	result, err := pst.useCases.Perform(httpRequest.Ctx, httpRequest.Txn, model.ToAuthenticateUserDto())
