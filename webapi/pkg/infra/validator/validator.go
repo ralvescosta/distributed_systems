@@ -15,6 +15,10 @@ func (_validator) ValidateStruct(m interface{}) []dtos.ValidatedDto {
 	v := validator.New()
 	err := v.Struct(m)
 
+	if err == nil {
+		return nil
+	}
+
 	validationErrors := err.(validator.ValidationErrors)
 
 	var validatedErros []dtos.ValidatedDto
