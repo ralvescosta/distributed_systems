@@ -1,0 +1,46 @@
+syntax = "proto3";
+
+package inventory;
+
+service Inventory {
+  rpc GetProductById (GetByIdRequest) returns (ProductResponse);
+  rpc GetProducts (Empty) returns (ProductsResponse);
+  rpc CreateProduct (CreateProductRequest) returns (ProductResponse);
+  rpc UpdateProduct(UpdateProductRequest) returns (ProductResponse);
+}
+
+message Empty {}
+
+message GetByIdRequest {
+  int64 id = 1;
+}
+
+message CreateProductRequest {
+  string tag = 1;
+  string title = 2;
+  string subtitle = 3;
+  string authors = 4;
+  int64 amount_in_stock = 5;
+}
+
+message UpdateProductRequest {
+  string tag = 1;
+  string title = 2;
+  string subtitle = 3;
+  int64 amount_in_stock = 4;
+}
+
+message ProductResponse {
+  int64 id = 1;
+  string tag = 2;
+  string title = 3;
+  string subtitle = 4;
+  string authors = 5;
+  int64 amount_in_stock = 6;
+  string created_at = 7;
+  string updated_at = 8;
+}
+
+message ProductsResponse {
+  repeated ProductResponse Value = 1;
+}
