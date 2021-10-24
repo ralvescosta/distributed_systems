@@ -22,12 +22,12 @@ type usersHandler struct {
 func (pst usersHandler) Create(httpRequest http.HttpRequest) http.HttpResponse {
 	model := models.CreateUserRequest{}
 	if err := json.Unmarshal(httpRequest.Body, &model); err != nil {
-		return http.BadRequest("body is required", nil)
+		return http.BadRequest(models.StringToErrorResponse("body is required"), nil)
 	}
 
 	if err := pst.validator.ValidateStruct(model); err != nil {
 		pst.logger.Error("")
-		return http.BadRequest("", nil)
+		return http.BadRequest(models.StringToErrorResponse(""), nil)
 	}
 
 	result, err := pst.useCases.Perform(httpRequest.Ctx, httpRequest.Txn, model.ToCreateUserDto())

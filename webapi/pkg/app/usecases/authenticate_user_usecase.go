@@ -22,6 +22,10 @@ func (pst authenticateUserUsecase) Perform(ctx context.Context, txn interface{},
 		return dtos.AuthenticatedUserDto{}, err
 	}
 
+	if user == nil {
+		return dtos.AuthenticatedUserDto{}, errors.NewNotFoundError("Email not found")
+	}
+
 	if !pst.hasher.Verify(dto.Password, user.Password) {
 		return dtos.AuthenticatedUserDto{}, errors.NewBadRequestError("Wrong password")
 	}
