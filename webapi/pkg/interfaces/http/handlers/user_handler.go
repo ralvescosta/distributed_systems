@@ -14,14 +14,20 @@ type IUsersHandler interface {
 }
 
 type usersHandler struct {
-	logger   interfaces.ILogger
-	useCases usecases.ICreateUserUseCase
+	logger    interfaces.ILogger
+	useCases  usecases.ICreateUserUseCase
+	validator interfaces.IValidator
 }
 
 func (pst usersHandler) Create(httpRequest http.HttpRequest) http.HttpResponse {
 	model := models.CreateUserRequest{}
 	if err := json.Unmarshal(httpRequest.Body, &model); err != nil {
 		return http.BadRequest("body is required", nil)
+	}
+
+	if err := pst.validator.ValidateStruct(model); err != nil {
+		pst.logger.Error("")
+		return http.BadRequest("", nil)
 	}
 
 	result, err := pst.useCases.Perform(httpRequest.Ctx, httpRequest.Txn, model.ToCreateUserDto())
@@ -32,9 +38,10 @@ func (pst usersHandler) Create(httpRequest http.HttpRequest) http.HttpResponse {
 	return http.Created(models.ToCreateUserResponse(result), nil)
 }
 
-func NewUsersHandler(logger interfaces.ILogger, useCases usecases.ICreateUserUseCase) IUsersHandler {
+func NewUsersHandler(logger interfaces.ILogger, useCases usecases.ICreateUserUseCase, validator interfaces.IValidator) IUsersHandler {
 	return usersHandler{
-		logger:   logger,
-		useCases: useCases,
+		logger:    logger,
+		useCases:  useCases,
+		validator: validator,
 	}
 }
