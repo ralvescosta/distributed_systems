@@ -11,6 +11,7 @@ import (
 	"webapi/pkg/infra/logger"
 	"webapi/pkg/infra/repositories"
 	tokenManager "webapi/pkg/infra/token_manager"
+	"webapi/pkg/infra/validator"
 	"webapi/pkg/interfaces/http/handlers"
 	"webapi/pkg/interfaces/http/middlewares"
 	"webapi/pkg/interfaces/http/presenters"
@@ -61,23 +62,24 @@ func NewContainer() webApiContainer {
 	}
 
 	logger := logger.NewLogger()
+	validatoR := validator.NewValidator()
 	httpServer := httpServer.NewHttpServer(logger)
 
 	userRepository := repositories.NewUserRepository(logger, dbConnection, monitoring)
 	hasher := hasher.NewHahser(logger)
 	accessTokenManager := tokenManager.NewTokenManager(logger)
 	createUserUseCase := appUseCases.NewCreateUserUseCase(userRepository, hasher, accessTokenManager)
-	usersHandler := handlers.NewUsersHandler(logger, createUserUseCase)
+	usersHandler := handlers.NewUsersHandler(logger, createUserUseCase, validatoR)
 	usersRoutes := presenters.NewUsersRoutes(logger, usersHandler)
 
 	authenticationUserUseCase := appUseCases.NewAuthenticateUserUseCase(userRepository, hasher, accessTokenManager)
-	authenticationHandler := handlers.NewAuthenticationHandler(logger, authenticationUserUseCase)
+	authenticationHandler := handlers.NewAuthenticationHandler(logger, authenticationUserUseCase, validatoR)
 	authenticationRoutes := presenters.NewAuthenticationRoutes(logger, authenticationHandler)
 
 	authenticationUseCase := appUseCases.NewAuthenticationUseCase(userRepository, accessTokenManager)
 	authenticationMiddleware := middlewares.NewAuthMiddleware(authenticationUseCase)
 
-	inventoryHandler := handlers.NewInventoryHandler(logger)
+	inventoryHandler := handlers.NewInventoryHandler(logger, validatoR)
 	inventoryRoutes := presenters.NewInventoryRoutes(logger, authenticationMiddleware, inventoryHandler)
 
 	return webApiContainer{

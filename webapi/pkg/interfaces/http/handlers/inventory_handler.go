@@ -10,7 +10,8 @@ type IInventoryHandler interface {
 }
 
 type inventoryHandler struct {
-	logger interfaces.ILogger
+	logger    interfaces.ILogger
+	validator interfaces.IValidator
 }
 
 func (pst inventoryHandler) Create(httpRequest http.HttpRequest) http.HttpResponse {
@@ -18,8 +19,9 @@ func (pst inventoryHandler) Create(httpRequest http.HttpRequest) http.HttpRespon
 	return http.Created(nil, nil)
 }
 
-func NewInventoryHandler(logger interfaces.ILogger) IInventoryHandler {
+func NewInventoryHandler(logger interfaces.ILogger, validator interfaces.IValidator) IInventoryHandler {
 	return inventoryHandler{
-		logger: logger,
+		logger:    logger,
+		validator: validator,
 	}
 }

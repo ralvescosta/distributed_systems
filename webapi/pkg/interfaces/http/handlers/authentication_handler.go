@@ -3,8 +3,6 @@ package handlers
 import (
 	"encoding/json"
 
-	"github.com/go-playground/validator/v10"
-
 	"webapi/pkg/app/interfaces"
 	"webapi/pkg/domain/usecases"
 	"webapi/pkg/interfaces/http"
@@ -16,20 +14,21 @@ type IAuthenticationHandler interface {
 }
 
 type authenticationHandler struct {
-	logger   interfaces.ILogger
-	useCases usecases.IAuthenticateUserUseCase
+	logger    interfaces.ILogger
+	useCases  usecases.IAuthenticateUserUseCase
+	validator interfaces.IValidator
 }
 
 func (pst authenticationHandler) Create(httpRequest http.HttpRequest) http.HttpResponse {
 	model := models.AuthenticationRequest{}
 	if err := json.Unmarshal(httpRequest.Body, &model); err != nil {
+		pst.logger.Error(err.Error())
 		return http.BadRequest("body is required", nil)
 	}
 
-	v := validator.New()
-	err := v.Struct(model)
-	if err != nil {
-		pst.logger.Info(err.Error())
+	if validationErrs := pst.validator.ValidateStruct(model); validationErrs != nil {
+		pst.logger.Error("")
+		return http.BadRequest("", nil)
 	}
 
 	result, err := pst.useCases.Perform(httpRequest.Ctx, httpRequest.Txn, model.ToAuthenticateUserDto())
@@ -40,9 +39,10 @@ func (pst authenticationHandler) Create(httpRequest http.HttpRequest) http.HttpR
 	return http.Ok(models.ToAuthenticationResponse(result), nil)
 }
 
-func NewAuthenticationHandler(logger interfaces.ILogger, useCases usecases.IAuthenticateUserUseCase) IAuthenticationHandler {
+func NewAuthenticationHandler(logger interfaces.ILogger, useCases usecases.IAuthenticateUserUseCase, validator interfaces.IValidator) IAuthenticationHandler {
 	return authenticationHandler{
-		logger:   logger,
-		useCases: useCases,
+		logger:    logger,
+		useCases:  useCases,
+		validator: validator,
 	}
 }
