@@ -35,7 +35,7 @@ message ProductResponse {
   string tag = 2;
   string title = 3;
   string subtitle = 4;
-  string authors = 5;
+  repeated string authors = 5;
   int64 amount_in_stock = 6;
   string created_at = 7;
   string updated_at = 8;
