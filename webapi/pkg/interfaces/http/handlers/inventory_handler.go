@@ -7,11 +7,17 @@ import (
 
 type IInventoryHandler interface {
 	Create(httpRequest http.HttpRequest) http.HttpResponse
+	GetById(httpRequest http.HttpRequest) http.HttpResponse
 }
 
 type inventoryHandler struct {
 	logger    interfaces.ILogger
 	validator interfaces.IValidator
+}
+
+func (pst inventoryHandler) GetById(httpRequest http.HttpRequest) http.HttpResponse {
+	pst.logger.Debug("[InventoryHandler::GetById]")
+	return http.Created(nil, nil)
 }
 
 func (pst inventoryHandler) Create(httpRequest http.HttpRequest) http.HttpResponse {

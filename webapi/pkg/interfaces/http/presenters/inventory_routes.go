@@ -23,7 +23,7 @@ func (pst inventoryRoutes) Register(httpServer server.IHttpServer) {
 		"GET",
 		"/api/v1/inventory",
 		adapter.MiddlewareAdapt(pst.middlewares.Perform, pst.logger),
-		adapter.HandlerAdapt(pst.handlers.Create, pst.logger),
+		adapter.HandlerAdapt(pst.handlers.GetById, pst.logger),
 	)
 }
 
