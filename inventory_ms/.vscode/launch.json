@@ -1,0 +1,26 @@
+{
+  "version": "0.2.0",
+  "configurations": [
+    {
+      "type": "lldb",
+      "request": "launch",
+      "name": "Debug GRPC Server",
+      "cargo": {
+        "args": [
+          "build",
+          "--bin=grpc",
+          "--package=grpc"
+        ],
+        "filter": {
+          "name": "grpc",
+          "kind": "bin"
+        },
+      },
+      "env": {
+        "RUST_ENV": "development",
+      },
+      "args": [],
+      "cwd": "${workspaceFolder}"
+    }
+  ]
+}

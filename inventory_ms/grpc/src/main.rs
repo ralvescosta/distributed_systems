@@ -1,23 +1,28 @@
+use infra::logger::logger::Logger;
 use std::sync::Arc;
-
-use application::usecases::get_inventory_by_id::GetInventoryByIdUseCase;
-use inventory::inventory_server::InventoryServer;
 use tonic::transport::Server;
 
-use crate::controllers::inventory_controller::InventoryController;
+use application::usecases::get_inventory_by_id::GetInventoryByIdUseCase;
+use infra::environments;
 
-mod inventory;
+use crate::controllers::inventory_controller::InventoryController;
+use crate::inventory::inventory_server::InventoryServer;
 
 mod controllers;
+mod inventory;
 mod middlewares;
 mod models;
 
 #[tokio::main]
 async fn main() -> Result<(), Box<dyn std::error::Error>> {
-    let addr = "[::1]:50051".parse().unwrap();
+    environments::env::register_env()?;
+    Logger::init();
 
-    let get_inventory_by_id_use_case = GetInventoryByIdUseCase::new();
-    let inventory_controller = InventoryController::new(Arc::new(get_inventory_by_id_use_case));
+    let addr = "127.0.0.1:50051".parse().unwrap();
+
+    let logger = Arc::new(Logger::new());
+    let get_inventory_by_id_use_case = Arc::new(GetInventoryByIdUseCase::new(logger));
+    let inventory_controller = InventoryController::new(get_inventory_by_id_use_case);
 
     println!("Server listening on {}", addr);
     Server::builder()
