@@ -17,6 +17,6 @@ impl GetInventoryByIdUseCase {
 impl IGetInventoryByIdUseCase for GetInventoryByIdUseCase {
     fn perform(&self) {
         self.logger
-            .debug("[GetInventoryByIdUseCase::perform]", "Request");
+            .debug("GetInventoryByIdUseCase::perform", "Request");
     }
 }

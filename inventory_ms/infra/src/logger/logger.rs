@@ -1,3 +1,5 @@
+use std::fmt::Debug;
+
 use application::interfaces::i_logger::ILogger;
 use env_logger;
 use log::{debug, error, info, trace, warn};
@@ -11,6 +13,10 @@ impl Logger {
     }
     pub fn new() -> impl ILogger {
         Logger {}
+    }
+
+    pub fn test<T: Debug>() {
+        println!("{:?}", std::any::type_name::<T>());
     }
 }
 

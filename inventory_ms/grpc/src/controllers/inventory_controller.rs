@@ -48,20 +48,38 @@ impl Inventory for InventoryController {
         &self,
         _request: Request<Empty>,
     ) -> Result<Response<ProductsResponse>, Status> {
-        todo!()
+        Ok(Response::new(ProductsResponse { value: vec![] }))
     }
 
     async fn create_product(
         &self,
         _request: Request<CreateProductRequest>,
     ) -> Result<Response<ProductResponse>, Status> {
-        todo!()
+        Ok(Response::new(ProductResponse {
+            id: 1,
+            tag: String::new(),
+            title: String::new(),
+            subtitle: String::new(),
+            authors: vec![],
+            amount_in_stock: 10,
+            created_at: String::new(),
+            updated_at: String::new(),
+        }))
     }
 
     async fn update_product(
         &self,
         _request: Request<UpdateProductRequest>,
     ) -> Result<Response<ProductResponse>, Status> {
-        todo!()
+        Ok(Response::new(ProductResponse {
+            id: 1,
+            tag: String::new(),
+            title: String::new(),
+            subtitle: String::new(),
+            authors: vec![],
+            amount_in_stock: 10,
+            created_at: String::new(),
+            updated_at: String::new(),
+        }))
     }
 }
