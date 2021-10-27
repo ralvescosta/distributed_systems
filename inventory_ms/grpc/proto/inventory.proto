@@ -21,6 +21,8 @@ message CreateProductRequest {
   string subtitle = 3;
   string authors = 4;
   int64 amount_in_stock = 5;
+  int64 num_pages = 6;
+  repeated string tags = 7;
 }
 
 message UpdateProductRequest {
@@ -32,13 +34,16 @@ message UpdateProductRequest {
 
 message ProductResponse {
   int64 id = 1;
-  string tag = 2;
-  string title = 3;
-  string subtitle = 4;
-  repeated string authors = 5;
-  int64 amount_in_stock = 6;
-  string created_at = 7;
-  string updated_at = 8;
+  string tp = 2;
+  string tag = 3;
+  string title = 4;
+  string subtitle = 5;
+  repeated string authors = 6;
+  int64 amount_in_stock = 7;
+  int64 num_pages = 8;
+  repeated string tags = 9;
+  string created_at = 10;
+  string updated_at = 11;
 }
 
 message ProductsResponse {
