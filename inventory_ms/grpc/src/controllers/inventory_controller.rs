@@ -34,6 +34,7 @@ impl Inventory for InventoryController {
 
         Ok(Response::new(ProductResponse {
             id: 1,
+            tp: String::new(),
             tag: String::new(),
             title: String::new(),
             subtitle: String::new(),
@@ -41,6 +42,8 @@ impl Inventory for InventoryController {
             amount_in_stock: 10,
             created_at: String::new(),
             updated_at: String::new(),
+            num_pages: 10,
+            tags: vec![],
         }))
     }
 
@@ -57,6 +60,7 @@ impl Inventory for InventoryController {
     ) -> Result<Response<ProductResponse>, Status> {
         Ok(Response::new(ProductResponse {
             id: 1,
+            tp: String::new(),
             tag: String::new(),
             title: String::new(),
             subtitle: String::new(),
@@ -64,6 +68,8 @@ impl Inventory for InventoryController {
             amount_in_stock: 10,
             created_at: String::new(),
             updated_at: String::new(),
+            num_pages: 10,
+            tags: vec![],
         }))
     }
 
@@ -73,6 +79,7 @@ impl Inventory for InventoryController {
     ) -> Result<Response<ProductResponse>, Status> {
         Ok(Response::new(ProductResponse {
             id: 1,
+            tp: String::new(),
             tag: String::new(),
             title: String::new(),
             subtitle: String::new(),
@@ -80,6 +87,8 @@ impl Inventory for InventoryController {
             amount_in_stock: 10,
             created_at: String::new(),
             updated_at: String::new(),
+            num_pages: 10,
+            tags: vec![],
         }))
     }
 }
