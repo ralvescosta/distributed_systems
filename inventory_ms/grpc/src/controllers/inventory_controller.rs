@@ -11,9 +11,6 @@ pub struct InventoryController {
     get_product_by_id_use_case: Arc<dyn IGetInventoryByIdUseCase>,
 }
 
-unsafe impl Sync for InventoryController {}
-unsafe impl Send for InventoryController {}
-
 impl InventoryController {
     pub fn new(
         get_product_by_id_use_case: Arc<dyn IGetInventoryByIdUseCase>,
@@ -30,11 +27,11 @@ impl Inventory for InventoryController {
         &self,
         _request: Request<GetByIdRequest>,
     ) -> Result<Response<ProductResponse>, Status> {
-        self.get_product_by_id_use_case.perform();
+        self.get_product_by_id_use_case.perform().await;
 
         Ok(Response::new(ProductResponse {
             id: 1,
-            tp: String::new(),
+            product_category: String::new(),
             tag: String::new(),
             title: String::new(),
             subtitle: String::new(),
@@ -60,7 +57,7 @@ impl Inventory for InventoryController {
     ) -> Result<Response<ProductResponse>, Status> {
         Ok(Response::new(ProductResponse {
             id: 1,
-            tp: String::new(),
+            product_category: String::new(),
             tag: String::new(),
             title: String::new(),
             subtitle: String::new(),
@@ -79,7 +76,7 @@ impl Inventory for InventoryController {
     ) -> Result<Response<ProductResponse>, Status> {
         Ok(Response::new(ProductResponse {
             id: 1,
-            tp: String::new(),
+            product_category: String::new(),
             tag: String::new(),
             title: String::new(),
             subtitle: String::new(),
