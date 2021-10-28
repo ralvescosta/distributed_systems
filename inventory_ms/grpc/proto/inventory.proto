@@ -34,7 +34,7 @@ message UpdateProductRequest {
 
 message ProductResponse {
   int64 id = 1;
-  string tp = 2;
+  string product_category = 2;
   string tag = 3;
   string title = 4;
   string subtitle = 5;
