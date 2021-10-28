@@ -1,14 +1,14 @@
 use mongodb::{options::ClientOptions, Client, Collection, Database};
 use std::{env, error::Error};
 
-pub struct MongoConnection {
+pub struct DbConnection {
     pub client: Client,
     pub app_name: String,
     pub db_name: String,
     pub inventory_collection_name: String,
 }
 
-pub async fn connect_to_database() -> Result<MongoConnection, Box<dyn Error>> {
+pub async fn connect_to_database() -> Result<DbConnection, Box<dyn Error>> {
     let mongo_connection_uri = env::var("MONGO_CONNECTION_URI")?;
     let app_name = env::var("APP_NAME")?;
     let db_name = env::var("MONGO_DB_NAME")?;
@@ -19,7 +19,7 @@ pub async fn connect_to_database() -> Result<MongoConnection, Box<dyn Error>> {
     client_options.app_name = Some(app_name.clone());
     let client = Client::with_options(client_options)?;
 
-    Ok(MongoConnection {
+    Ok(DbConnection {
         client,
         app_name,
         db_name,
@@ -27,7 +27,7 @@ pub async fn connect_to_database() -> Result<MongoConnection, Box<dyn Error>> {
     })
 }
 
-impl MongoConnection {
+impl DbConnection {
     pub fn get_database(&self) -> Database {
         self.client.database(&self.db_name)
     }

@@ -1,4 +1,4 @@
-pub trait ILogger {
+pub trait ILogger: Send + Sync {
     fn trace(&self, target: &str, msg: &str);
     fn debug(&self, target: &str, msg: &str);
     fn info(&self, target: &str, msg: &str);

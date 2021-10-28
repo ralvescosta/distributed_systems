@@ -1,4 +1,6 @@
-pub struct BookEntity {
+pub struct ProductEntity {
+    pub id: String,
+    pub product_category: String,
     pub tag: String,
     pub title: String,
     pub subtitle: String,
