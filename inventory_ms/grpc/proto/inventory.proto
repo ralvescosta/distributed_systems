@@ -12,7 +12,7 @@ service Inventory {
 message Empty {}
 
 message GetByIdRequest {
-  int64 id = 1;
+  string id = 1;
 }
 
 message CreateProductRequest {
@@ -33,7 +33,7 @@ message UpdateProductRequest {
 }
 
 message ProductResponse {
-  int64 id = 1;
+  string id = 1;
   string product_category = 2;
   string tag = 3;
   string title = 4;
