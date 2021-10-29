@@ -25,23 +25,29 @@ impl InventoryController {
 impl Inventory for InventoryController {
     async fn get_product_by_id(
         &self,
-        _request: Request<GetByIdRequest>,
+        request: Request<GetByIdRequest>,
     ) -> Result<Response<ProductResponse>, Status> {
-        self.get_product_by_id_use_case.perform().await;
-
-        Ok(Response::new(ProductResponse {
-            id: 1,
-            product_category: String::new(),
-            tag: String::new(),
-            title: String::new(),
-            subtitle: String::new(),
-            authors: vec![],
-            amount_in_stock: 10,
-            created_at: String::new(),
-            updated_at: String::new(),
-            num_pages: 10,
-            tags: vec![],
-        }))
+        let result = self
+            .get_product_by_id_use_case
+            .perform(request.into_inner().id)
+            .await;
+        match result {
+            Ok(Some(product)) => Ok(Response::new(ProductResponse {
+                id: product.id,
+                product_category: product.product_category,
+                tag: product.tag,
+                title: product.title,
+                subtitle: product.subtitle,
+                authors: product.authors,
+                amount_in_stock: product.amount_in_stock,
+                created_at: product.created_at,
+                updated_at: product.updated_at,
+                num_pages: product.num_pages,
+                tags: product.tags,
+            })),
+            Ok(None) => Err(Status::not_found("Not Found")),
+            Err(err) => Err(Status::internal(format!("{:?}", err))),
+        }
     }
 
     async fn get_products(
@@ -56,7 +62,7 @@ impl Inventory for InventoryController {
         _request: Request<CreateProductRequest>,
     ) -> Result<Response<ProductResponse>, Status> {
         Ok(Response::new(ProductResponse {
-            id: 1,
+            id: String::new(),
             product_category: String::new(),
             tag: String::new(),
             title: String::new(),
@@ -75,7 +81,7 @@ impl Inventory for InventoryController {
         _request: Request<UpdateProductRequest>,
     ) -> Result<Response<ProductResponse>, Status> {
         Ok(Response::new(ProductResponse {
-            id: 1,
+            id: String::new(),
             product_category: String::new(),
             tag: String::new(),
             title: String::new(),
