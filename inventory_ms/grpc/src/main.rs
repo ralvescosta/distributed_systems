@@ -1,3 +1,4 @@
+use application::usecases::create_product::CreateProductUseCase;
 use infra::logger::logger::Logger;
 use std::sync::Arc;
 use tonic::transport::Server;
@@ -24,9 +25,13 @@ async fn main() -> Result<(), Box<dyn std::error::Error>> {
 
     let logger = Arc::new(Logger::new());
     let inventory_repository = Arc::new(ProductRepository::new(db_connection));
-    let get_inventory_by_id_use_case =
-        Arc::new(GetInventoryByIdUseCase::new(logger, inventory_repository));
-    let inventory_controller = InventoryController::new(get_inventory_by_id_use_case);
+    let get_inventory_by_id_use_case = Arc::new(GetInventoryByIdUseCase::new(
+        logger,
+        inventory_repository.clone(),
+    ));
+    let create_product_use_case = Arc::new(CreateProductUseCase::new(inventory_repository));
+    let inventory_controller =
+        InventoryController::new(get_inventory_by_id_use_case, create_product_use_case);
 
     println!("Server listening on {}", addr);
     Server::builder()
