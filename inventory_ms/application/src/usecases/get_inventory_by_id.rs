@@ -23,7 +23,6 @@ impl GetInventoryByIdUseCase {
 }
 
 #[async_trait]
-
 impl IGetInventoryByIdUseCase for GetInventoryByIdUseCase {
     async fn perform(&self, id: String) -> Result<Option<ProductEntity>, Box<dyn Error>> {
         self.logger

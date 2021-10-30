@@ -10,6 +10,5 @@ domain = { path = "../domain" }
 async-trait = "0.1.51"
 
 [dev-dependencies]
-tokio = { version = "1.0",  features = ["full"]}
+tokio = { version = "1.0",  features = ["full"] }
 mockall = "0.10.2"
-mockall_double = "0.2.0"
