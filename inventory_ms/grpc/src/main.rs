@@ -3,10 +3,10 @@ use infra::logger::logger::Logger;
 use std::sync::Arc;
 use tonic::transport::Server;
 
-use application::usecases::get_inventory_by_id::GetInventoryByIdUseCase;
+use application::usecases::get_product_by_id::GetProductByIdUseCase;
 use infra::{database, environments, repositories::product_repository::ProductRepository};
 
-use crate::controllers::inventory_controller::InventoryController;
+use crate::controllers::product_controller::ProductController;
 use crate::inventory::inventory_server::InventoryServer;
 
 mod controllers;
@@ -24,18 +24,18 @@ async fn main() -> Result<(), Box<dyn std::error::Error>> {
     let addr = "127.0.0.1:50051".parse().unwrap();
 
     let logger = Arc::new(Logger::new());
-    let inventory_repository = Arc::new(ProductRepository::new(db_connection));
-    let get_inventory_by_id_use_case = Arc::new(GetInventoryByIdUseCase::new(
+    let product_repository = Arc::new(ProductRepository::new(db_connection));
+    let get_product_by_id_use_case = Arc::new(GetProductByIdUseCase::new(
         logger,
-        inventory_repository.clone(),
+        product_repository.clone(),
     ));
-    let create_product_use_case = Arc::new(CreateProductUseCase::new(inventory_repository));
-    let inventory_controller =
-        InventoryController::new(get_inventory_by_id_use_case, create_product_use_case);
+    let create_product_use_case = Arc::new(CreateProductUseCase::new(product_repository));
+    let product_controller =
+        ProductController::new(get_product_by_id_use_case, create_product_use_case);
 
     println!("Server listening on {}", addr);
     Server::builder()
-        .add_service(InventoryServer::new(inventory_controller))
+        .add_service(InventoryServer::new(product_controller))
         .serve(addr)
         .await?;
     Ok(())
