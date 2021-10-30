@@ -1,8 +1,11 @@
 use async_trait::async_trait;
+use chrono::Utc;
 use mongodb::bson::doc;
+use std::error::Error;
+use uuid::Uuid;
 
 use application::interfaces::i_product_repository::IProductRepository;
-use domain::entities::product_entity::ProductEntity;
+use domain::{dtos::create_product_dto::CreateProductDto, entities::product_entity::ProductEntity};
 
 use crate::database::{connection::DbConnection, documents::product_documents::ProductDocument};
 
@@ -18,10 +21,7 @@ impl ProductRepository {
 
 #[async_trait]
 impl IProductRepository for ProductRepository {
-    async fn get_product_by_id(
-        &self,
-        id: String,
-    ) -> Result<Option<ProductEntity>, Box<dyn std::error::Error>> {
+    async fn get_product_by_id(&self, id: String) -> Result<Option<ProductEntity>, Box<dyn Error>> {
         let collection = self
             .connection
             .get_collection::<ProductDocument>(&self.connection.inventory_collection_name);
@@ -32,12 +32,37 @@ impl IProductRepository for ProductRepository {
             Some(document) => Ok(Some(document.to_entity())),
         }
     }
+
+    async fn create(&self, dto: CreateProductDto) -> Result<ProductEntity, Box<dyn Error>> {
+        let collection = self
+            .connection
+            .get_collection(&self.connection.inventory_collection_name);
+
+        let guid = Uuid::new_v4().to_hyphenated().to_string();
+
+        let doc = doc! {
+            "id": guid,
+            "product_category": dto.product_category,
+            "tag": dto.tag,
+            "title": dto.title,
+            "subtitle": dto.subtitle,
+            "authors": dto.authors,
+            "amount_in_stock": dto.amount_in_stock,
+            "num_pages": dto.num_pages,
+            "tags": dto.tags,
+            "created_at": Utc::now().to_rfc3339(),
+            "updated_at": Utc::now().to_rfc3339(),
+        };
+
+        let result = collection.insert_one(doc, None).await?;
+
+        Ok(ProductEntity::default())
+    }
 }
 
 #[cfg(test)]
 mod test {
     use super::*;
-
     use mongodb::Client;
 
     #[tokio::test]

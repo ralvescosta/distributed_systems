@@ -1,12 +1,11 @@
 use async_trait::async_trait;
+use std::{error::Error, sync::Arc};
+
+use crate::interfaces::{i_logger::ILogger, i_product_repository::IProductRepository};
 use domain::{
     entities::product_entity::ProductEntity,
     usecases::i_get_inventory_by_id::IGetInventoryByIdUseCase,
 };
-
-use std::{error::Error, sync::Arc};
-
-use crate::interfaces::{i_logger::ILogger, i_product_repository::IProductRepository};
 
 pub struct GetInventoryByIdUseCase {
     logger: Arc<dyn ILogger>,
@@ -35,6 +34,7 @@ impl IGetInventoryByIdUseCase for GetInventoryByIdUseCase {
 mod test {
 
     use super::*;
+    use domain::dtos::create_product_dto::CreateProductDto;
     use mockall::*;
     use std::io::{Error, ErrorKind};
 
@@ -114,6 +114,9 @@ mod test {
                 &self,
                 _id: String,
             ) -> Result<Option<ProductEntity>, Box<dyn std::error::Error>> {
+                todo!()
+            }
+            async fn create(&self, dto: CreateProductDto) -> Result<ProductEntity, Box<dyn std::error::Error>> {
                 todo!()
             }
         }
