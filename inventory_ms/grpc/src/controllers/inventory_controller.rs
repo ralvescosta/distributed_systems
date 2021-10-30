@@ -95,3 +95,46 @@ impl Inventory for InventoryController {
         }))
     }
 }
+
+#[cfg(test)]
+mod test {
+
+    use super::*;
+    use domain::entities::product_entity::ProductEntity;
+    use mockall::*;
+
+    #[tokio::test]
+    async fn perform() {
+        let mut use_case_mocked = MockGetInventoryByIdUseCase::new();
+        let request = Request::<GetByIdRequest>::new(GetByIdRequest {
+            ..Default::default()
+        });
+        use_case_mocked
+            .expect_perform()
+            .returning(|_id| Ok(Some(ProductEntity::default())))
+            .times(1);
+
+        let sut = InventoryController::new(Arc::new(use_case_mocked));
+
+        match sut.get_product_by_id(request).await {
+            Ok(result) => assert_eq!(result.get_ref().title, String::from("")),
+            _ => assert!(false),
+        }
+    }
+
+    mock! {
+        pub GetInventoryByIdUseCase {}
+        #[tonic::async_trait]
+        impl IGetInventoryByIdUseCase for GetInventoryByIdUseCase {
+            async fn perform(
+                &self,
+                id: String,
+            ) -> Result<
+                Option<domain::entities::product_entity::ProductEntity>,
+                Box<dyn std::error::Error>,
+            > {
+                todo!()
+            }
+        }
+    }
+}
