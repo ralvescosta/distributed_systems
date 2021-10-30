@@ -1,6 +1,5 @@
 use async_trait::async_trait;
-use chrono::Utc;
-use mongodb::bson::doc;
+use mongodb::bson::{doc, DateTime};
 use std::error::Error;
 use uuid::Uuid;
 
@@ -36,27 +35,27 @@ impl IProductRepository for ProductRepository {
     async fn create(&self, dto: CreateProductDto) -> Result<ProductEntity, Box<dyn Error>> {
         let collection = self
             .connection
-            .get_collection(&self.connection.inventory_collection_name);
+            .get_collection::<ProductDocument>(&self.connection.inventory_collection_name);
 
         let guid = Uuid::new_v4().to_hyphenated().to_string();
 
-        let doc = doc! {
-            "id": guid,
-            "product_category": dto.product_category,
-            "tag": dto.tag,
-            "title": dto.title,
-            "subtitle": dto.subtitle,
-            "authors": dto.authors,
-            "amount_in_stock": dto.amount_in_stock,
-            "num_pages": dto.num_pages,
-            "tags": dto.tags,
-            "created_at": Utc::now().to_rfc3339(),
-            "updated_at": Utc::now().to_rfc3339(),
+        let document = ProductDocument {
+            id: guid,
+            product_category: dto.product_category,
+            tag: dto.tag,
+            title: dto.title,
+            subtitle: dto.subtitle,
+            authors: dto.authors,
+            amount_in_stock: dto.amount_in_stock,
+            num_pages: dto.num_pages,
+            tags: dto.tags,
+            created_at: DateTime::now(),
+            updated_at: DateTime::now(),
         };
 
-        let result = collection.insert_one(doc, None).await?;
+        collection.insert_one(document.clone(), None).await?;
 
-        Ok(ProductEntity::default())
+        Ok(document.to_entity())
     }
 }
 

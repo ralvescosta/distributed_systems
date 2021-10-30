@@ -1,7 +1,8 @@
 use domain::entities::product_entity::ProductEntity;
+use mongodb::bson::DateTime;
 use serde::{Deserialize, Serialize};
 
-#[derive(Serialize, Deserialize)]
+#[derive(Serialize, Deserialize, Clone)]
 pub struct ProductDocument {
     pub id: String,
     pub product_category: String,
@@ -10,8 +11,8 @@ pub struct ProductDocument {
     pub subtitle: String,
     pub authors: Vec<String>,
     pub amount_in_stock: i64,
-    pub created_at: String,
-    pub updated_at: String,
+    pub created_at: DateTime,
+    pub updated_at: DateTime,
     pub num_pages: i64,
     pub tags: Vec<String>,
 }
@@ -26,8 +27,8 @@ impl ProductDocument {
             subtitle: self.subtitle,
             authors: self.authors,
             amount_in_stock: self.amount_in_stock,
-            created_at: self.created_at,
-            updated_at: self.updated_at,
+            created_at: self.created_at.to_string(),
+            updated_at: self.updated_at.to_string(),
             num_pages: self.num_pages,
             tags: self.tags,
         }

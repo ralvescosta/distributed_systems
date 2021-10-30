@@ -670,7 +670,6 @@ version = "0.1.0"
 dependencies = [
  "application",
  "async-trait",
- "chrono",
  "domain",
  "dotenv",
  "env_logger",
