@@ -33,3 +33,30 @@ impl IProductRepository for ProductRepository {
         }
     }
 }
+
+#[cfg(test)]
+mod test {
+    use super::*;
+
+    use mongodb::Client;
+
+    #[tokio::test]
+    async fn should_execute_method_with_connection_error() -> mongodb::error::Result<()> {
+        let client = Client::with_uri_str("mongodb://example.com").await?;
+        let db_connection = DbConnection {
+            client,
+            app_name: String::from(""),
+            db_name: String::from(""),
+            inventory_collection_name: String::from(""),
+        };
+
+        let sut = ProductRepository::new(db_connection);
+
+        match sut.get_product_by_id(String::from("some")).await {
+            Err(_err) => assert!(true),
+            _ => assert!(false),
+        }
+
+        Ok(())
+    }
+}
