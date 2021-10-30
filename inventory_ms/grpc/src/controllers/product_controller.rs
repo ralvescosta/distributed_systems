@@ -9,20 +9,20 @@ use crate::{
     models::product_model::ProductModel,
 };
 use domain::usecases::{
-    i_create_product::ICreateProductUseCase, i_get_inventory_by_id::IGetInventoryByIdUseCase,
+    i_create_product::ICreateProductUseCase, i_get_product_by_id::IGetProductByIdUseCase,
 };
 
-pub struct InventoryController {
-    get_product_by_id_use_case: Arc<dyn IGetInventoryByIdUseCase>,
+pub struct ProductController {
+    get_product_by_id_use_case: Arc<dyn IGetProductByIdUseCase>,
     create_product_use_case: Arc<dyn ICreateProductUseCase>,
 }
 
-impl InventoryController {
+impl ProductController {
     pub fn new(
-        get_product_by_id_use_case: Arc<dyn IGetInventoryByIdUseCase>,
+        get_product_by_id_use_case: Arc<dyn IGetProductByIdUseCase>,
         create_product_use_case: Arc<dyn ICreateProductUseCase>,
-    ) -> InventoryController {
-        InventoryController {
+    ) -> ProductController {
+        ProductController {
             get_product_by_id_use_case,
             create_product_use_case,
         }
@@ -30,7 +30,7 @@ impl InventoryController {
 }
 
 #[tonic::async_trait]
-impl Inventory for InventoryController {
+impl Inventory for ProductController {
     async fn get_product_by_id(
         &self,
         request: Request<GetByIdRequest>,
@@ -98,7 +98,7 @@ mod test {
 
     #[tokio::test]
     async fn perform() {
-        let mut get_by_id_use_case = MockGetInventoryByIdUseCase::new();
+        let mut get_by_id_use_case = MockGetProductByIdUseCase::new();
         let mut create_product_use_case = MockCreateProductUseCase::new();
         let request = Request::<GetByIdRequest>::new(GetByIdRequest {
             ..Default::default()
@@ -108,7 +108,7 @@ mod test {
             .returning(|_id| Ok(Some(ProductEntity::default())))
             .times(1);
 
-        let sut = InventoryController::new(
+        let sut = ProductController::new(
             Arc::new(get_by_id_use_case),
             Arc::new(create_product_use_case),
         );
@@ -120,9 +120,9 @@ mod test {
     }
 
     mock! {
-        pub GetInventoryByIdUseCase {}
+        pub GetProductByIdUseCase {}
         #[tonic::async_trait]
-        impl IGetInventoryByIdUseCase for GetInventoryByIdUseCase {
+        impl IGetProductByIdUseCase for GetProductByIdUseCase {
             async fn perform(
                 &self,
                 id: String,

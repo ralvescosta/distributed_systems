@@ -1,1 +1,1 @@
-pub mod inventory_controller;
+pub mod product_controller;

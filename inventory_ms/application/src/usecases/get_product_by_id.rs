@@ -3,29 +3,28 @@ use std::{error::Error, sync::Arc};
 
 use crate::interfaces::{i_logger::ILogger, i_product_repository::IProductRepository};
 use domain::{
-    entities::product_entity::ProductEntity,
-    usecases::i_get_inventory_by_id::IGetInventoryByIdUseCase,
+    entities::product_entity::ProductEntity, usecases::i_get_product_by_id::IGetProductByIdUseCase,
 };
 
-pub struct GetInventoryByIdUseCase {
+pub struct GetProductByIdUseCase {
     logger: Arc<dyn ILogger>,
     repo: Arc<dyn IProductRepository>,
 }
 
-impl GetInventoryByIdUseCase {
+impl GetProductByIdUseCase {
     pub fn new(
         logger: Arc<dyn ILogger>,
         repo: Arc<dyn IProductRepository>,
-    ) -> GetInventoryByIdUseCase {
-        GetInventoryByIdUseCase { logger, repo }
+    ) -> GetProductByIdUseCase {
+        GetProductByIdUseCase { logger, repo }
     }
 }
 
 #[async_trait]
-impl IGetInventoryByIdUseCase for GetInventoryByIdUseCase {
+impl IGetProductByIdUseCase for GetProductByIdUseCase {
     async fn perform(&self, id: String) -> Result<Option<ProductEntity>, Box<dyn Error>> {
         self.logger
-            .debug("GetInventoryByIdUseCase::perform", "Request");
+            .debug("GetProductByIdUseCase::perform", "Request");
         self.repo.get_product_by_id(id).await
     }
 }
@@ -49,8 +48,7 @@ mod test {
             .returning(|_id| Ok(Some(ProductEntity::default())))
             .times(1);
 
-        let sut =
-            GetInventoryByIdUseCase::new(Arc::new(mocked_logger), Arc::new(mocked_repository));
+        let sut = GetProductByIdUseCase::new(Arc::new(mocked_logger), Arc::new(mocked_repository));
 
         match sut.perform(String::from("some")).await {
             Ok(Some(result)) => assert_eq!(result.title, ProductEntity::default().title),
@@ -69,8 +67,7 @@ mod test {
             .returning(|_id| Ok(None))
             .times(1);
 
-        let sut =
-            GetInventoryByIdUseCase::new(Arc::new(mocked_logger), Arc::new(mocked_repository));
+        let sut = GetProductByIdUseCase::new(Arc::new(mocked_logger), Arc::new(mocked_repository));
         match sut.perform(String::from("some")).await {
             Ok(None) => assert!(true),
             _ => assert!(false),
@@ -88,8 +85,7 @@ mod test {
             .returning(|_id| Err(Box::new(Error::from(ErrorKind::Unsupported))))
             .times(1);
 
-        let sut =
-            GetInventoryByIdUseCase::new(Arc::new(mocked_logger), Arc::new(mocked_repository));
+        let sut = GetProductByIdUseCase::new(Arc::new(mocked_logger), Arc::new(mocked_repository));
         match sut.perform(String::from("some")).await {
             Err(_err) => assert!(true),
             _ => assert!(false),
