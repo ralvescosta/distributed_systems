@@ -15,9 +15,13 @@ mongodb = { version = "2.0.1" }
 serde = {version = "1.0", features = ["derive"] }
 async-trait = { version = "0.1.51" }
 uuid = { version = "0.8", features = ["serde", "v4"] }
-newrelic = { version = "0.2", features = ["distributed_tracing"] }
-newrelic-sys = { version = "0.2" }
-libc = { version = "0.2" }
+
+sentry = { version = "0.23.0", features = ["debug-images", "tracing"] }
+tracing = { version = "0.1" }
+tracing-log = { version = "0.1.2" }
+tracing-bunyan-formatter = { version = "0.2.4" }
+tracing-subscriber = { version = "0.2.19" }
+sentry-tracing = { version = "0.23.0" }
 
 [dev-dependencies]
 mockall = { version = "0.10.2" }

@@ -2,3 +2,5 @@ coverage
 cert
 *bin
 .env.development
+.env.staging
+.env.production
