@@ -50,8 +50,8 @@ func (pst authenticateUserUsecase) Perform(ctx context.Context, txn interface{},
 
 func NewAuthenticateUserUseCase(repository interfaces.IUserRepository, hasher interfaces.IHasher, tokenManager interfaces.ITokenManager) usecases.IAuthenticateUserUseCase {
 	return authenticateUserUsecase{
-		repository:   repository,
-		hasher:       hasher,
-		tokenManager: tokenManager,
+		repository,
+		hasher,
+		tokenManager,
 	}
 }

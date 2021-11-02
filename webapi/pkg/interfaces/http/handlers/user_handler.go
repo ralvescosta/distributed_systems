@@ -40,8 +40,8 @@ func (pst usersHandler) Create(httpRequest http.HttpRequest) http.HttpResponse {
 
 func NewUsersHandler(logger interfaces.ILogger, useCases usecases.ICreateUserUseCase, validator interfaces.IValidator) IUsersHandler {
 	return usersHandler{
-		logger:    logger,
-		useCases:  useCases,
-		validator: validator,
+		logger,
+		useCases,
+		validator,
 	}
 }

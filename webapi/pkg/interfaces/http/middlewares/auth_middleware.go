@@ -33,6 +33,6 @@ func (pst authMiddleware) Perform(httpRequest http.HttpRequest) http.HttpRespons
 
 func NewAuthMiddleware(usecase usecases.IAuthenticationUseCase) IAuthMiddleware {
 	return authMiddleware{
-		usecase: usecase,
+		usecase,
 	}
 }

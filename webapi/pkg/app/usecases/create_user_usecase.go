@@ -60,8 +60,8 @@ func (pst createUserUseCase) Perform(ctx context.Context, txn interface{}, dto d
 
 func NewCreateUserUseCase(repository interfaces.IUserRepository, hasher interfaces.IHasher, tokenManager interfaces.ITokenManager) usecases.ICreateUserUseCase {
 	return createUserUseCase{
-		repository:   repository,
-		hasher:       hasher,
-		tokenManager: tokenManager,
+		repository,
+		hasher,
+		tokenManager,
 	}
 }

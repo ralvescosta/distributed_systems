@@ -29,8 +29,8 @@ func (pst inventoryRoutes) Register(httpServer server.IHttpServer) {
 
 func NewInventoryRoutes(logger interfaces.ILogger, middlewares middlewares.IAuthMiddleware, handlers handlers.IInventoryHandler) IInventoryRoutes {
 	return inventoryRoutes{
-		logger:      logger,
-		middlewares: middlewares,
-		handlers:    handlers,
+		handlers,
+		middlewares,
+		logger,
 	}
 }

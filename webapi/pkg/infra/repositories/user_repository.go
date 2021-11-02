@@ -150,8 +150,8 @@ func (pst userRepository) Create(ctx context.Context, txn interface{}, dto dtos.
 
 func NewUserRepository(logger interfaces.ILogger, dbConnection *sql.DB, monitoring *newrelic.Application) interfaces.IUserRepository {
 	return userRepository{
-		logger:       logger,
-		dbConnection: dbConnection,
-		monitoring:   monitoring,
+		logger,
+		dbConnection,
+		monitoring,
 	}
 }
