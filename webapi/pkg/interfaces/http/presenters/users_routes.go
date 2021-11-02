@@ -22,7 +22,7 @@ func (pst usersRoutes) Register(httpServer server.IHttpServer) {
 
 func NewUsersRoutes(logger interfaces.ILogger, handlers handlers.IUsersHandler) IUsersRoutes {
 	return usersRoutes{
-		logger:   logger,
-		handlers: handlers,
+		handlers,
+		logger,
 	}
 }

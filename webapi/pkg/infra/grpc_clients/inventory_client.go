@@ -28,7 +28,7 @@ func (pst inventoryClient) GetInventoryById() {
 
 func NewInventoryClient(conn grpc.ClientConn, logger interfaces.ILogger) interfaces.IIventoryClient {
 	return inventoryClient{
-		conn:   conn,
-		logger: logger,
+		conn,
+		logger,
 	}
 }

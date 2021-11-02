@@ -27,7 +27,7 @@ func (pst inventoryHandler) Create(httpRequest http.HttpRequest) http.HttpRespon
 
 func NewInventoryHandler(logger interfaces.ILogger, validator interfaces.IValidator) IInventoryHandler {
 	return inventoryHandler{
-		logger:    logger,
-		validator: validator,
+		logger,
+		validator,
 	}
 }

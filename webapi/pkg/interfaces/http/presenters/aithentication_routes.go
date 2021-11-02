@@ -22,7 +22,7 @@ func (pst authenticationRoutes) Register(httpServer server.IHttpServer) {
 
 func NewAuthenticationRoutes(logger interfaces.ILogger, handlers handlers.IAuthenticationHandler) IAuthenticationRoutes {
 	return authenticationRoutes{
-		logger:   logger,
-		handlers: handlers,
+		handlers,
+		logger,
 	}
 }

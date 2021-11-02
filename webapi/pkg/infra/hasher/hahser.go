@@ -34,6 +34,6 @@ func (h hasher) Verify(originalText, hashedText string) bool {
 
 func NewHahser(logger interfaces.ILogger) interfaces.IHasher {
 	return &hasher{
-		logger: logger,
+		logger,
 	}
 }

@@ -32,7 +32,7 @@ func (pst authenticationUseCase) Perform(ctx context.Context, txn interface{}, a
 
 func NewAuthenticationUseCase(repository interfaces.IUserRepository, tokenManager interfaces.ITokenManager) usecases.IAuthenticationUseCase {
 	return authenticationUseCase{
-		repository:   repository,
-		tokenManager: tokenManager,
+		repository,
+		tokenManager,
 	}
 }

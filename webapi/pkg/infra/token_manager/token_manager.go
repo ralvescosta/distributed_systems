@@ -106,6 +106,6 @@ func (pst tokenManager) VerifyToken(accessToken string) (*dtos.AuthenticatedUser
 
 func NewTokenManager(logger interfaces.ILogger) interfaces.ITokenManager {
 	return tokenManager{
-		logger: logger,
+		logger,
 	}
 }

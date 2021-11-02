@@ -41,8 +41,8 @@ func (pst authenticationHandler) Create(httpRequest http.HttpRequest) http.HttpR
 
 func NewAuthenticationHandler(logger interfaces.ILogger, useCases usecases.IAuthenticateUserUseCase, validator interfaces.IValidator) IAuthenticationHandler {
 	return authenticationHandler{
-		logger:    logger,
-		useCases:  useCases,
-		validator: validator,
+		logger,
+		useCases,
+		validator,
 	}
 }

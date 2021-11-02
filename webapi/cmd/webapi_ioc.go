@@ -83,13 +83,13 @@ func NewContainer() webApiContainer {
 	inventoryRoutes := presenters.NewInventoryRoutes(logger, authenticationMiddleware, inventoryHandler)
 
 	return webApiContainer{
-		logger:     logger,
-		httpServer: httpServer,
+		logger,
+		httpServer,
 
-		usersRoutes:          usersRoutes,
-		authenticationRoutes: authenticationRoutes,
-		inventoryRoutes:      inventoryRoutes,
+		usersRoutes,
+		authenticationRoutes,
+		inventoryRoutes,
 
-		monitoring: monitoring,
+		monitoring,
 	}
 }
