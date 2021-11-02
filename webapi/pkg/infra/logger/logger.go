@@ -21,12 +21,12 @@ type logger struct {
 func (l logger) GetHandleFunc() gin.HandlerFunc {
 	goEnv := os.Getenv("GO_ENV")
 	if goEnv == "production" || goEnv == "staging" {
-		return l.productionLoggerFormater
+		return l.HttpRequestLogger
 	}
 	return gin.Logger()
 }
 
-func (l logger) productionLoggerFormater(ctx *gin.Context) {
+func (l logger) HttpRequestLogger(ctx *gin.Context) {
 	startTime := time.Now()
 	ctx.Next()
 	endTime := time.Now()

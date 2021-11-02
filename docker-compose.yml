@@ -1,0 +1,30 @@
+version: '3'
+
+services:
+  postgres:
+    image: postgres
+    container_name: postgres
+    environment:
+      - POSTGRES_USER=postgres
+      - POSTGRES_PASSWORD=postgres
+      - POSTGRES_DB=webapi
+    volumes:
+      - ./sql/create_users_table.sql:/docker-entrypoint-initdb.d/create_users_table.sql
+    ports:
+      - 5432:5432
+      
+  rabbitmq:
+    image: rabbitmq:3.6-management
+    container_name: rabbitmq
+    ports:
+      - 5672:5672
+      - 15672:15672
+            
+  mongodb:
+    image: mongo
+    container_name: inventory-mongodb
+    environment:
+      MONGO_INITDB_ROOT_USERNAME: admin
+      MONGO_INITDB_ROOT_PASSWORD: admin
+    ports:
+      - 27017:27017

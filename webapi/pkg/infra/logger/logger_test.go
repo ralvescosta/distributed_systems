@@ -36,6 +36,7 @@ func Test_Should_Execute_GetHandleFunc_For_Prod_Environment(t *testing.T) {
 }
 
 func Test_Should_Execute_ProductionLoggerFormater_Correctly(t *testing.T) {
+	os.Setenv("GO_ENV", "production")
 	sut := NewLoggerToTest()
 
 	req := &http.Request{
@@ -50,7 +51,7 @@ func Test_Should_Execute_ProductionLoggerFormater_Correctly(t *testing.T) {
 
 	param := reflect.ValueOf(contextMock)
 
-	reflect.ValueOf(sut.logger).MethodByName("ProductionLoggerFormater").Call([]reflect.Value{param})
+	reflect.ValueOf(sut.logger).MethodByName("HttpRequestLogger").Call([]reflect.Value{param})
 }
 
 func Test_Should_Call_Logger_Methods_Correctly(t *testing.T) {
