@@ -13,35 +13,19 @@ import (
 	"go.uber.org/zap/zapcore"
 )
 
-type Logger struct {
-	zap *zap.Logger
+type logger struct {
+	*zap.Logger
 }
 
-func (l Logger) GetHandleFunc() gin.HandlerFunc {
+func (l logger) GetHandleFunc() gin.HandlerFunc {
 	goEnv := os.Getenv("GO_ENV")
 	if goEnv == "production" || goEnv == "staging" {
-		return l.ProductionLoggerFormater
+		return l.productionLoggerFormater
 	}
 	return gin.Logger()
 }
 
-func (l Logger) Debug(msg string, fields ...interfaces.LogField) {
-	l.zap.Debug(msg, convertLogField(fields)...)
-}
-
-func (l Logger) Info(msg string, fields ...interfaces.LogField) {
-	l.zap.Info(msg, convertLogField(fields)...)
-}
-
-func (l Logger) Warn(msg string, fields ...interfaces.LogField) {
-	l.zap.Warn(msg, convertLogField(fields)...)
-}
-
-func (l Logger) Error(msg string, fields ...interfaces.LogField) {
-	l.zap.Error(msg, convertLogField(fields)...)
-}
-
-func (l Logger) ProductionLoggerFormater(ctx *gin.Context) {
+func (l logger) productionLoggerFormater(ctx *gin.Context) {
 	startTime := time.Now()
 	ctx.Next()
 	endTime := time.Now()
@@ -49,7 +33,7 @@ func (l Logger) ProductionLoggerFormater(ctx *gin.Context) {
 
 	body, _ := ioutil.ReadAll(ctx.Request.Body)
 
-	l.zap.Info("Request",
+	l.Info("Request",
 		zapcore.Field{
 			Key:    "method",
 			Type:   zapcore.StringType,
@@ -83,57 +67,64 @@ func (l Logger) ProductionLoggerFormater(ctx *gin.Context) {
 	)
 }
 
-func convertLogField(fields []interfaces.LogField) []zap.Field {
-	zapFields := []zap.Field{}
+func createLoggerInstance() *zap.Logger {
+	highPriority := zap.LevelEnablerFunc(func(lvl zapcore.Level) bool {
+		return lvl >= zapcore.ErrorLevel
+	})
+	lowPriority := zap.LevelEnablerFunc(func(lvl zapcore.Level) bool {
+		return lvl < zapcore.ErrorLevel
+	})
 
-	for _, field := range fields {
-		zapFields = append(zapFields, zap.Field{
-			Key:       field.Key,
-			Interface: field.Value,
-		})
+	environment := os.Getenv("GO_ENV")
+	var core zapcore.Core
+	if environment == "development" {
+		debugging := zapcore.Lock(os.Stdout)
+		errors := zapcore.Lock(os.Stderr)
+		consoleEncoder := zapcore.NewConsoleEncoder(zap.NewDevelopmentEncoderConfig())
+
+		core = zapcore.NewTee(
+			zapcore.NewCore(consoleEncoder, debugging, lowPriority),
+			zapcore.NewCore(consoleEncoder, errors, highPriority),
+		)
+	} else {
+		debugging := zapcore.Lock(os.Stdout)
+		errors := zapcore.Lock(os.Stderr)
+		jsonEncoder := zapcore.NewJSONEncoder(zap.NewProductionEncoderConfig())
+
+		core = zapcore.NewTee(
+			zapcore.NewCore(jsonEncoder, debugging, lowPriority),
+			zapcore.NewCore(jsonEncoder, errors, highPriority),
+		)
 	}
 
-	return zapFields
+	return zap.New(
+		core,
+		zap.IncreaseLevel(getIncreaseLevel()),
+		zap.AddCaller(),
+		zap.AddStacktrace(zapcore.ErrorLevel),
+	)
 }
 
-func configureZapInstance() *zap.Logger {
-	goEnv := os.Getenv("GO_ENV")
+func getIncreaseLevel() zapcore.Level {
 	logLevel := os.Getenv("LOG_LEVEL")
-	var zapLogLevel zapcore.Level
 	switch logLevel {
 	case "Debug":
-		zapLogLevel = zap.DebugLevel
+		return zap.DebugLevel
 	case "Info":
-		zapLogLevel = zap.InfoLevel
+		return zap.InfoLevel
 	case "Warn":
-		zapLogLevel = zap.WarnLevel
+		return zap.WarnLevel
 	case "Error":
-		zapLogLevel = zap.ErrorLevel
+		return zap.ErrorLevel
 	case "Panic":
-		zapLogLevel = zap.PanicLevel
+		return zap.PanicLevel
 	default:
-		zapLogLevel = zap.InfoLevel
+		return zap.InfoLevel
 	}
-
-	var zapInstance *zap.Logger
-	switch goEnv {
-	case "production":
-		zapInstance, _ = zap.NewProduction(zap.IncreaseLevel(zapLogLevel), zap.AddStacktrace(zap.ErrorLevel))
-	case "staging":
-		zapInstance, _ = zap.NewProduction(zap.IncreaseLevel(zapLogLevel), zap.AddStacktrace(zap.ErrorLevel))
-	case "development":
-		zapInstance, _ = zap.NewDevelopment(zap.IncreaseLevel(zapLogLevel), zap.AddStacktrace(zap.ErrorLevel))
-	case "test":
-		zapInstance, _ = zap.NewDevelopment(zap.IncreaseLevel(zapLogLevel), zap.AddStacktrace(zap.ErrorLevel))
-	default:
-		break
-	}
-
-	return zapInstance
 }
 
 func NewLogger() interfaces.ILogger {
-	return Logger{
-		zap: configureZapInstance(),
+	return logger{
+		createLoggerInstance(),
 	}
 }

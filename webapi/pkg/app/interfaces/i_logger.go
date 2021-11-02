@@ -1,6 +1,9 @@
 package interfaces
 
-import "github.com/gin-gonic/gin"
+import (
+	"github.com/gin-gonic/gin"
+	"go.uber.org/zap"
+)
 
 type LogField struct {
 	Key   string
@@ -9,8 +12,9 @@ type LogField struct {
 
 type ILogger interface {
 	GetHandleFunc() gin.HandlerFunc
-	Debug(msg string, fields ...LogField)
-	Info(msg string, fields ...LogField)
-	Warn(msg string, fields ...LogField)
-	Error(msg string, fields ...LogField)
+	Debug(msg string, fields ...zap.Field)
+	Info(msg string, fields ...zap.Field)
+	Warn(msg string, fields ...zap.Field)
+	Error(msg string, fields ...zap.Field)
+	Fatal(msg string, fields ...zap.Field)
 }
