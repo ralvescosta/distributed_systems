@@ -18,7 +18,7 @@ func (pst inventoryClient) GetInventoryById() {
 	client := proto.NewInventoryClient(&pst.conn)
 
 	response, err := client.GetProductById(context.Background(), &proto.GetByIdRequest{
-		Id: 1,
+		Id: "1",
 	})
 
 	pst.logger.Debug("[InventoryClient::GetInventoryById]")

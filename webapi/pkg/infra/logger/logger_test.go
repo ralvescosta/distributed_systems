@@ -7,7 +7,6 @@ import (
 	"net/http/httptest"
 	"os"
 	"reflect"
-	"webapi/pkg/app/interfaces"
 
 	"testing"
 
@@ -52,14 +51,6 @@ func Test_Should_Execute_ProductionLoggerFormater_Correctly(t *testing.T) {
 	param := reflect.ValueOf(contextMock)
 
 	reflect.ValueOf(sut.logger).MethodByName("ProductionLoggerFormater").Call([]reflect.Value{param})
-}
-
-func Test_Should_Return_Zup_Fields(t *testing.T) {
-	result := convertLogField([]interfaces.LogField{{Key: "key", Value: "value"}})
-
-	name := reflect.TypeOf(result[0]).Name()
-
-	assert.Equal(t, name, "Field", "Should return zap Filed")
 }
 
 func Test_Should_Call_Logger_Methods_Correctly(t *testing.T) {

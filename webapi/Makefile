@@ -1,5 +1,5 @@
-migrate:
-	GO_ENV=development go run migrations/main.go
+compile-proto:
+	protoc --go_out=plugins=grpc:proto ./pkg/infra/grpc_clients/proto/inventory.proto
 
 run:
 	GO_ENV=development GIN_MODE=debug go run main.go
