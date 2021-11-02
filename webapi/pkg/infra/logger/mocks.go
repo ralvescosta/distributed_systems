@@ -24,8 +24,8 @@ type LoggerToTest struct {
 func NewLoggerToTest() LoggerToTest {
 	zap, _ := zap.NewDevelopment(zap.IncreaseLevel(zap.DebugLevel), zap.AddStacktrace(zap.ErrorLevel))
 
-	sut := &Logger{
-		zap: zap,
+	sut := logger{
+		zap,
 	}
 
 	return LoggerToTest{

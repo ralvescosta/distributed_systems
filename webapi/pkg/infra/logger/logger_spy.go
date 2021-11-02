@@ -4,6 +4,7 @@ import (
 	"webapi/pkg/app/interfaces"
 
 	"github.com/gin-gonic/gin"
+	"go.uber.org/zap"
 )
 
 type loggerSpy struct {
@@ -19,10 +20,12 @@ func (l *loggerSpy) GetHandleFunc() gin.HandlerFunc {
 	l.GetHandleFuncCallerCount++
 	return func(*gin.Context) {}
 }
-func (l *loggerSpy) Debug(msg string, fields ...interfaces.LogField) {}
-func (l *loggerSpy) Info(msg string, fields ...interfaces.LogField)  {}
-func (l *loggerSpy) Warn(msg string, fields ...interfaces.LogField)  {}
-func (l *loggerSpy) Error(msg string, fields ...interfaces.LogField) {}
+func (l *loggerSpy) Debug(msg string, fields ...zap.Field) {}
+func (l *loggerSpy) Info(msg string, fields ...zap.Field)  {}
+func (l *loggerSpy) Warn(msg string, fields ...zap.Field)  {}
+func (l *loggerSpy) Error(msg string, fields ...zap.Field) {}
+func (l *loggerSpy) Fatal(msg string, fields ...zap.Field) {}
+
 func NewLoggerSpy() interfaces.ILogger {
 	return &loggerSpy{
 		GetHandleFuncCallerCount: 0,
