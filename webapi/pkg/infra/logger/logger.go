@@ -3,6 +3,7 @@ package logger
 import (
 	"fmt"
 	"io/ioutil"
+	"log"
 	"os"
 	"time"
 
@@ -68,6 +69,15 @@ func (l logger) productionLoggerFormater(ctx *gin.Context) {
 }
 
 func createLoggerInstance() *zap.Logger {
+	return zap.New(
+		configureZapCore(),
+		zap.IncreaseLevel(getIncreaseLevel()),
+		zap.AddCaller(),
+		zap.AddStacktrace(zapcore.ErrorLevel),
+	)
+}
+
+func configureZapCore() zapcore.Core {
 	highPriority := zap.LevelEnablerFunc(func(lvl zapcore.Level) bool {
 		return lvl >= zapcore.ErrorLevel
 	})
@@ -75,34 +85,38 @@ func createLoggerInstance() *zap.Logger {
 		return lvl < zapcore.ErrorLevel
 	})
 
-	environment := os.Getenv("GO_ENV")
-	var core zapcore.Core
-	if environment == "development" {
+	if os.Getenv("GO_ENV") == "development" {
 		debugging := zapcore.Lock(os.Stdout)
 		errors := zapcore.Lock(os.Stderr)
 		consoleEncoder := zapcore.NewConsoleEncoder(zap.NewDevelopmentEncoderConfig())
 
-		core = zapcore.NewTee(
+		return zapcore.NewTee(
 			zapcore.NewCore(consoleEncoder, debugging, lowPriority),
 			zapcore.NewCore(consoleEncoder, errors, highPriority),
 		)
-	} else {
-		debugging := zapcore.Lock(os.Stdout)
-		errors := zapcore.Lock(os.Stderr)
-		jsonEncoder := zapcore.NewJSONEncoder(zap.NewProductionEncoderConfig())
-
-		core = zapcore.NewTee(
-			zapcore.NewCore(jsonEncoder, debugging, lowPriority),
-			zapcore.NewCore(jsonEncoder, errors, highPriority),
-		)
 	}
 
-	return zap.New(
-		core,
-		zap.IncreaseLevel(getIncreaseLevel()),
-		zap.AddCaller(),
-		zap.AddStacktrace(zapcore.ErrorLevel),
+	logIo, err := os.Create(getLogPath())
+	if err != nil {
+		err = fmt.Errorf("server.Start - create log writer")
+		log.Fatal(err)
+	}
+
+	jsonEncoder := zapcore.NewJSONEncoder(zap.NewProductionEncoderConfig())
+
+	return zapcore.NewTee(
+		zapcore.NewCore(jsonEncoder, logIo, lowPriority),
+		zapcore.NewCore(jsonEncoder, logIo, highPriority),
 	)
+}
+
+func getLogPath() string {
+	logPath := os.Getenv("LOG_PATH")
+	if logPath != "" {
+		return logPath
+	}
+
+	return "file.log"
 }
 
 func getIncreaseLevel() zapcore.Level {
