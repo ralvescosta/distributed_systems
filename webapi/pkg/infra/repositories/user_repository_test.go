@@ -9,7 +9,7 @@ import (
 )
 
 func Test_Should_Create_User_And_Returns_When_Execute_Correctly(t *testing.T) {
-	sut := NewUserRepositoryToTest()
+	sut := newUserRepositoryToTest()
 
 	query := "INSERT INTO users \\(name, email, password\\) VALUES \\(\\$1, \\$2, \\$3\\) RETURNING \\*"
 	rows := sut.sqlMock.NewRows(
@@ -42,7 +42,7 @@ func Test_Should_Create_User_And_Returns_When_Execute_Correctly(t *testing.T) {
 }
 
 func Test_Should_Returns_An_Error_When_Prepare_Return_Error(t *testing.T) {
-	sut := NewUserRepositoryToTest()
+	sut := newUserRepositoryToTest()
 
 	sut.sqlMock.ExpectPrepare("")
 
@@ -60,7 +60,7 @@ func Test_Should_Returns_An_Error_When_Prepare_Return_Error(t *testing.T) {
 }
 
 func Test_Should_Returns_An_Error_When_Occur_Error_In_Query_Execution(t *testing.T) {
-	sut := NewUserRepositoryToTest()
+	sut := newUserRepositoryToTest()
 
 	query := "INSERT INTO users \\(name, email, password\\) VALUES \\(\\$1, \\$2, \\$3\\) RETURNING \\*"
 	rows := sut.sqlMock.NewRows(

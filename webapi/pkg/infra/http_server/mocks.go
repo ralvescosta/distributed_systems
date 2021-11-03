@@ -9,12 +9,12 @@ import (
 	"github.com/gin-gonic/gin"
 )
 
-type HttpServerToTest struct {
+type httpServerToTest struct {
 	server    HttpServer
 	loggerSpy interfaces.ILogger
 }
 
-func (pst HttpServerToTest) doRequest(method, path string) (*http.Response, error) {
+func (pst httpServerToTest) doRequest(method, path string) (*http.Response, error) {
 	req, err := http.NewRequest(method, path, nil)
 	if err != nil {
 		return nil, err
@@ -26,12 +26,12 @@ func (pst HttpServerToTest) doRequest(method, path string) (*http.Response, erro
 	return w.Result(), nil
 }
 
-func NewHttpServerToTest() HttpServerToTest {
+func newHttpServerToTest() httpServerToTest {
 	gin.SetMode(gin.TestMode)
 
 	loggerSpy := logger.NewLoggerSpy()
 
-	return HttpServerToTest{
+	return httpServerToTest{
 		server:    HttpServer{logger: loggerSpy},
 		loggerSpy: loggerSpy,
 	}

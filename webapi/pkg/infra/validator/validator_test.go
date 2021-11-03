@@ -7,7 +7,7 @@ import (
 )
 
 func Test_Should_ValidateStruct_Returns_Error_When_Some_Field_Is_Wrong(t *testing.T) {
-	sut := NewValidatorToTest()
+	sut := newValidatorToTest()
 
 	type SomeStruct struct {
 		Email string `validate:"required,email"`
@@ -23,7 +23,7 @@ func Test_Should_ValidateStruct_Returns_Error_When_Some_Field_Is_Wrong(t *testin
 }
 
 func Test_Should_ValidateStruct_Returns_Nil_When_Some_Field_Is_Correctly(t *testing.T) {
-	sut := NewValidatorToTest()
+	sut := newValidatorToTest()
 
 	type SomeStruct struct {
 		Email string `validate:"required,email"`

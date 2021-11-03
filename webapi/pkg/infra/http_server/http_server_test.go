@@ -12,7 +12,7 @@ import (
 )
 
 func Test_Should_Execute_Setup_Correctly(t *testing.T) {
-	sut := NewHttpServerToTest()
+	sut := newHttpServerToTest()
 
 	sut.server.Setup()
 	calledTimes := reflect.ValueOf(sut.loggerSpy).Elem().Field(0).Interface()
@@ -21,7 +21,7 @@ func Test_Should_Execute_Setup_Correctly(t *testing.T) {
 }
 
 func Test_Should_Execute_RegistreRoute_POST_Correctly(t *testing.T) {
-	sut := NewHttpServerToTest()
+	sut := newHttpServerToTest()
 	sut.server.Setup()
 
 	sut.server.RegistreRoute("POST", "/api/v1/books", func(ctx *gin.Context) {
@@ -35,7 +35,7 @@ func Test_Should_Execute_RegistreRoute_POST_Correctly(t *testing.T) {
 }
 
 func Test_Should_Execute_RegistreRoute_GET_Correctly(t *testing.T) {
-	sut := NewHttpServerToTest()
+	sut := newHttpServerToTest()
 	sut.server.Setup()
 
 	sut.server.RegistreRoute("GET", "/api/v1/books", func(ctx *gin.Context) {
@@ -49,7 +49,7 @@ func Test_Should_Execute_RegistreRoute_GET_Correctly(t *testing.T) {
 }
 
 func Test_Should_Execute_RegistreRoute_PUT_Correctly(t *testing.T) {
-	sut := NewHttpServerToTest()
+	sut := newHttpServerToTest()
 	sut.server.Setup()
 
 	sut.server.RegistreRoute("PUT", "/api/v1/books", func(ctx *gin.Context) {
@@ -63,7 +63,7 @@ func Test_Should_Execute_RegistreRoute_PUT_Correctly(t *testing.T) {
 }
 
 func Test_Should_Execute_RegistreRoute_DELETE_Correctly(t *testing.T) {
-	sut := NewHttpServerToTest()
+	sut := newHttpServerToTest()
 	sut.server.Setup()
 
 	sut.server.RegistreRoute("DELETE", "/api/v1/books", func(ctx *gin.Context) {
@@ -77,7 +77,7 @@ func Test_Should_Execute_RegistreRoute_DELETE_Correctly(t *testing.T) {
 }
 
 func Test_Should_Execute_RegistreRoute_Error(t *testing.T) {
-	sut := NewHttpServerToTest()
+	sut := newHttpServerToTest()
 	sut.server.Setup()
 
 	err := sut.server.RegistreRoute("Something", "/api/v1/books", func(ctx *gin.Context) {
@@ -88,7 +88,7 @@ func Test_Should_Execute_RegistreRoute_Error(t *testing.T) {
 }
 
 func Test_Should_Execute_Run_Correctly(t *testing.T) {
-	sut := NewHttpServerToTest()
+	sut := newHttpServerToTest()
 	sut.server.Setup()
 
 	go func(t *testing.T) {
