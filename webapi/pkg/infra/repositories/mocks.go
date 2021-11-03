@@ -13,7 +13,7 @@ import (
 	"github.com/newrelic/go-agent/v3/newrelic"
 )
 
-type UserRepositoryToTest struct {
+type userRepositoryToTest struct {
 	repo         interfaces.IUserRepository
 	logger       interfaces.ILogger
 	dbConnection *sql.DB
@@ -22,7 +22,7 @@ type UserRepositoryToTest struct {
 	mockedUser   entities.User
 }
 
-func NewUserRepositoryToTest() UserRepositoryToTest {
+func newUserRepositoryToTest() userRepositoryToTest {
 	db, mock, err := sqlmock.New()
 	if err != nil {
 		log.Fatalf("an error '%s' was not expected when opening a stub database connection", err)
@@ -32,7 +32,7 @@ func NewUserRepositoryToTest() UserRepositoryToTest {
 	newrelic, _ := newrelic.NewApplication(newrelic.ConfigAppName(os.Getenv("APP_NAME")))
 	repository := NewUserRepository(loggerSpy, db, newrelic)
 
-	return UserRepositoryToTest{
+	return userRepositoryToTest{
 		repo:         repository,
 		logger:       loggerSpy,
 		dbConnection: db,

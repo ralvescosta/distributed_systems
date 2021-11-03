@@ -6,12 +6,12 @@ import (
 	"webapi/pkg/infra/logger"
 )
 
-type BcryptMocked struct {
+type bcryptMocked struct {
 	failure bool
 	hash    []byte
 }
 
-func (m BcryptMocked) GenerateHash(password []byte, cost int) ([]byte, error) {
+func (m bcryptMocked) GenerateHash(password []byte, cost int) ([]byte, error) {
 	if m.failure {
 		return []byte(""), errors.New("bcrypt error")
 	}
@@ -19,7 +19,7 @@ func (m BcryptMocked) GenerateHash(password []byte, cost int) ([]byte, error) {
 	return m.hash, nil
 }
 
-func (m BcryptMocked) CompareHash(hashedPassword, password []byte) error {
+func (m bcryptMocked) CompareHash(hashedPassword, password []byte) error {
 	if m.failure {
 		return errors.New("bcrypt error")
 	}
@@ -27,22 +27,22 @@ func (m BcryptMocked) CompareHash(hashedPassword, password []byte) error {
 	return nil
 }
 
-func NewBcryptMock(failure bool, hash []byte) *BcryptMocked {
-	return &BcryptMocked{
+func newBcryptMock(failure bool, hash []byte) *bcryptMocked {
+	return &bcryptMocked{
 		failure: failure,
 		hash:    hash,
 	}
 }
 
-type HasherToTest struct {
+type hasherToTest struct {
 	hasher    interfaces.IHasher
 	loggerSpy interfaces.ILogger
 }
 
-func NewHasherToTest() HasherToTest {
+func newHasherToTest() hasherToTest {
 	loggerSpy := logger.NewLoggerSpy()
 
-	return HasherToTest{
+	return hasherToTest{
 		hasher:    NewHahser(loggerSpy),
 		loggerSpy: loggerSpy,
 	}

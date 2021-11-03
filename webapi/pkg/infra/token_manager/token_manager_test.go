@@ -17,7 +17,7 @@ var tokenData = dtos.TokenDataDto{
 }
 
 func Test_Should_CreateToken_Correctly(t *testing.T) {
-	jwtMock := JwtMocked{}
+	jwtMock := jwtMocked{}
 	fileReader = jwtMock.FileReader(false)
 	parseRSAPrivateKey = jwtMock.ParseRSAPrivateKey(false)
 	claimsGenerator = jwtMock.ClaimsGenerator(false)
@@ -29,7 +29,7 @@ func Test_Should_CreateToken_Correctly(t *testing.T) {
 }
 
 func Test_Should_Return_Err_If_Some_Error_Occur_In_ReadRSAPrivateKey(t *testing.T) {
-	jwtMock := JwtMocked{}
+	jwtMock := jwtMocked{}
 	fileReader = jwtMock.FileReader(true)
 
 	_, err := manager.GenerateToken(tokenData)
@@ -39,7 +39,7 @@ func Test_Should_Return_Err_If_Some_Error_Occur_In_ReadRSAPrivateKey(t *testing.
 }
 
 func Test_Should_Return_Err_If_Some_Error_Occur_In_ParseRSAPrivateKey(t *testing.T) {
-	jwtMock := JwtMocked{}
+	jwtMock := jwtMocked{}
 	fileReader = jwtMock.FileReader(false)
 	parseRSAPrivateKey = jwtMock.ParseRSAPrivateKey(true)
 
@@ -61,7 +61,7 @@ func Test_Should_Return_Err_If_Some_Error_Occur_In_ParseRSAPrivateKey(t *testing
 // }
 
 func Test_Should_Verify_Token_Correctly(t *testing.T) {
-	jwtMock := JwtMocked{}
+	jwtMock := jwtMocked{}
 	fileReader = jwtMock.FileReader(false)
 	parseRSAPublicKey = jwtMock.ParseRSAPublicKey(false)
 	parseClaims = jwtMock.ParseClaims(false, time.Now().Add(time.Hour))
@@ -73,7 +73,7 @@ func Test_Should_Verify_Token_Correctly(t *testing.T) {
 }
 
 func Test_Should_Return_Err_If_Some_Error_Occur_In_ReadRSAPublicKey(t *testing.T) {
-	jwtMock := JwtMocked{}
+	jwtMock := jwtMocked{}
 	fileReader = jwtMock.FileReader(true)
 
 	token, err := manager.VerifyToken("token")
@@ -83,7 +83,7 @@ func Test_Should_Return_Err_If_Some_Error_Occur_In_ReadRSAPublicKey(t *testing.T
 }
 
 func Test_Should_Return_Err_If_Some_Error_Occur_In_ParseRSAPublicKey(t *testing.T) {
-	jwtMock := JwtMocked{}
+	jwtMock := jwtMocked{}
 	fileReader = jwtMock.FileReader(false)
 	parseRSAPublicKey = jwtMock.ParseRSAPublicKey(true)
 
@@ -94,7 +94,7 @@ func Test_Should_Return_Err_If_Some_Error_Occur_In_ParseRSAPublicKey(t *testing.
 }
 
 func Test_Should_Return_Err_If_Some_Error_Occur_When_ParseClaims(t *testing.T) {
-	jwtMock := JwtMocked{}
+	jwtMock := jwtMocked{}
 	fileReader = jwtMock.FileReader(false)
 	parseRSAPublicKey = jwtMock.ParseRSAPublicKey(false)
 	parseClaims = jwtMock.ParseClaims(true, time.Now().Add(time.Hour))
@@ -106,7 +106,7 @@ func Test_Should_Return_Err_If_Some_Error_Occur_When_ParseClaims(t *testing.T) {
 }
 
 func Test_Should_Return_Err_If_Token_Expired(t *testing.T) {
-	jwtMock := JwtMocked{}
+	jwtMock := jwtMocked{}
 	fileReader = jwtMock.FileReader(false)
 	parseRSAPublicKey = jwtMock.ParseRSAPublicKey(false)
 	parseClaims = jwtMock.ParseClaims(false, time.Now().Add(-time.Hour))

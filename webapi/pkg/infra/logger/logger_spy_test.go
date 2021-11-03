@@ -8,7 +8,7 @@ import (
 )
 
 func Test_Should_Execute_GetHandleFunc_Correctly(t *testing.T) {
-	sut := NewLoggerSpyToTest()
+	sut := newLoggerSpyToTest()
 
 	result := reflect.TypeOf(sut.logger.GetHandleFunc()).Name()
 
@@ -16,7 +16,7 @@ func Test_Should_Execute_GetHandleFunc_Correctly(t *testing.T) {
 }
 
 func Test_Should_Execute_Logger_Methods_Correctly(t *testing.T) {
-	sut := NewLoggerSpyToTest()
+	sut := newLoggerSpyToTest()
 
 	sut.logger.Debug("some message")
 	sut.logger.Info("some message")

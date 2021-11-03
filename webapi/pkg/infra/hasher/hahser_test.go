@@ -9,10 +9,10 @@ import (
 )
 
 func Test_Should_Execute_Hahser_Correctly(t *testing.T) {
-	var bcryptMock = NewBcryptMock(false, []byte("hashed"))
+	var bcryptMock = newBcryptMock(false, []byte("hashed"))
 	generateHash = bcryptMock.GenerateHash
 
-	sut := NewHasherToTest()
+	sut := newHasherToTest()
 
 	hashed, err := sut.hasher.Hahser("text")
 
@@ -21,10 +21,10 @@ func Test_Should_Execute_Hahser_Correctly(t *testing.T) {
 }
 
 func Test_Should_Execute_Hahser_When_Same_Error_Occur_In_Crypto(t *testing.T) {
-	var bcryptMock = NewBcryptMock(true, []byte("hash"))
+	var bcryptMock = newBcryptMock(true, []byte("hash"))
 	generateHash = bcryptMock.GenerateHash
 
-	sut := NewHasherToTest()
+	sut := newHasherToTest()
 
 	_, err := sut.hasher.Hahser("text")
 
@@ -33,10 +33,10 @@ func Test_Should_Execute_Hahser_When_Same_Error_Occur_In_Crypto(t *testing.T) {
 }
 
 func Test_Should_Return_Ture_If_Hash_Is_Correctly(t *testing.T) {
-	var bcryptMock = NewBcryptMock(false, []byte(""))
+	var bcryptMock = newBcryptMock(false, []byte(""))
 	compareHash = bcryptMock.CompareHash
 
-	sut := NewHasherToTest()
+	sut := newHasherToTest()
 
 	result := sut.hasher.Verify("text", "hash")
 
@@ -44,10 +44,10 @@ func Test_Should_Return_Ture_If_Hash_Is_Correctly(t *testing.T) {
 }
 
 func Test_Should_Retorne_False_If_Hash_Is_Wrong(t *testing.T) {
-	var bcryptMock = NewBcryptMock(true, []byte(""))
+	var bcryptMock = newBcryptMock(true, []byte(""))
 	compareHash = bcryptMock.CompareHash
 
-	sut := NewHasherToTest()
+	sut := newHasherToTest()
 
 	result := sut.hasher.Verify("text", "hash")
 

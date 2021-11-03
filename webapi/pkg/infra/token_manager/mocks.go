@@ -9,9 +9,9 @@ import (
 	"github.com/golang-jwt/jwt/v4"
 )
 
-type JwtMocked struct{}
+type jwtMocked struct{}
 
-func (m JwtMocked) FileReader(failure bool) func(path string) ([]byte, error) {
+func (m jwtMocked) FileReader(failure bool) func(path string) ([]byte, error) {
 	return func(path string) ([]byte, error) {
 		if failure {
 			return nil, errors.New("error when try to read rsa private key")
@@ -21,7 +21,7 @@ func (m JwtMocked) FileReader(failure bool) func(path string) ([]byte, error) {
 	}
 }
 
-func (m JwtMocked) ParseRSAPrivateKey(failure bool) func(key []byte) (*rsa.PrivateKey, error) {
+func (m jwtMocked) ParseRSAPrivateKey(failure bool) func(key []byte) (*rsa.PrivateKey, error) {
 	return func(key []byte) (*rsa.PrivateKey, error) {
 		if failure {
 			return nil, errors.New("parse rsa private key")
@@ -32,7 +32,7 @@ func (m JwtMocked) ParseRSAPrivateKey(failure bool) func(key []byte) (*rsa.Priva
 
 }
 
-func (m JwtMocked) ParseRSAPublicKey(failure bool) func(key []byte) (*rsa.PublicKey, error) {
+func (m jwtMocked) ParseRSAPublicKey(failure bool) func(key []byte) (*rsa.PublicKey, error) {
 	return func(key []byte) (*rsa.PublicKey, error) {
 		if failure {
 			return nil, errors.New("parse rsa public key")
@@ -45,7 +45,7 @@ func (m JwtMocked) ParseRSAPublicKey(failure bool) func(key []byte) (*rsa.Public
 
 }
 
-func (m JwtMocked) ClaimsGenerator(failure bool) func(method jwt.SigningMethod, claims jwt.Claims) *jwt.Token {
+func (m jwtMocked) ClaimsGenerator(failure bool) func(method jwt.SigningMethod, claims jwt.Claims) *jwt.Token {
 	return func(method jwt.SigningMethod, claims jwt.Claims) *jwt.Token {
 		if failure {
 			return nil
@@ -59,7 +59,7 @@ func (m JwtMocked) ClaimsGenerator(failure bool) func(method jwt.SigningMethod, 
 	}
 }
 
-func (m JwtMocked) ParseClaims(failure bool, unixTime time.Time) func(tokenString string, claims jwt.Claims, keyFunc jwt.Keyfunc) (*jwt.Token, error) {
+func (m jwtMocked) ParseClaims(failure bool, unixTime time.Time) func(tokenString string, claims jwt.Claims, keyFunc jwt.Keyfunc) (*jwt.Token, error) {
 	return func(tokenString string, claims jwt.Claims, keyFunc jwt.Keyfunc) (*jwt.Token, error) {
 		if failure {
 			return nil, errors.New("")

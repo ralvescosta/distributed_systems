@@ -25,9 +25,9 @@ func (pst usersHandler) Create(httpRequest http.HttpRequest) http.HttpResponse {
 		return http.BadRequest(models.StringToErrorResponse("body is required"), nil)
 	}
 
-	if err := pst.validator.ValidateStruct(model); err != nil {
-		pst.logger.Error("")
-		return http.BadRequest(models.StringToErrorResponse(""), nil)
+	if validationErrs := pst.validator.ValidateStruct(model); validationErrs != nil {
+		pst.logger.Error(validationErrs[0].Message)
+		return http.BadRequest(models.StringToErrorResponse(validationErrs[0].Message), nil)
 	}
 
 	result, err := pst.useCases.Perform(httpRequest.Ctx, httpRequest.Txn, model.ToCreateUserDto())

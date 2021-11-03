@@ -9,7 +9,7 @@ services:
       - POSTGRES_PASSWORD=postgres
       - POSTGRES_DB=webapi
     volumes:
-      - ./sql/create_users_table.sql:/docker-entrypoint-initdb.d/create_users_table.sql
+      - ./webapi/sql/create_users_table.sql:/docker-entrypoint-initdb.d/create_users_table.sql
     ports:
       - 5432:5432
       

@@ -3,7 +3,7 @@ package adapters
 import "testing"
 
 func Test_Should_Exec_Middleware_Successfully(t *testing.T) {
-	sut := NewMiddlewareAdaptToTest(false)
+	sut := newMiddlewareAdaptToTest(false)
 
 	sut.adapt(sut.ctx)
 
@@ -13,7 +13,7 @@ func Test_Should_Exec_Middleware_Successfully(t *testing.T) {
 }
 
 func Test_Should_Exec_Middleware_With_Body_Error(t *testing.T) {
-	sut := NewMiddlewareAdaptToTest(true)
+	sut := newMiddlewareAdaptToTest(true)
 
 	sut.adapt(sut.ctx)
 

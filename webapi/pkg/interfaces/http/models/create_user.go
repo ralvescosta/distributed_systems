@@ -5,9 +5,9 @@ import (
 )
 
 type CreateUserRequest struct {
-	Name     string `json:"name"`
-	Email    string `json:"email"`
-	Password string `json:"password"`
+	Name     string `json:"name" validate:"required,min=4"`
+	Email    string `json:"email" validate:"required,email"`
+	Password string `json:"password" validate:"required,min=6"`
 }
 
 func (pst CreateUserRequest) ToCreateUserDto() dtos.CreateUserDto {

@@ -21,7 +21,7 @@ func (customReader) Read(p []byte) (int, error) {
 	return 0, errors.New("some error")
 }
 
-func CreateMockedHttpRequest(readerWithError bool) *http.Request {
+func createMockedHttpRequest(readerWithError bool) *http.Request {
 	var reader io.ReadCloser
 	if readerWithError {
 		reader = ioutil.NopCloser(customReader{})
@@ -37,7 +37,7 @@ func CreateMockedHttpRequest(readerWithError bool) *http.Request {
 	}
 }
 
-func CreateMockedGinContext(req *http.Request) *gin.Context {
+func createMockedGinContext(req *http.Request) *gin.Context {
 	contextMock, _ := gin.CreateTestContext(httptest.NewRecorder())
 	contextMock.Params = []gin.Param{{Key: "key", Value: "value"}}
 	contextMock.Request = req
@@ -45,7 +45,7 @@ func CreateMockedGinContext(req *http.Request) *gin.Context {
 	return contextMock
 }
 
-type HandlerAdaptToTest struct {
+type handlerAdaptToTest struct {
 	adapt              gin.HandlerFunc
 	loggerMock         interfaces.ILogger
 	handlerCalledTimes *int
@@ -54,7 +54,7 @@ type HandlerAdaptToTest struct {
 	ctx                *gin.Context
 }
 
-func NewHandlerAdaptToTest(readerWithError bool) HandlerAdaptToTest {
+func newHandlerAdaptToTest(readerWithError bool) handlerAdaptToTest {
 	handlerCalledTimes := 0
 	handlerMock := func(httpRequest internalHttp.HttpRequest) internalHttp.HttpResponse {
 		handlerCalledTimes++
@@ -62,20 +62,20 @@ func NewHandlerAdaptToTest(readerWithError bool) HandlerAdaptToTest {
 	}
 
 	loggerMock := logger.NewLoggerSpy()
-	req := CreateMockedHttpRequest(readerWithError)
+	req := createMockedHttpRequest(readerWithError)
 	sut := HandlerAdapt(handlerMock, loggerMock)
 
-	return HandlerAdaptToTest{
+	return handlerAdaptToTest{
 		handlerMock:        handlerMock,
 		handlerCalledTimes: &handlerCalledTimes,
 		loggerMock:         loggerMock,
 		request:            req,
 		adapt:              sut,
-		ctx:                CreateMockedGinContext(req),
+		ctx:                createMockedGinContext(req),
 	}
 }
 
-type MiddlewareAdaptToTest struct {
+type middlewareAdaptToTest struct {
 	adapt              gin.HandlerFunc
 	loggerMock         interfaces.ILogger
 	handlerCalledTimes *int
@@ -84,7 +84,7 @@ type MiddlewareAdaptToTest struct {
 	ctx                *gin.Context
 }
 
-func NewMiddlewareAdaptToTest(readerWithError bool) MiddlewareAdaptToTest {
+func newMiddlewareAdaptToTest(readerWithError bool) middlewareAdaptToTest {
 	handlerCalledTimes := 0
 	handlerMock := func(httpRequest internalHttp.HttpRequest) internalHttp.HttpResponse {
 		handlerCalledTimes++
@@ -92,15 +92,15 @@ func NewMiddlewareAdaptToTest(readerWithError bool) MiddlewareAdaptToTest {
 	}
 
 	loggerMock := logger.NewLoggerSpy()
-	req := CreateMockedHttpRequest(readerWithError)
+	req := createMockedHttpRequest(readerWithError)
 	sut := MiddlewareAdapt(handlerMock, loggerMock)
 
-	return MiddlewareAdaptToTest{
+	return middlewareAdaptToTest{
 		handlerMock:        handlerMock,
 		handlerCalledTimes: &handlerCalledTimes,
 		loggerMock:         loggerMock,
 		request:            req,
 		adapt:              sut,
-		ctx:                CreateMockedGinContext(req),
+		ctx:                createMockedGinContext(req),
 	}
 }

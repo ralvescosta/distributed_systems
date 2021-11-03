@@ -15,7 +15,7 @@ import (
 )
 
 func Test_Should_Execute_GetHandleFunc_For_Test_Environment(t *testing.T) {
-	sut := NewLoggerToTest()
+	sut := newLoggerToTest()
 
 	handle := sut.logger.GetHandleFunc()
 
@@ -25,7 +25,7 @@ func Test_Should_Execute_GetHandleFunc_For_Test_Environment(t *testing.T) {
 }
 
 func Test_Should_Execute_GetHandleFunc_For_Prod_Environment(t *testing.T) {
-	sut := NewLoggerToTest()
+	sut := newLoggerToTest()
 	os.Setenv("GO_ENV", "production")
 
 	handle := sut.logger.GetHandleFunc()
@@ -37,7 +37,7 @@ func Test_Should_Execute_GetHandleFunc_For_Prod_Environment(t *testing.T) {
 
 func Test_Should_Execute_ProductionLoggerFormater_Correctly(t *testing.T) {
 	os.Setenv("GO_ENV", "production")
-	sut := NewLoggerToTest()
+	sut := newLoggerToTest()
 
 	req := &http.Request{
 		Body: ioutil.NopCloser(bytes.NewBuffer([]byte(nil))),
@@ -55,7 +55,7 @@ func Test_Should_Execute_ProductionLoggerFormater_Correctly(t *testing.T) {
 }
 
 func Test_Should_Call_Logger_Methods_Correctly(t *testing.T) {
-	sut := NewLoggerToTest()
+	sut := newLoggerToTest()
 
 	sut.logger.Info("some message")
 	sut.logger.Debug("some message")

@@ -5,7 +5,7 @@ import (
 )
 
 func Test_Should_Exec_Handler_Successfully(t *testing.T) {
-	sut := NewHandlerAdaptToTest(false)
+	sut := newHandlerAdaptToTest(false)
 
 	sut.adapt(sut.ctx)
 
@@ -15,7 +15,7 @@ func Test_Should_Exec_Handler_Successfully(t *testing.T) {
 }
 
 func Test_Should_Exec_Handler_With_Body_Error(t *testing.T) {
-	sut := NewHandlerAdaptToTest(true)
+	sut := newHandlerAdaptToTest(true)
 
 	sut.adapt(sut.ctx)
 

@@ -2,12 +2,12 @@ package validator
 
 import "webapi/pkg/app/interfaces"
 
-type ValidatorToTest struct {
+type validatorToTest struct {
 	validate interfaces.IValidator
 }
 
-func NewValidatorToTest() ValidatorToTest {
+func newValidatorToTest() validatorToTest {
 	validate := NewValidator()
 
-	return ValidatorToTest{validate}
+	return validatorToTest{validate}
 }

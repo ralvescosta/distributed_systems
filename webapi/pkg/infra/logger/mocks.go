@@ -6,29 +6,29 @@ import (
 	"go.uber.org/zap"
 )
 
-type LoggerSpyToTest struct {
+type loggerSpyToTest struct {
 	logger interfaces.ILogger
 }
 
-func NewLoggerSpyToTest() LoggerSpyToTest {
-	return LoggerSpyToTest{
+func newLoggerSpyToTest() loggerSpyToTest {
+	return loggerSpyToTest{
 		logger: NewLoggerSpy(),
 	}
 }
 
-type LoggerToTest struct {
+type loggerToTest struct {
 	zapInstance *zap.Logger
 	logger      interfaces.ILogger
 }
 
-func NewLoggerToTest() LoggerToTest {
+func newLoggerToTest() loggerToTest {
 	zap, _ := zap.NewDevelopment(zap.IncreaseLevel(zap.DebugLevel), zap.AddStacktrace(zap.ErrorLevel))
 
 	sut := logger{
 		zap,
 	}
 
-	return LoggerToTest{
+	return loggerToTest{
 		zapInstance: zap,
 		logger:      sut,
 	}
