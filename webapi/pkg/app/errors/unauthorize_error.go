@@ -9,5 +9,5 @@ func (e UnauthorizeError) Error() string {
 }
 
 func NewUnauthorizeError(m string) error {
-	return ConflictError{Message: m}
+	return UnauthorizeError{Message: m}
 }
