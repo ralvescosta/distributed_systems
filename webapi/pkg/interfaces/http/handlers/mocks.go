@@ -53,3 +53,33 @@ type createUserUseCaseSpy struct {
 func (pst createUserUseCaseSpy) Perform(ctx context.Context, txn interface{}, dto dtos.CreateUserDto) (dtos.CreatedUserDto, error) {
 	return dtos.CreatedUserDto{}, pst.useCaseError
 }
+
+type authenticationHandlerToTest struct {
+	handler    IAuthenticationHandler
+	loggerSpy  interfaces.ILogger
+	useCase    usecases.IAuthenticateUserUseCase
+	mockedUser models.CreateUserRequest
+}
+
+func newAuthenticationHandlerToTest(validationFailure bool, useCaseError error) authenticationHandlerToTest {
+	loggerSpy := logger.NewLoggerSpy()
+	useCase := authenticateUserUseCaseSpy{useCaseError}
+	validatorSpy := _validatorSpy{validationFailure}
+	handler := NewAuthenticationHandler(loggerSpy, useCase, validatorSpy)
+
+	mockedUser := models.CreateUserRequest{
+		Name:     "Some Name",
+		Email:    "some@email.com",
+		Password: "1234567",
+	}
+
+	return authenticationHandlerToTest{handler, loggerSpy, useCase, mockedUser}
+}
+
+type authenticateUserUseCaseSpy struct {
+	useCaseError error
+}
+
+func (pst authenticateUserUseCaseSpy) Perform(ctx context.Context, txn interface{}, dto dtos.AuthenticateUserDto) (dtos.AuthenticatedUserDto, error) {
+	return dtos.AuthenticatedUserDto{}, pst.useCaseError
+}
