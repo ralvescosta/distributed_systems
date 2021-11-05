@@ -54,11 +54,13 @@ type handlerAdaptToTest struct {
 	ctx                *gin.Context
 }
 
-func newHandlerAdaptToTest(readerWithError bool) handlerAdaptToTest {
+func newHandlerAdaptToTest(readerWithError bool, httpStatusCodeResponse int) handlerAdaptToTest {
 	handlerCalledTimes := 0
 	handlerMock := func(httpRequest internalHttp.HttpRequest) internalHttp.HttpResponse {
 		handlerCalledTimes++
-		return internalHttp.HttpResponse{}
+		return internalHttp.HttpResponse{
+			StatusCode: httpStatusCodeResponse,
+		}
 	}
 
 	loggerMock := logger.NewLoggerSpy()
@@ -84,11 +86,13 @@ type middlewareAdaptToTest struct {
 	ctx                *gin.Context
 }
 
-func newMiddlewareAdaptToTest(readerWithError bool) middlewareAdaptToTest {
+func newMiddlewareAdaptToTest(readerWithError bool, httpStatusCodeResponse int) middlewareAdaptToTest {
 	handlerCalledTimes := 0
 	handlerMock := func(httpRequest internalHttp.HttpRequest) internalHttp.HttpResponse {
 		handlerCalledTimes++
-		return internalHttp.HttpResponse{}
+		return internalHttp.HttpResponse{
+			StatusCode: httpStatusCodeResponse,
+		}
 	}
 
 	loggerMock := logger.NewLoggerSpy()
