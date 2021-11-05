@@ -12,6 +12,8 @@ services:
       - ./webapi/sql/create_users_table.sql:/docker-entrypoint-initdb.d/create_users_table.sql
     ports:
       - 5432:5432
+    networks:
+      - distributed_system
       
   rabbitmq:
     image: rabbitmq:3.6-management
@@ -19,6 +21,8 @@ services:
     ports:
       - 5672:5672
       - 15672:15672
+    networks:
+      - distributed_system
             
   mongodb:
     image: mongo
@@ -28,3 +32,19 @@ services:
       MONGO_INITDB_ROOT_PASSWORD: admin
     ports:
       - 27017:27017
+    networks:
+      - distributed_system
+  
+  load-balancer:
+    container_name: load-balancer
+    image: nginx
+    restart: unless-stopped
+    volumes:
+      - ./nginx.conf:/etc/nginx/conf.d/webapi.conf
+    ports: 
+      - 8080:8080
+    networks:
+      - distributed_system    
+
+networks:
+  distributed_system:

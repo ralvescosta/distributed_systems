@@ -1,5 +1,7 @@
 FROM golang:alpine as build
 
+ENV PORT=3333
+
 WORKDIR /build
 ENV GO111MODULE=on \
     CGO_ENABLED=0 \
@@ -16,6 +18,6 @@ WORKDIR /app
 USER app
 COPY --from=build ./build/exec ./
 COPY ./.env.* ./
-EXPOSE 3333
+EXPOSE ${PORT}
 
 CMD ["./exec"]
