@@ -2,7 +2,7 @@ package dtos
 
 import "time"
 
-type AuthenticateUserDto struct {
+type SignInDto struct {
 	Email    string
 	Password string
 }
@@ -13,7 +13,7 @@ type TokenDataDto struct {
 	Audience string
 }
 
-type AuthenticatedUserDto struct {
+type SessionDto struct {
 	Id          int
 	AccessToken string
 	Kind        string

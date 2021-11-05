@@ -6,5 +6,5 @@ import (
 
 type ITokenManager interface {
 	GenerateToken(tokenData dtos.TokenDataDto) (string, error)
-	VerifyToken(token string) (*dtos.AuthenticatedUserDto, error)
+	VerifyToken(token string) (*dtos.SessionDto, error)
 }

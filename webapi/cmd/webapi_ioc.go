@@ -24,7 +24,7 @@ type webApiContainer struct {
 	httpServer httpServer.IHttpServer
 
 	usersRoutes          presenters.IUsersRoutes
-	authenticationRoutes presenters.IAuthenticationRoutes
+	authenticationRoutes presenters.ISessionRoutes
 	inventoryRoutes      presenters.IInventoryRoutes
 
 	monitoring *newrelic.Application
@@ -72,14 +72,15 @@ func NewContainer() webApiContainer {
 	usersHandler := handlers.NewUsersHandler(logger, createUserUseCase, validatoR)
 	usersRoutes := presenters.NewUsersRoutes(logger, usersHandler)
 
-	authenticationUserUseCase := appUseCases.NewAuthenticateUserUseCase(userRepository, hasher, accessTokenManager)
-	authenticationHandler := handlers.NewAuthenticationHandler(logger, authenticationUserUseCase, validatoR)
-	authenticationRoutes := presenters.NewAuthenticationRoutes(logger, authenticationHandler)
+	authenticationUserUseCase := appUseCases.NewSessionUseCase(userRepository, hasher, accessTokenManager)
+	authenticationHandler := handlers.NewSessionHandler(logger, authenticationUserUseCase, validatoR)
+	authenticationRoutes := presenters.NewSessionRoutes(logger, authenticationHandler)
 
 	authenticationUseCase := appUseCases.NewAuthenticationUseCase(userRepository, accessTokenManager)
 	authenticationMiddleware := middlewares.NewAuthMiddleware(authenticationUseCase)
 
-	inventoryHandler := handlers.NewInventoryHandler(logger, validatoR)
+	getBookById := appUseCases.NewGetBookByIdUseCase()
+	inventoryHandler := handlers.NewInventoryHandler(logger, validatoR, getBookById)
 	inventoryRoutes := presenters.NewInventoryRoutes(logger, authenticationMiddleware, inventoryHandler)
 
 	return webApiContainer{

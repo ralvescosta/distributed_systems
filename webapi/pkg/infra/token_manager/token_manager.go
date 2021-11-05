@@ -57,7 +57,7 @@ func (pst tokenManager) GenerateToken(tokenData dtos.TokenDataDto) (string, erro
 	return token, nil
 }
 
-func (pst tokenManager) VerifyToken(accessToken string) (*dtos.AuthenticatedUserDto, error) {
+func (pst tokenManager) VerifyToken(accessToken string) (*dtos.SessionDto, error) {
 	publicKeyInBytes, err := fileReader(os.Getenv("RSA_PUBLIC_KEY_DIR"))
 	if err != nil {
 		pst.logger.Error(err.Error())
@@ -96,7 +96,7 @@ func (pst tokenManager) VerifyToken(accessToken string) (*dtos.AuthenticatedUser
 
 	id, _ := strconv.Atoi(claims.ID)
 
-	return &dtos.AuthenticatedUserDto{
+	return &dtos.SessionDto{
 		Id:          id,
 		AccessToken: accessToken,
 		Kind:        os.Getenv("TOKEN_KIND"),

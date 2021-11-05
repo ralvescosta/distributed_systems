@@ -54,18 +54,18 @@ func (pst createUserUseCaseSpy) Perform(ctx context.Context, txn interface{}, dt
 	return dtos.CreatedUserDto{}, pst.useCaseError
 }
 
-type authenticationHandlerToTest struct {
-	handler    IAuthenticationHandler
+type sessionHandlerToTest struct {
+	handler    ISessionHandler
 	loggerSpy  interfaces.ILogger
-	useCase    usecases.IAuthenticateUserUseCase
+	useCase    usecases.ISessionUseCase
 	mockedUser models.CreateUserRequest
 }
 
-func newAuthenticationHandlerToTest(validationFailure bool, useCaseError error) authenticationHandlerToTest {
+func newSessionHandlerToTest(validationFailure bool, useCaseError error) sessionHandlerToTest {
 	loggerSpy := logger.NewLoggerSpy()
-	useCase := authenticateUserUseCaseSpy{useCaseError}
+	useCase := sessionUseCaseSpy{useCaseError}
 	validatorSpy := _validatorSpy{validationFailure}
-	handler := NewAuthenticationHandler(loggerSpy, useCase, validatorSpy)
+	handler := NewSessionHandler(loggerSpy, useCase, validatorSpy)
 
 	mockedUser := models.CreateUserRequest{
 		Name:     "Some Name",
@@ -73,13 +73,13 @@ func newAuthenticationHandlerToTest(validationFailure bool, useCaseError error) 
 		Password: "1234567",
 	}
 
-	return authenticationHandlerToTest{handler, loggerSpy, useCase, mockedUser}
+	return sessionHandlerToTest{handler, loggerSpy, useCase, mockedUser}
 }
 
-type authenticateUserUseCaseSpy struct {
+type sessionUseCaseSpy struct {
 	useCaseError error
 }
 
-func (pst authenticateUserUseCaseSpy) Perform(ctx context.Context, txn interface{}, dto dtos.AuthenticateUserDto) (dtos.AuthenticatedUserDto, error) {
-	return dtos.AuthenticatedUserDto{}, pst.useCaseError
+func (pst sessionUseCaseSpy) Perform(ctx context.Context, txn interface{}, dto dtos.SignInDto) (dtos.SessionDto, error) {
+	return dtos.SessionDto{}, pst.useCaseError
 }

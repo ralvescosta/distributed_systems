@@ -7,21 +7,21 @@ import (
 	"webapi/pkg/interfaces/http/handlers"
 )
 
-type IAuthenticationRoutes interface {
+type ISessionRoutes interface {
 	Register(httpServer server.IHttpServer)
 }
 
-type authenticationRoutes struct {
+type sessionRoutes struct {
 	handlers handlers.IUsersHandler
 	logger   interfaces.ILogger
 }
 
-func (pst authenticationRoutes) Register(httpServer server.IHttpServer) {
+func (pst sessionRoutes) Register(httpServer server.IHttpServer) {
 	httpServer.RegistreRoute("POST", "/api/v1/auth", adapter.HandlerAdapt(pst.handlers.Create, pst.logger))
 }
 
-func NewAuthenticationRoutes(logger interfaces.ILogger, handlers handlers.IAuthenticationHandler) IAuthenticationRoutes {
-	return authenticationRoutes{
+func NewSessionRoutes(logger interfaces.ILogger, handlers handlers.ISessionHandler) ISessionRoutes {
+	return sessionRoutes{
 		handlers,
 		logger,
 	}

@@ -11,7 +11,7 @@ import (
 )
 
 func Test_Auth_Should_Execute_CreateSession_Correctly(t *testing.T) {
-	sut := newAuthenticationHandlerToTest(false, nil)
+	sut := newSessionHandlerToTest(false, nil)
 	body, _ := json.Marshal(sut.mockedUser)
 
 	result := sut.handler.Create(internalHttp.HttpRequest{
@@ -22,7 +22,7 @@ func Test_Auth_Should_Execute_CreateSession_Correctly(t *testing.T) {
 }
 
 func Test_Auth_Should_Returns_BadRequest_If_Has_No_Body(t *testing.T) {
-	sut := newUserHandlerToTest(false, nil)
+	sut := newSessionHandlerToTest(false, nil)
 
 	result := sut.handler.Create(
 		internalHttp.HttpRequest{},
@@ -32,7 +32,7 @@ func Test_Auth_Should_Returns_BadRequest_If_Has_No_Body(t *testing.T) {
 }
 
 func Test_Auth_Should_Returns_BadRequest_If_There_Is_Validation_Error_In_Body(t *testing.T) {
-	sut := newUserHandlerToTest(true, nil)
+	sut := newSessionHandlerToTest(true, nil)
 	body, _ := json.Marshal(sut.mockedUser)
 
 	result := sut.handler.Create(
@@ -45,7 +45,7 @@ func Test_Auth_Should_Returns_BadRequest_If_There_Is_Validation_Error_In_Body(t 
 }
 
 func Test_Auth_Should_Returns_Http4xx_If_Some_Error_Occur_In_UseCase(t *testing.T) {
-	sut := newUserHandlerToTest(false, errors.NewConflictError("conflict"))
+	sut := newSessionHandlerToTest(false, errors.NewConflictError("conflict"))
 	body, _ := json.Marshal(sut.mockedUser)
 
 	result := sut.handler.Create(

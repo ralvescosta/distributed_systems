@@ -10,24 +10,24 @@ import (
 	"webapi/pkg/domain/usecases"
 )
 
-type authenticateUserUsecase struct {
+type sessionUseCase struct {
 	repository   interfaces.IUserRepository
 	hasher       interfaces.IHasher
 	tokenManager interfaces.ITokenManager
 }
 
-func (pst authenticateUserUsecase) Perform(ctx context.Context, txn interface{}, dto dtos.AuthenticateUserDto) (dtos.AuthenticatedUserDto, error) {
+func (pst sessionUseCase) Perform(ctx context.Context, txn interface{}, dto dtos.SignInDto) (dtos.SessionDto, error) {
 	user, err := pst.repository.FindByEmail(ctx, txn, dto.Email)
 	if err != nil {
-		return dtos.AuthenticatedUserDto{}, err
+		return dtos.SessionDto{}, err
 	}
 
 	if user == nil {
-		return dtos.AuthenticatedUserDto{}, errors.NewNotFoundError("Email not found")
+		return dtos.SessionDto{}, errors.NewNotFoundError("Email not found")
 	}
 
 	if !pst.hasher.Verify(dto.Password, user.Password) {
-		return dtos.AuthenticatedUserDto{}, errors.NewBadRequestError("Wrong password")
+		return dtos.SessionDto{}, errors.NewBadRequestError("Wrong password")
 	}
 
 	expireIn := time.Now().Add(time.Hour * 1)
@@ -37,10 +37,10 @@ func (pst authenticateUserUsecase) Perform(ctx context.Context, txn interface{},
 		ExpireIn: expireIn,
 	})
 	if err != nil {
-		return dtos.AuthenticatedUserDto{}, err
+		return dtos.SessionDto{}, err
 	}
 
-	return dtos.AuthenticatedUserDto{
+	return dtos.SessionDto{
 		AccessToken: accessToken,
 		Kind:        os.Getenv("TOKEN_KIND"),
 		ExpireIn:    expireIn,
@@ -48,8 +48,8 @@ func (pst authenticateUserUsecase) Perform(ctx context.Context, txn interface{},
 
 }
 
-func NewAuthenticateUserUseCase(repository interfaces.IUserRepository, hasher interfaces.IHasher, tokenManager interfaces.ITokenManager) usecases.IAuthenticateUserUseCase {
-	return authenticateUserUsecase{
+func NewSessionUseCase(repository interfaces.IUserRepository, hasher interfaces.IHasher, tokenManager interfaces.ITokenManager) usecases.ISessionUseCase {
+	return sessionUseCase{
 		repository,
 		hasher,
 		tokenManager,

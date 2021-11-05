@@ -12,7 +12,7 @@ type IAuthMiddleware interface {
 }
 
 type authMiddleware struct {
-	usecase usecases.IAuthenticationUseCase
+	usecase usecases.IValidationTokenUseCase
 }
 
 func (pst authMiddleware) Perform(httpRequest http.HttpRequest) http.HttpResponse {
@@ -24,14 +24,14 @@ func (pst authMiddleware) Perform(httpRequest http.HttpRequest) http.HttpRespons
 	}
 
 	authenticatedUser, err := pst.usecase.Perform(httpRequest.Ctx, httpRequest.Txn, token[1])
-	if err != nil {
+	if err != nil || authenticatedUser.Id == 0 {
 		return http.Unauthorized(models.StringToErrorResponse("Invalid token"), httpRequest.Headers)
 	}
 
 	return http.Ok(&authenticatedUser, httpRequest.Headers)
 }
 
-func NewAuthMiddleware(usecase usecases.IAuthenticationUseCase) IAuthMiddleware {
+func NewAuthMiddleware(usecase usecases.IValidationTokenUseCase) IAuthMiddleware {
 	return authMiddleware{
 		usecase,
 	}
