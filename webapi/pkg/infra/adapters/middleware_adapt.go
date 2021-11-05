@@ -14,18 +14,18 @@ func MiddlewareAdapt(handler func(httpRequest internalHttp.HttpRequest) internal
 		request, err := GetHttpRequest(ctx)
 		if err != nil {
 			logger.Error("error while read request bytes")
-			ctx.JSON(http.StatusInternalServerError, gin.H{})
+			ctx.AbortWithStatusJSON(http.StatusInternalServerError, gin.H{})
 			return
 		}
 
 		result := handler(request)
 
 		if result.StatusCode >= http.StatusBadRequest {
-			ctx.JSON(result.StatusCode, result.Body)
+			ctx.AbortWithStatusJSON(result.StatusCode, result.Body)
 			return
 		}
 
-		authenticatedUserDto, ok := result.Body.(*dtos.AuthenticatedUserDto)
+		authenticatedUserDto, ok := result.Body.(*dtos.SessionDto)
 		if ok {
 			ctx.Set("auth", authenticatedUserDto)
 		}

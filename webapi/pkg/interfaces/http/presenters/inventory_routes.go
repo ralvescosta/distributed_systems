@@ -21,7 +21,7 @@ type inventoryRoutes struct {
 func (pst inventoryRoutes) Register(httpServer server.IHttpServer) {
 	httpServer.RegistreRoute(
 		"GET",
-		"/api/v1/inventory",
+		"/api/v1/inventory/:id",
 		adapter.MiddlewareAdapt(pst.middlewares.Perform, pst.logger),
 		adapter.HandlerAdapt(pst.handlers.GetById, pst.logger),
 	)

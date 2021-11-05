@@ -9,18 +9,18 @@ import (
 	"webapi/pkg/interfaces/http/models"
 )
 
-type IAuthenticationHandler interface {
+type ISessionHandler interface {
 	Create(httpRequest http.HttpRequest) http.HttpResponse
 }
 
-type authenticationHandler struct {
+type sessionHandler struct {
 	logger    interfaces.ILogger
-	useCases  usecases.IAuthenticateUserUseCase
+	useCases  usecases.ISessionUseCase
 	validator interfaces.IValidator
 }
 
-func (pst authenticationHandler) Create(httpRequest http.HttpRequest) http.HttpResponse {
-	model := models.AuthenticationRequest{}
+func (pst sessionHandler) Create(httpRequest http.HttpRequest) http.HttpResponse {
+	model := models.SignInRequest{}
 	if err := json.Unmarshal(httpRequest.Body, &model); err != nil {
 		pst.logger.Error(err.Error())
 		return http.BadRequest(models.StringToErrorResponse("body is required"), nil)
@@ -31,16 +31,16 @@ func (pst authenticationHandler) Create(httpRequest http.HttpRequest) http.HttpR
 		return http.BadRequest(models.StringToErrorResponse(validationErrs[0].Message), nil)
 	}
 
-	result, err := pst.useCases.Perform(httpRequest.Ctx, httpRequest.Txn, model.ToAuthenticateUserDto())
+	result, err := pst.useCases.Perform(httpRequest.Ctx, httpRequest.Txn, model.ToSignInDto())
 	if err != nil {
 		return http.ErrorResponseMapper(err, nil)
 	}
 
-	return http.Ok(models.ToAuthenticationResponse(result), nil)
+	return http.Ok(models.ToSessionResponse(result), nil)
 }
 
-func NewAuthenticationHandler(logger interfaces.ILogger, useCases usecases.IAuthenticateUserUseCase, validator interfaces.IValidator) IAuthenticationHandler {
-	return authenticationHandler{
+func NewSessionHandler(logger interfaces.ILogger, useCases usecases.ISessionUseCase, validator interfaces.IValidator) ISessionHandler {
+	return sessionHandler{
 		logger,
 		useCases,
 		validator,
