@@ -8,17 +8,16 @@ import (
 	"webapi/pkg/domain/usecases"
 )
 
+type mockConfigure struct {
+	method       string
+	customResult interface{}
+	customError  error
+}
 type createUserUseCaseToTest struct {
 	useCase      usecases.ICreateUserUseCase
 	repo         interfaces.IUserRepository
 	hasher       interfaces.IHasher
 	tokenManager interfaces.ITokenManager
-}
-
-type mockConfigure struct {
-	method       string
-	customResult interface{}
-	customError  error
 }
 
 func newCreateUserUseCaseToTest(configs map[string]mockConfigure) createUserUseCaseToTest {
@@ -50,27 +49,67 @@ func newCreateUserUseCaseToTest(configs map[string]mockConfigure) createUserUseC
 	return createUserUseCaseToTest{useCase, repo, hasher, tokenManager}
 }
 
+type authenticationUseCaseToTest struct {
+	useCase      usecases.IValidationTokenUseCase
+	repo         interfaces.IUserRepository
+	tokenManager interfaces.ITokenManager
+}
+
+func newAuthenticationUseCaseToTest(configs map[string]mockConfigure) authenticationUseCaseToTest {
+	repoConfig, ok := configs["userRepository"]
+	var repo interfaces.IUserRepository
+	if ok {
+		repo = userRepositorySpy{config: &repoConfig}
+	} else {
+		repo = userRepositorySpy{}
+	}
+
+	tokenManagerConfig, ok := configs["tokenManager"]
+	var tokenManager interfaces.ITokenManager
+	if ok {
+		tokenManager = tokenManagerSpy{config: &tokenManagerConfig}
+	} else {
+		tokenManager = tokenManagerSpy{}
+	}
+
+	useCase := NewAuthenticationUseCase(repo, tokenManager)
+	return authenticationUseCaseToTest{useCase, repo, tokenManager}
+}
+
 type userRepositorySpy struct {
 	config *mockConfigure
 }
 
 func (pst userRepositorySpy) FindById(ctx context.Context, txn interface{}, id int) (*entities.User, error) {
 	if pst.config != nil && pst.config.method == "FindById" {
-		return pst.config.customResult.(*entities.User), pst.config.customError
+		user, ok := pst.config.customResult.(*entities.User)
+		if ok {
+			return user, pst.config.customError
+		}
+		return nil, pst.config.customError
 	}
 
 	return &entities.User{}, nil
 }
 func (pst userRepositorySpy) FindByEmail(ctx context.Context, txn interface{}, email string) (*entities.User, error) {
 	if pst.config != nil && pst.config.method == "FindByEmail" {
-		return pst.config.customResult.(*entities.User), pst.config.customError
+		user, ok := pst.config.customResult.(*entities.User)
+		if ok {
+			return user, pst.config.customError
+		}
+
+		return nil, pst.config.customError
 	}
 
 	return nil, nil
 }
 func (pst userRepositorySpy) Create(ctx context.Context, txn interface{}, dto dtos.CreateUserDto) (*entities.User, error) {
 	if pst.config != nil && pst.config.method == "Create" {
-		return pst.config.customResult.(*entities.User), pst.config.customError
+		user, ok := pst.config.customResult.(*entities.User)
+		if ok {
+			return user, pst.config.customError
+		}
+		return nil, pst.config.customError
 	}
 
 	return &entities.User{}, nil
@@ -111,5 +150,5 @@ func (pst tokenManagerSpy) VerifyToken(token string) (*dtos.SessionDto, error) {
 		return pst.config.customResult.(*dtos.SessionDto), pst.config.customError
 	}
 
-	return &dtos.SessionDto{}, pst.config.customError
+	return &dtos.SessionDto{}, nil
 }
