@@ -76,8 +76,8 @@ func NewContainer() webApiContainer {
 	authenticationHandler := handlers.NewSessionHandler(logger, authenticationUserUseCase, validatoR)
 	authenticationRoutes := presenters.NewSessionRoutes(logger, authenticationHandler)
 
-	authenticationUseCase := appUseCases.NewAuthenticationUseCase(userRepository, accessTokenManager)
-	authenticationMiddleware := middlewares.NewAuthMiddleware(authenticationUseCase)
+	validationTokenUseCase := appUseCases.NewValidatinTokenUseCase(userRepository, accessTokenManager)
+	authenticationMiddleware := middlewares.NewAuthMiddleware(validationTokenUseCase)
 
 	getBookById := appUseCases.NewGetBookByIdUseCase()
 	inventoryHandler := handlers.NewInventoryHandler(logger, validatoR, getBookById)

@@ -49,13 +49,13 @@ func newCreateUserUseCaseToTest(configs map[string]mockConfigure) createUserUseC
 	return createUserUseCaseToTest{useCase, repo, hasher, tokenManager}
 }
 
-type authenticationUseCaseToTest struct {
+type validationTokenUseCaseToTest struct {
 	useCase      usecases.IValidationTokenUseCase
 	repo         interfaces.IUserRepository
 	tokenManager interfaces.ITokenManager
 }
 
-func newAuthenticationUseCaseToTest(configs map[string]mockConfigure) authenticationUseCaseToTest {
+func newValidationTokenUseCaseToTest(configs map[string]mockConfigure) validationTokenUseCaseToTest {
 	repoConfig, ok := configs["userRepository"]
 	var repo interfaces.IUserRepository
 	if ok {
@@ -72,8 +72,44 @@ func newAuthenticationUseCaseToTest(configs map[string]mockConfigure) authentica
 		tokenManager = tokenManagerSpy{}
 	}
 
-	useCase := NewAuthenticationUseCase(repo, tokenManager)
-	return authenticationUseCaseToTest{useCase, repo, tokenManager}
+	useCase := NewValidatinTokenUseCase(repo, tokenManager)
+	return validationTokenUseCaseToTest{useCase, repo, tokenManager}
+}
+
+type sessionUsecaseToTest struct {
+	useCase      usecases.ISessionUseCase
+	repo         interfaces.IUserRepository
+	hasher       interfaces.IHasher
+	tokenManager interfaces.ITokenManager
+}
+
+func newSessionUsecaseToTest(configs map[string]mockConfigure) sessionUsecaseToTest {
+	repoConfig, ok := configs["userRepository"]
+	var repo interfaces.IUserRepository
+	if ok {
+		repo = userRepositorySpy{config: &repoConfig}
+	} else {
+		repo = userRepositorySpy{}
+	}
+
+	hasherConfig, ok := configs["hasher"]
+	var hasher interfaces.IHasher
+	if ok {
+		hasher = hasherSpy{config: &hasherConfig}
+	} else {
+		hasher = hasherSpy{}
+	}
+
+	tokenManagerConfig, ok := configs["tokenManager"]
+	var tokenManager interfaces.ITokenManager
+	if ok {
+		tokenManager = tokenManagerSpy{config: &tokenManagerConfig}
+	} else {
+		tokenManager = tokenManagerSpy{}
+	}
+
+	useCase := NewSessionUseCase(repo, hasher, tokenManager)
+	return sessionUsecaseToTest{useCase, repo, hasher, tokenManager}
 }
 
 type userRepositorySpy struct {
