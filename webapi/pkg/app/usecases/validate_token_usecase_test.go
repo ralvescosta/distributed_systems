@@ -17,7 +17,7 @@ func Test_ValidateTokenUC_Should_Validate_Token_Correctly(t *testing.T) {
 		"some": {},
 	}
 
-	sut := newAuthenticationUseCaseToTest(config)
+	sut := newValidationTokenUseCaseToTest(config)
 
 	result, err := sut.useCase.Perform(context.Background(), nil, "some token")
 
@@ -34,7 +34,7 @@ func Test_ValidateTokenUC_Should_Return_InternalError_If_Some_Error_Occur_In_Ver
 		},
 	}
 
-	sut := newAuthenticationUseCaseToTest(config)
+	sut := newValidationTokenUseCaseToTest(config)
 
 	_, err := sut.useCase.Perform(context.Background(), nil, "some token")
 
@@ -51,7 +51,7 @@ func Test_ValidateTokenUC_Should_Return_InternalError_If_Some_Error_Occur_In_Rep
 		},
 	}
 
-	sut := newAuthenticationUseCaseToTest(config)
+	sut := newValidationTokenUseCaseToTest(config)
 
 	_, err := sut.useCase.Perform(context.Background(), nil, "some token")
 
@@ -68,7 +68,7 @@ func Test_ValidateTokenUC_Should_Return_Unauthorized_If_User_Not_Found(t *testin
 		},
 	}
 
-	sut := newAuthenticationUseCaseToTest(config)
+	sut := newValidationTokenUseCaseToTest(config)
 
 	_, err := sut.useCase.Perform(context.Background(), nil, "some token")
 

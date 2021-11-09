@@ -8,12 +8,12 @@ import (
 	"webapi/pkg/domain/usecases"
 )
 
-type authenticationUseCase struct {
+type validatinTokenUseCase struct {
 	repository   interfaces.IUserRepository
 	tokenManager interfaces.ITokenManager
 }
 
-func (pst authenticationUseCase) Perform(ctx context.Context, txn interface{}, accessToken string) (dtos.SessionDto, error) {
+func (pst validatinTokenUseCase) Perform(ctx context.Context, txn interface{}, accessToken string) (dtos.SessionDto, error) {
 	authenticatedUser, err := pst.tokenManager.VerifyToken(accessToken)
 	if err != nil {
 		return dtos.SessionDto{}, errors.NewInternalError("Some error occur whiling validate the access token")
@@ -30,8 +30,8 @@ func (pst authenticationUseCase) Perform(ctx context.Context, txn interface{}, a
 	return *authenticatedUser, nil
 }
 
-func NewAuthenticationUseCase(repository interfaces.IUserRepository, tokenManager interfaces.ITokenManager) usecases.IValidationTokenUseCase {
-	return authenticationUseCase{
+func NewValidatinTokenUseCase(repository interfaces.IUserRepository, tokenManager interfaces.ITokenManager) usecases.IValidationTokenUseCase {
+	return validatinTokenUseCase{
 		repository,
 		tokenManager,
 	}
