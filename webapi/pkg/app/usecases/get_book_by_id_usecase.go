@@ -8,7 +8,7 @@ import (
 
 type getBookByIdUseCase struct{}
 
-func (getBookByIdUseCase) Perform(ctx context.Context, txn interface{}, id string) (dtos.BookDto, error) {
+func (getBookByIdUseCase) Perform(ctx context.Context, id string) (dtos.BookDto, error) {
 	return dtos.BookDto{}, nil
 }
 

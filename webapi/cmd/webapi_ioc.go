@@ -65,7 +65,7 @@ func NewContainer() webApiContainer {
 	validatoR := validator.NewValidator()
 	httpServer := httpServer.NewHttpServer(logger)
 
-	userRepository := repositories.NewUserRepository(logger, dbConnection, monitoring)
+	userRepository := repositories.NewUserRepository(logger, dbConnection)
 	hasher := hasher.NewHahser(logger)
 	accessTokenManager := tokenManager.NewTokenManager(logger)
 	createUserUseCase := appUseCases.NewCreateUserUseCase(userRepository, hasher, accessTokenManager)

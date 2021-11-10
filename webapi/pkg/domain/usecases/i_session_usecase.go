@@ -6,5 +6,5 @@ import (
 )
 
 type ISessionUseCase interface {
-	Perform(ctx context.Context, txn interface{}, dto dtos.SignInDto) (dtos.SessionDto, error)
+	Perform(ctx context.Context, dto dtos.SignInDto) (dtos.SessionDto, error)
 }

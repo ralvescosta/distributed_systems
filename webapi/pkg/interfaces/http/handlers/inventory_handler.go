@@ -24,7 +24,7 @@ func (pst inventoryHandler) GetById(httpRequest http.HttpRequest) http.HttpRespo
 		return http.BadRequest(models.StringToErrorResponse("id is required"), nil)
 	}
 
-	result, err := pst.useCase.Perform(httpRequest.Ctx, httpRequest.Txn, id)
+	result, err := pst.useCase.Perform(httpRequest.Ctx, id)
 	if err != nil {
 		return http.ErrorResponseMapper(err, nil)
 	}

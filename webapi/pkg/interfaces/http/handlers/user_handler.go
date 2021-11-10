@@ -30,7 +30,7 @@ func (pst usersHandler) Create(httpRequest http.HttpRequest) http.HttpResponse {
 		return http.BadRequest(models.StringToErrorResponse(validationErrs[0].Message), nil)
 	}
 
-	result, err := pst.useCases.Perform(httpRequest.Ctx, httpRequest.Txn, model.ToCreateUserDto())
+	result, err := pst.useCases.Perform(httpRequest.Ctx, model.ToCreateUserDto())
 	if err != nil {
 		return http.ErrorResponseMapper(err, nil)
 	}

@@ -16,8 +16,8 @@ type createUserUseCase struct {
 	tokenManager interfaces.ITokenManager
 }
 
-func (pst createUserUseCase) Perform(ctx context.Context, txn interface{}, dto dtos.CreateUserDto) (dtos.CreatedUserDto, error) {
-	user, err := pst.repository.FindByEmail(ctx, txn, dto.Email)
+func (pst createUserUseCase) Perform(ctx context.Context, dto dtos.CreateUserDto) (dtos.CreatedUserDto, error) {
+	user, err := pst.repository.FindByEmail(ctx, dto.Email)
 	if err != nil {
 		return dtos.CreatedUserDto{}, errors.NewInternalError(err.Error())
 	}
@@ -32,7 +32,7 @@ func (pst createUserUseCase) Perform(ctx context.Context, txn interface{}, dto d
 	}
 
 	dto.Password = hashedPassword
-	user, err = pst.repository.Create(ctx, txn, dto)
+	user, err = pst.repository.Create(ctx, dto)
 	if err != nil {
 		return dtos.CreatedUserDto{}, errors.NewInternalError(err.Error())
 	}

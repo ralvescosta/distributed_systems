@@ -6,5 +6,5 @@ import (
 )
 
 type IValidationTokenUseCase interface {
-	Perform(ctx context.Context, txn interface{}, accessToken string) (dtos.SessionDto, error)
+	Perform(ctx context.Context, accessToken string) (dtos.SessionDto, error)
 }

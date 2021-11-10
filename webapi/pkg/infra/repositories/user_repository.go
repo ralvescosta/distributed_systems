@@ -6,19 +6,14 @@ import (
 	"webapi/pkg/app/interfaces"
 	"webapi/pkg/domain/dtos"
 	"webapi/pkg/domain/entities"
-
-	"github.com/newrelic/go-agent/v3/newrelic"
 )
 
 type userRepository struct {
 	logger       interfaces.ILogger
 	dbConnection *sql.DB
-	monitoring   *newrelic.Application
 }
 
-func (pst userRepository) FindById(ctx context.Context, txn interface{}, id int) (*entities.User, error) {
-	tnxCtx := newrelic.NewContext(ctx, txn.(*newrelic.Transaction))
-
+func (pst userRepository) FindById(ctx context.Context, id int) (*entities.User, error) {
 	sql := `SELECT 
 								id as Id,
 								name AS Name, 
@@ -31,7 +26,7 @@ func (pst userRepository) FindById(ctx context.Context, txn interface{}, id int)
 					WHERE id = $1
 					AND deleted_at IS NULL`
 
-	prepare, err := pst.dbConnection.PrepareContext(tnxCtx, sql)
+	prepare, err := pst.dbConnection.PrepareContext(ctx, sql)
 	if err != nil {
 		pst.logger.Error(err.Error())
 		return nil, err
@@ -39,7 +34,7 @@ func (pst userRepository) FindById(ctx context.Context, txn interface{}, id int)
 
 	entity := entities.User{}
 
-	row := prepare.QueryRowContext(tnxCtx, id)
+	row := prepare.QueryRowContext(ctx, id)
 	if row == nil {
 		return nil, nil
 	}
@@ -63,9 +58,7 @@ func (pst userRepository) FindById(ctx context.Context, txn interface{}, id int)
 	return &entity, nil
 }
 
-func (pst userRepository) FindByEmail(ctx context.Context, txn interface{}, email string) (*entities.User, error) {
-	tnxCtx := newrelic.NewContext(ctx, txn.(*newrelic.Transaction))
-
+func (pst userRepository) FindByEmail(ctx context.Context, email string) (*entities.User, error) {
 	sql := `SELECT 
 								id as Id,
 								name AS Name, 
@@ -78,7 +71,7 @@ func (pst userRepository) FindByEmail(ctx context.Context, txn interface{}, emai
 					WHERE email = $1
 					AND deleted_at IS NULL`
 
-	prepare, err := pst.dbConnection.PrepareContext(tnxCtx, sql)
+	prepare, err := pst.dbConnection.PrepareContext(ctx, sql)
 	if err != nil {
 		pst.logger.Error(err.Error())
 		return nil, err
@@ -86,7 +79,7 @@ func (pst userRepository) FindByEmail(ctx context.Context, txn interface{}, emai
 
 	entity := entities.User{}
 
-	row := prepare.QueryRowContext(tnxCtx, email)
+	row := prepare.QueryRowContext(ctx, email)
 	if row == nil {
 		return nil, nil
 	}
@@ -110,16 +103,14 @@ func (pst userRepository) FindByEmail(ctx context.Context, txn interface{}, emai
 	return &entity, nil
 }
 
-func (pst userRepository) Create(ctx context.Context, txn interface{}, dto dtos.CreateUserDto) (*entities.User, error) {
-	tnxCtx := newrelic.NewContext(ctx, txn.(*newrelic.Transaction))
-
+func (pst userRepository) Create(ctx context.Context, dto dtos.CreateUserDto) (*entities.User, error) {
 	sql := `INSERT INTO users
 								(name, email, password) 
 					VALUES
 								($1, $2, $3) 
 					RETURNING *`
 
-	prepare, err := pst.dbConnection.PrepareContext(tnxCtx, sql)
+	prepare, err := pst.dbConnection.PrepareContext(ctx, sql)
 	if err != nil {
 		pst.logger.Error(err.Error())
 		return nil, err
@@ -127,7 +118,7 @@ func (pst userRepository) Create(ctx context.Context, txn interface{}, dto dtos.
 
 	entity := entities.User{}
 
-	row := prepare.QueryRowContext(tnxCtx, dto.Name, dto.Email, dto.Password)
+	row := prepare.QueryRowContext(ctx, dto.Name, dto.Email, dto.Password)
 	if row == nil {
 		return nil, nil
 	}
@@ -148,10 +139,9 @@ func (pst userRepository) Create(ctx context.Context, txn interface{}, dto dtos.
 	return &entity, nil
 }
 
-func NewUserRepository(logger interfaces.ILogger, dbConnection *sql.DB, monitoring *newrelic.Application) interfaces.IUserRepository {
+func NewUserRepository(logger interfaces.ILogger, dbConnection *sql.DB) interfaces.IUserRepository {
 	return userRepository{
 		logger,
 		dbConnection,
-		monitoring,
 	}
 }

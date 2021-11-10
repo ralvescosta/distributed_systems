@@ -6,7 +6,6 @@ import (
 	internalHttp "webapi/pkg/interfaces/http"
 
 	"github.com/gin-gonic/gin"
-	"github.com/newrelic/go-agent/v3/integrations/nrgin"
 )
 
 func GetHttpRequest(ctx *gin.Context) (internalHttp.HttpRequest, error) {
@@ -29,6 +28,5 @@ func GetHttpRequest(ctx *gin.Context) (internalHttp.HttpRequest, error) {
 		Params:  params,
 		Auth:    auth,
 		Ctx:     ctx.Request.Context(),
-		Txn:     nrgin.Transaction(ctx),
 	}, nil
 }

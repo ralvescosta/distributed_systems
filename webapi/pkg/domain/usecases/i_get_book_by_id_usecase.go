@@ -6,5 +6,5 @@ import (
 )
 
 type IGetBookByIdUseCase interface {
-	Perform(ctx context.Context, txn interface{}, id string) (dtos.BookDto, error)
+	Perform(ctx context.Context, id string) (dtos.BookDto, error)
 }

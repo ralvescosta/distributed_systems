@@ -31,7 +31,7 @@ func (pst sessionHandler) Create(httpRequest http.HttpRequest) http.HttpResponse
 		return http.BadRequest(models.StringToErrorResponse(validationErrs[0].Message), nil)
 	}
 
-	result, err := pst.useCases.Perform(httpRequest.Ctx, httpRequest.Txn, model.ToSignInDto())
+	result, err := pst.useCases.Perform(httpRequest.Ctx, model.ToSignInDto())
 	if err != nil {
 		return http.ErrorResponseMapper(err, nil)
 	}

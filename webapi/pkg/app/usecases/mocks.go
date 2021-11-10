@@ -116,7 +116,7 @@ type userRepositorySpy struct {
 	config *mockConfigure
 }
 
-func (pst userRepositorySpy) FindById(ctx context.Context, txn interface{}, id int) (*entities.User, error) {
+func (pst userRepositorySpy) FindById(ctx context.Context, id int) (*entities.User, error) {
 	if pst.config != nil && pst.config.method == "FindById" {
 		user, ok := pst.config.customResult.(*entities.User)
 		if ok {
@@ -127,7 +127,7 @@ func (pst userRepositorySpy) FindById(ctx context.Context, txn interface{}, id i
 
 	return &entities.User{}, nil
 }
-func (pst userRepositorySpy) FindByEmail(ctx context.Context, txn interface{}, email string) (*entities.User, error) {
+func (pst userRepositorySpy) FindByEmail(ctx context.Context, email string) (*entities.User, error) {
 	if pst.config != nil && pst.config.method == "FindByEmail" {
 		user, ok := pst.config.customResult.(*entities.User)
 		if ok {
@@ -139,7 +139,7 @@ func (pst userRepositorySpy) FindByEmail(ctx context.Context, txn interface{}, e
 
 	return nil, nil
 }
-func (pst userRepositorySpy) Create(ctx context.Context, txn interface{}, dto dtos.CreateUserDto) (*entities.User, error) {
+func (pst userRepositorySpy) Create(ctx context.Context, dto dtos.CreateUserDto) (*entities.User, error) {
 	if pst.config != nil && pst.config.method == "Create" {
 		user, ok := pst.config.customResult.(*entities.User)
 		if ok {

@@ -19,7 +19,7 @@ func Test_ValidateTokenUC_Should_Validate_Token_Correctly(t *testing.T) {
 
 	sut := newValidationTokenUseCaseToTest(config)
 
-	result, err := sut.useCase.Perform(context.Background(), nil, "some token")
+	result, err := sut.useCase.Perform(context.Background(), "some token")
 
 	assert.NoError(t, err)
 	assert.IsType(t, result, dtos.SessionDto{})
@@ -36,7 +36,7 @@ func Test_ValidateTokenUC_Should_Return_InternalError_If_Some_Error_Occur_In_Ver
 
 	sut := newValidationTokenUseCaseToTest(config)
 
-	_, err := sut.useCase.Perform(context.Background(), nil, "some token")
+	_, err := sut.useCase.Perform(context.Background(), "some token")
 
 	assert.Error(t, err)
 	assert.IsType(t, err, internalError.InternalError{})
@@ -53,7 +53,7 @@ func Test_ValidateTokenUC_Should_Return_InternalError_If_Some_Error_Occur_In_Rep
 
 	sut := newValidationTokenUseCaseToTest(config)
 
-	_, err := sut.useCase.Perform(context.Background(), nil, "some token")
+	_, err := sut.useCase.Perform(context.Background(), "some token")
 
 	assert.Error(t, err)
 	assert.IsType(t, err, internalError.InternalError{})
@@ -70,7 +70,7 @@ func Test_ValidateTokenUC_Should_Return_Unauthorized_If_User_Not_Found(t *testin
 
 	sut := newValidationTokenUseCaseToTest(config)
 
-	_, err := sut.useCase.Perform(context.Background(), nil, "some token")
+	_, err := sut.useCase.Perform(context.Background(), "some token")
 
 	assert.Error(t, err)
 	assert.IsType(t, err, internalError.UnauthorizeError{})

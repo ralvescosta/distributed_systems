@@ -18,6 +18,6 @@ type validateTokenUseCaseSpy struct {
 	useCaseError error
 }
 
-func (pst validateTokenUseCaseSpy) Perform(ctx context.Context, txn interface{}, accessToken string) (dtos.SessionDto, error) {
+func (pst validateTokenUseCaseSpy) Perform(ctx context.Context, accessToken string) (dtos.SessionDto, error) {
 	return dtos.SessionDto{Id: 1}, pst.useCaseError
 }
