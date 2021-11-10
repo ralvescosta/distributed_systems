@@ -10,13 +10,14 @@ import (
 	httpServer "webapi/pkg/infra/http_server"
 	"webapi/pkg/infra/logger"
 	"webapi/pkg/infra/repositories"
+	"webapi/pkg/infra/telemetry"
 	tokenManager "webapi/pkg/infra/token_manager"
 	"webapi/pkg/infra/validator"
 	"webapi/pkg/interfaces/http/handlers"
 	"webapi/pkg/interfaces/http/middlewares"
 	"webapi/pkg/interfaces/http/presenters"
 
-	"github.com/newrelic/go-agent/v3/newrelic"
+	"github.com/opentracing/opentracing-go"
 )
 
 type webApiContainer struct {
@@ -27,24 +28,10 @@ type webApiContainer struct {
 	authenticationRoutes presenters.ISessionRoutes
 	inventoryRoutes      presenters.IInventoryRoutes
 
-	monitoring *newrelic.Application
+	telemetryTracer opentracing.Tracer
 }
 
 func NewContainer() webApiContainer {
-	monitoring, err := newrelic.NewApplication(
-		newrelic.ConfigAppName(os.Getenv("APP_NAME")),
-		newrelic.ConfigLicense(os.Getenv("NEW_RELIC_LICENSE_KEY")),
-		// newrelic.ConfigDebugLogger(os.Stdout),
-		newrelic.ConfigDistributedTracerEnabled(true),
-		func(cfg *newrelic.Config) {
-			cfg.CustomInsightsEvents.Enabled = false
-			cfg.TransactionTracer.Segments.Threshold = 1
-		},
-	)
-	if err != nil {
-		panic(err)
-	}
-
 	connectionString := fmt.Sprintf(
 		"host=%s port=%s user=%s password=%s dbname=%s sslmode=disable",
 		os.Getenv("DB_HOST"),
@@ -64,8 +51,9 @@ func NewContainer() webApiContainer {
 	logger := logger.NewLogger()
 	validatoR := validator.NewValidator()
 	httpServer := httpServer.NewHttpServer(logger)
+	telemetryTracer, _ := telemetry.Config("WebApi")
 
-	userRepository := repositories.NewUserRepository(logger, dbConnection, monitoring)
+	userRepository := repositories.NewUserRepository(logger, dbConnection, telemetryTracer)
 	hasher := hasher.NewHahser(logger)
 	accessTokenManager := tokenManager.NewTokenManager(logger)
 	createUserUseCase := appUseCases.NewCreateUserUseCase(userRepository, hasher, accessTokenManager)
@@ -91,6 +79,6 @@ func NewContainer() webApiContainer {
 		authenticationRoutes,
 		inventoryRoutes,
 
-		monitoring,
+		telemetryTracer,
 	}
 }

@@ -13,13 +13,13 @@ type validatinTokenUseCase struct {
 	tokenManager interfaces.ITokenManager
 }
 
-func (pst validatinTokenUseCase) Perform(ctx context.Context, txn interface{}, accessToken string) (dtos.SessionDto, error) {
+func (pst validatinTokenUseCase) Perform(ctx context.Context, accessToken string) (dtos.SessionDto, error) {
 	authenticatedUser, err := pst.tokenManager.VerifyToken(accessToken)
 	if err != nil {
 		return dtos.SessionDto{}, errors.NewInternalError("Some error occur whiling validate the access token")
 	}
 
-	user, err := pst.repository.FindById(ctx, txn, authenticatedUser.Id)
+	user, err := pst.repository.FindById(ctx, authenticatedUser.Id)
 	if err != nil {
 		return dtos.SessionDto{}, errors.NewInternalError("Some error occur whiling validate the access token")
 	}

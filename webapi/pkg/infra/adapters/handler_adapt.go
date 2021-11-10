@@ -10,16 +10,16 @@ import (
 )
 
 func HandlerAdapt(handler func(httpRequest internalHttp.HttpRequest) internalHttp.HttpResponse, logger interfaces.ILogger) gin.HandlerFunc {
-	return func(ctx *gin.Context) {
-		request, err := GetHttpRequest(ctx)
+	return func(ginCtx *gin.Context) {
+		request, err := GetHttpRequest(ginCtx)
 		if err != nil {
 			logger.Error("error while read request bytes")
-			ctx.AbortWithStatusJSON(http.StatusInternalServerError, gin.H{})
+			ginCtx.AbortWithStatusJSON(http.StatusInternalServerError, gin.H{})
 			return
 		}
 
 		result := handler(request)
 
-		ctx.JSON(result.StatusCode, result.Body)
+		ginCtx.JSON(result.StatusCode, result.Body)
 	}
 }

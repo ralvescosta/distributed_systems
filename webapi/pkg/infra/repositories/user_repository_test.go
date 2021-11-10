@@ -29,7 +29,6 @@ func Test_Should_Create_User_And_Returns_When_Execute_Correctly(t *testing.T) {
 
 	result, err := sut.repo.Create(
 		context.Background(),
-		sut.newrelic.StartTransaction("txn"),
 		dtos.CreateUserDto{
 			Name:     sut.mockedUser.Name,
 			Email:    sut.mockedUser.Email,
@@ -48,7 +47,6 @@ func Test_Should_Returns_An_Error_When_Prepare_Return_Error(t *testing.T) {
 
 	_, err := sut.repo.Create(
 		context.Background(),
-		sut.newrelic.StartTransaction("txn"),
 		dtos.CreateUserDto{
 			Name:     sut.mockedUser.Name,
 			Email:    sut.mockedUser.Email,
@@ -80,7 +78,6 @@ func Test_Should_Returns_An_Error_When_Occur_Error_In_Query_Execution(t *testing
 
 	_, err := sut.repo.Create(
 		context.Background(),
-		sut.newrelic.StartTransaction("txn"),
 		dtos.CreateUserDto{
 			Name:     sut.mockedUser.Name,
 			Email:    sut.mockedUser.Email,

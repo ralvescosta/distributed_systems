@@ -50,7 +50,7 @@ type createUserUseCaseSpy struct {
 	useCaseError error
 }
 
-func (pst createUserUseCaseSpy) Perform(ctx context.Context, txn interface{}, dto dtos.CreateUserDto) (dtos.CreatedUserDto, error) {
+func (pst createUserUseCaseSpy) Perform(ctx context.Context, dto dtos.CreateUserDto) (dtos.CreatedUserDto, error) {
 	return dtos.CreatedUserDto{}, pst.useCaseError
 }
 
@@ -80,6 +80,6 @@ type sessionUseCaseSpy struct {
 	useCaseError error
 }
 
-func (pst sessionUseCaseSpy) Perform(ctx context.Context, txn interface{}, dto dtos.SignInDto) (dtos.SessionDto, error) {
+func (pst sessionUseCaseSpy) Perform(ctx context.Context, dto dtos.SignInDto) (dtos.SessionDto, error) {
 	return dtos.SessionDto{}, pst.useCaseError
 }

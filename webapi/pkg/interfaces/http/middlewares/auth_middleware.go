@@ -23,7 +23,7 @@ func (pst authMiddleware) Perform(httpRequest http.HttpRequest) http.HttpRespons
 		return http.Unauthorized(models.StringToErrorResponse("Authorization header unformatted"), httpRequest.Headers)
 	}
 
-	authenticatedUser, err := pst.usecase.Perform(httpRequest.Ctx, httpRequest.Txn, token[1])
+	authenticatedUser, err := pst.usecase.Perform(httpRequest.Ctx, token[1])
 	if err != nil || authenticatedUser.Id == 0 {
 		return http.Unauthorized(models.StringToErrorResponse("Invalid token"), httpRequest.Headers)
 	}

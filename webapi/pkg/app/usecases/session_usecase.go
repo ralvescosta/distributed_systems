@@ -16,8 +16,8 @@ type sessionUseCase struct {
 	tokenManager interfaces.ITokenManager
 }
 
-func (pst sessionUseCase) Perform(ctx context.Context, txn interface{}, dto dtos.SignInDto) (dtos.SessionDto, error) {
-	user, err := pst.repository.FindByEmail(ctx, txn, dto.Email)
+func (pst sessionUseCase) Perform(ctx context.Context, dto dtos.SignInDto) (dtos.SessionDto, error) {
+	user, err := pst.repository.FindByEmail(ctx, dto.Email)
 	if err != nil {
 		return dtos.SessionDto{}, err
 	}

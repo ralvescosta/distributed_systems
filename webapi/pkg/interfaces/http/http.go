@@ -21,7 +21,6 @@ type HttpRequest struct {
 	Params  map[string]string
 	Auth    interface{}
 	Ctx     context.Context
-	Txn     interface{}
 }
 
 func Ok(body interface{}, headers http.Header) HttpResponse {

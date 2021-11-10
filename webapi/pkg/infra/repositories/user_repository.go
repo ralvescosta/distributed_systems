@@ -7,17 +7,22 @@ import (
 	"webapi/pkg/domain/dtos"
 	"webapi/pkg/domain/entities"
 
-	"github.com/newrelic/go-agent/v3/newrelic"
+	"github.com/opentracing/opentracing-go"
+	tags "github.com/opentracing/opentracing-go/ext"
 )
 
 type userRepository struct {
 	logger       interfaces.ILogger
 	dbConnection *sql.DB
-	monitoring   *newrelic.Application
+	tracer       opentracing.Tracer
 }
 
-func (pst userRepository) FindById(ctx context.Context, txn interface{}, id int) (*entities.User, error) {
-	tnxCtx := newrelic.NewContext(ctx, txn.(*newrelic.Transaction))
+func (pst userRepository) FindById(ctx context.Context, id int) (*entities.User, error) {
+	span := opentracing.SpanFromContext(ctx)
+	span = pst.tracer.StartSpan("SQL SELECT", opentracing.ChildOf(span.Context()))
+	tags.SpanKindRPCClient.Set(span)
+	tags.PeerService.Set(span, "postgreSQL")
+	defer span.Finish()
 
 	sql := `SELECT 
 								id as Id,
@@ -31,15 +36,17 @@ func (pst userRepository) FindById(ctx context.Context, txn interface{}, id int)
 					WHERE id = $1
 					AND deleted_at IS NULL`
 
-	prepare, err := pst.dbConnection.PrepareContext(tnxCtx, sql)
+	prepare, err := pst.dbConnection.PrepareContext(ctx, sql)
 	if err != nil {
 		pst.logger.Error(err.Error())
 		return nil, err
 	}
 
+	span.SetTag("sql.query", sql)
+
 	entity := entities.User{}
 
-	row := prepare.QueryRowContext(tnxCtx, id)
+	row := prepare.QueryRowContext(ctx, id)
 	if row == nil {
 		return nil, nil
 	}
@@ -63,8 +70,12 @@ func (pst userRepository) FindById(ctx context.Context, txn interface{}, id int)
 	return &entity, nil
 }
 
-func (pst userRepository) FindByEmail(ctx context.Context, txn interface{}, email string) (*entities.User, error) {
-	tnxCtx := newrelic.NewContext(ctx, txn.(*newrelic.Transaction))
+func (pst userRepository) FindByEmail(ctx context.Context, email string) (*entities.User, error) {
+	span := opentracing.SpanFromContext(ctx)
+	span = pst.tracer.StartSpan("SQL SELECT", opentracing.ChildOf(span.Context()))
+	tags.SpanKindRPCClient.Set(span)
+	tags.PeerService.Set(span, "postgreSQL")
+	defer span.Finish()
 
 	sql := `SELECT 
 								id as Id,
@@ -78,15 +89,17 @@ func (pst userRepository) FindByEmail(ctx context.Context, txn interface{}, emai
 					WHERE email = $1
 					AND deleted_at IS NULL`
 
-	prepare, err := pst.dbConnection.PrepareContext(tnxCtx, sql)
+	prepare, err := pst.dbConnection.PrepareContext(ctx, sql)
 	if err != nil {
 		pst.logger.Error(err.Error())
 		return nil, err
 	}
 
+	span.SetTag("sql.query", sql)
+
 	entity := entities.User{}
 
-	row := prepare.QueryRowContext(tnxCtx, email)
+	row := prepare.QueryRowContext(ctx, email)
 	if row == nil {
 		return nil, nil
 	}
@@ -110,16 +123,14 @@ func (pst userRepository) FindByEmail(ctx context.Context, txn interface{}, emai
 	return &entity, nil
 }
 
-func (pst userRepository) Create(ctx context.Context, txn interface{}, dto dtos.CreateUserDto) (*entities.User, error) {
-	tnxCtx := newrelic.NewContext(ctx, txn.(*newrelic.Transaction))
-
+func (pst userRepository) Create(ctx context.Context, dto dtos.CreateUserDto) (*entities.User, error) {
 	sql := `INSERT INTO users
 								(name, email, password) 
 					VALUES
 								($1, $2, $3) 
 					RETURNING *`
 
-	prepare, err := pst.dbConnection.PrepareContext(tnxCtx, sql)
+	prepare, err := pst.dbConnection.PrepareContext(ctx, sql)
 	if err != nil {
 		pst.logger.Error(err.Error())
 		return nil, err
@@ -127,7 +138,7 @@ func (pst userRepository) Create(ctx context.Context, txn interface{}, dto dtos.
 
 	entity := entities.User{}
 
-	row := prepare.QueryRowContext(tnxCtx, dto.Name, dto.Email, dto.Password)
+	row := prepare.QueryRowContext(ctx, dto.Name, dto.Email, dto.Password)
 	if row == nil {
 		return nil, nil
 	}
@@ -148,10 +159,10 @@ func (pst userRepository) Create(ctx context.Context, txn interface{}, dto dtos.
 	return &entity, nil
 }
 
-func NewUserRepository(logger interfaces.ILogger, dbConnection *sql.DB, monitoring *newrelic.Application) interfaces.IUserRepository {
+func NewUserRepository(logger interfaces.ILogger, dbConnection *sql.DB, tracer opentracing.Tracer) interfaces.IUserRepository {
 	return userRepository{
 		logger,
 		dbConnection,
-		monitoring,
+		tracer,
 	}
 }

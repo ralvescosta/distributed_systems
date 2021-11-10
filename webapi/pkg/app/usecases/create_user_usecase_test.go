@@ -18,7 +18,7 @@ func Test_CreateUserUC_Should_Create_User_Correctly(t *testing.T) {
 	}
 	sut := newCreateUserUseCaseToTest(configs)
 
-	result, err := sut.useCase.Perform(context.Background(), nil, dtos.CreateUserDto{})
+	result, err := sut.useCase.Perform(context.Background(), dtos.CreateUserDto{})
 
 	assert.NoError(t, err)
 	assert.NotNil(t, result)
@@ -34,7 +34,7 @@ func Test_CreateUserUC_Should_Return_InternalError_If_Some_Error_Occur_In_Reposi
 	}
 	sut := newCreateUserUseCaseToTest(configs)
 
-	_, err := sut.useCase.Perform(context.Background(), nil, dtos.CreateUserDto{})
+	_, err := sut.useCase.Perform(context.Background(), dtos.CreateUserDto{})
 
 	assert.Error(t, err)
 	assert.IsType(t, err, inernalError.InternalError{})
@@ -50,7 +50,7 @@ func Test_CreateUserUC_Should_Return_ConflictError_If_Email_Already_Exist(t *tes
 	}
 	sut := newCreateUserUseCaseToTest(configs)
 
-	_, err := sut.useCase.Perform(context.Background(), nil, dtos.CreateUserDto{})
+	_, err := sut.useCase.Perform(context.Background(), dtos.CreateUserDto{})
 
 	assert.Error(t, err)
 	assert.IsType(t, err, inernalError.ConflictError{})
@@ -66,7 +66,7 @@ func Test_CreateUserUC_Should_Return_InternalError_If_Some_Error_Occur_In_Hasher
 	}
 	sut := newCreateUserUseCaseToTest(configs)
 
-	_, err := sut.useCase.Perform(context.Background(), nil, dtos.CreateUserDto{})
+	_, err := sut.useCase.Perform(context.Background(), dtos.CreateUserDto{})
 
 	assert.Error(t, err)
 	assert.IsType(t, err, inernalError.InternalError{})
@@ -82,7 +82,7 @@ func Test_CreateUserUC_Should_Return_InternalError_If_Some_Error_Occur_When_Crea
 	}
 	sut := newCreateUserUseCaseToTest(configs)
 
-	_, err := sut.useCase.Perform(context.Background(), nil, dtos.CreateUserDto{})
+	_, err := sut.useCase.Perform(context.Background(), dtos.CreateUserDto{})
 
 	assert.Error(t, err)
 	assert.IsType(t, err, inernalError.InternalError{})
@@ -98,7 +98,7 @@ func Test_CreateUserUC_Should_Return_InternalError_If_Some_Error_Occur_When_Crea
 	}
 	sut := newCreateUserUseCaseToTest(configs)
 
-	_, err := sut.useCase.Perform(context.Background(), nil, dtos.CreateUserDto{})
+	_, err := sut.useCase.Perform(context.Background(), dtos.CreateUserDto{})
 
 	assert.Error(t, err)
 	assert.IsType(t, err, inernalError.InternalError{})

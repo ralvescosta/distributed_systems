@@ -22,7 +22,7 @@ func Test_SessionUC_Should_Validate_Token_Correctly(t *testing.T) {
 
 	sut := newSessionUsecaseToTest(config)
 
-	result, err := sut.useCase.Perform(context.Background(), nil, dtos.SignInDto{})
+	result, err := sut.useCase.Perform(context.Background(), dtos.SignInDto{})
 
 	assert.NoError(t, err)
 	assert.IsType(t, result, dtos.SessionDto{})
@@ -39,7 +39,7 @@ func Test_SessionUC_Should_Return_Error_If_Some_Error_Occur_In_Repository(t *tes
 
 	sut := newSessionUsecaseToTest(config)
 
-	_, err := sut.useCase.Perform(context.Background(), nil, dtos.SignInDto{})
+	_, err := sut.useCase.Perform(context.Background(), dtos.SignInDto{})
 
 	assert.Error(t, err)
 }
@@ -55,7 +55,7 @@ func Test_SessionUC_Should_Return_NotFoundError_If_Email_Not_Found(t *testing.T)
 
 	sut := newSessionUsecaseToTest(config)
 
-	_, err := sut.useCase.Perform(context.Background(), nil, dtos.SignInDto{})
+	_, err := sut.useCase.Perform(context.Background(), dtos.SignInDto{})
 
 	assert.Error(t, err)
 	assert.IsType(t, err, internalError.NotFoundError{})
@@ -77,7 +77,7 @@ func Test_SessionUC_Should_Return_BadRequestError_If_Password_Is_Wrong(t *testin
 
 	sut := newSessionUsecaseToTest(config)
 
-	_, err := sut.useCase.Perform(context.Background(), nil, dtos.SignInDto{})
+	_, err := sut.useCase.Perform(context.Background(), dtos.SignInDto{})
 
 	assert.Error(t, err)
 	assert.IsType(t, err, internalError.BadRequestError{})
@@ -99,7 +99,7 @@ func Test_SessionUC_Should_Return_Error_If_GenerateToken_Return_Error(t *testing
 
 	sut := newSessionUsecaseToTest(config)
 
-	_, err := sut.useCase.Perform(context.Background(), nil, dtos.SignInDto{})
+	_, err := sut.useCase.Perform(context.Background(), dtos.SignInDto{})
 
 	assert.Error(t, err)
 }
