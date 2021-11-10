@@ -20,13 +20,15 @@ func Config(service string) (opentracing.Tracer, io.Closer) {
 	if err != nil {
 		panic(fmt.Sprintf("ERROR: cannot init Jaeger: %v\n", err))
 	}
+	opentracing.SetGlobalTracer(tracer)
+
 	return tracer, closer
 }
 
 // StartSpanFromRequest extracts the parent span context from the inbound HTTP request
 // and starts a new child span if there is a parent span.
-func StartSpanFromRequest(tracer opentracing.Tracer, r *http.Request) opentracing.Span {
-	spanCtx, _ := Extract(tracer, r)
+func StartSpanFromRequest(tracer opentracing.Tracer, header http.Header) opentracing.Span {
+	spanCtx, _ := Extract(tracer, header)
 	return tracer.StartSpan("ping-receive", ext.RPCServerOption(spanCtx))
 }
 
@@ -41,8 +43,8 @@ func Inject(span opentracing.Span, request *http.Request) error {
 
 // Extract extracts the inbound HTTP request to obtain the parent span's context to ensure
 // correct propagation of span context throughout the trace.
-func Extract(tracer opentracing.Tracer, r *http.Request) (opentracing.SpanContext, error) {
+func Extract(tracer opentracing.Tracer, header http.Header) (opentracing.SpanContext, error) {
 	return tracer.Extract(
 		opentracing.HTTPHeaders,
-		opentracing.HTTPHeadersCarrier(r.Header))
+		opentracing.HTTPHeadersCarrier(header))
 }

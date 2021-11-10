@@ -2,6 +2,7 @@ package adapters
 
 import (
 	"bytes"
+	"context"
 	"errors"
 	"io"
 	"io/ioutil"
@@ -41,7 +42,7 @@ func createMockedGinContext(req *http.Request) *gin.Context {
 	contextMock, _ := gin.CreateTestContext(httptest.NewRecorder())
 	contextMock.Params = []gin.Param{{Key: "key", Value: "value"}}
 	contextMock.Request = req
-
+	contextMock.Set("tracerCtx", context.Background())
 	return contextMock
 }
 

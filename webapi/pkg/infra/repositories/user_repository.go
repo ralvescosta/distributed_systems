@@ -6,14 +6,24 @@ import (
 	"webapi/pkg/app/interfaces"
 	"webapi/pkg/domain/dtos"
 	"webapi/pkg/domain/entities"
+
+	"github.com/opentracing/opentracing-go"
+	tags "github.com/opentracing/opentracing-go/ext"
 )
 
 type userRepository struct {
 	logger       interfaces.ILogger
 	dbConnection *sql.DB
+	tracer       opentracing.Tracer
 }
 
 func (pst userRepository) FindById(ctx context.Context, id int) (*entities.User, error) {
+	span := opentracing.SpanFromContext(ctx)
+	span = pst.tracer.StartSpan("SQL SELECT", opentracing.ChildOf(span.Context()))
+	tags.SpanKindRPCClient.Set(span)
+	tags.PeerService.Set(span, "postgreSQL")
+	defer span.Finish()
+
 	sql := `SELECT 
 								id as Id,
 								name AS Name, 
@@ -31,6 +41,8 @@ func (pst userRepository) FindById(ctx context.Context, id int) (*entities.User,
 		pst.logger.Error(err.Error())
 		return nil, err
 	}
+
+	span.SetTag("sql.query", sql)
 
 	entity := entities.User{}
 
@@ -59,6 +71,12 @@ func (pst userRepository) FindById(ctx context.Context, id int) (*entities.User,
 }
 
 func (pst userRepository) FindByEmail(ctx context.Context, email string) (*entities.User, error) {
+	span := opentracing.SpanFromContext(ctx)
+	span = pst.tracer.StartSpan("SQL SELECT", opentracing.ChildOf(span.Context()))
+	tags.SpanKindRPCClient.Set(span)
+	tags.PeerService.Set(span, "postgreSQL")
+	defer span.Finish()
+
 	sql := `SELECT 
 								id as Id,
 								name AS Name, 
@@ -76,6 +94,8 @@ func (pst userRepository) FindByEmail(ctx context.Context, email string) (*entit
 		pst.logger.Error(err.Error())
 		return nil, err
 	}
+
+	span.SetTag("sql.query", sql)
 
 	entity := entities.User{}
 
@@ -139,9 +159,10 @@ func (pst userRepository) Create(ctx context.Context, dto dtos.CreateUserDto) (*
 	return &entity, nil
 }
 
-func NewUserRepository(logger interfaces.ILogger, dbConnection *sql.DB) interfaces.IUserRepository {
+func NewUserRepository(logger interfaces.ILogger, dbConnection *sql.DB, tracer opentracing.Tracer) interfaces.IUserRepository {
 	return userRepository{
 		logger,
 		dbConnection,
+		tracer,
 	}
 }

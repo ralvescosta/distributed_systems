@@ -9,6 +9,7 @@ import (
 	"webapi/pkg/infra/logger"
 
 	"github.com/DATA-DOG/go-sqlmock"
+	"github.com/opentracing/opentracing-go"
 )
 
 type userRepositoryToTest struct {
@@ -17,6 +18,7 @@ type userRepositoryToTest struct {
 	dbConnection *sql.DB
 	sqlMock      sqlmock.Sqlmock
 	mockedUser   entities.User
+	tracer       opentracing.Tracer
 }
 
 func newUserRepositoryToTest() userRepositoryToTest {
@@ -26,7 +28,7 @@ func newUserRepositoryToTest() userRepositoryToTest {
 	}
 
 	loggerSpy := logger.NewLoggerSpy()
-	repository := NewUserRepository(loggerSpy, db)
+	repository := NewUserRepository(loggerSpy, db, nil)
 
 	return userRepositoryToTest{
 		repo:         repository,
