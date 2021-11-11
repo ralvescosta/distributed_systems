@@ -5,7 +5,7 @@ run:
 	GO_ENV=development GIN_MODE=debug go run main.go
 
 unit-test:
-	GO_ENV=development GIN_MODE=debug go test -race ./pkg/... -v
+	GO_ENV=test GIN_MODE=debug go test -race ./pkg/... -v
 
 test-cov:
 	if ! [ -d "coverage" ]; then \
