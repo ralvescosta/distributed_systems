@@ -16,8 +16,6 @@ import (
 	"webapi/pkg/interfaces/http/handlers"
 	"webapi/pkg/interfaces/http/middlewares"
 	"webapi/pkg/interfaces/http/presenters"
-
-	"github.com/opentracing/opentracing-go"
 )
 
 type webApiContainer struct {
@@ -28,7 +26,7 @@ type webApiContainer struct {
 	authenticationRoutes presenters.ISessionRoutes
 	inventoryRoutes      presenters.IInventoryRoutes
 
-	telemetryTracer opentracing.Tracer
+	telemetryApp interfaces.ITelemetry
 }
 
 func NewContainer() webApiContainer {
@@ -51,9 +49,9 @@ func NewContainer() webApiContainer {
 	logger := logger.NewLogger()
 	validatoR := validator.NewValidator()
 	httpServer := httpServer.NewHttpServer(logger)
-	telemetryTracer, _ := telemetry.Config("WebApi")
+	telemetryApp := telemetry.NewTelemetry()
 
-	userRepository := repositories.NewUserRepository(logger, dbConnection, telemetryTracer)
+	userRepository := repositories.NewUserRepository(logger, dbConnection, telemetryApp)
 	hasher := hasher.NewHahser(logger)
 	accessTokenManager := tokenManager.NewTokenManager(logger)
 	createUserUseCase := appUseCases.NewCreateUserUseCase(userRepository, hasher, accessTokenManager)
@@ -79,6 +77,6 @@ func NewContainer() webApiContainer {
 		authenticationRoutes,
 		inventoryRoutes,
 
-		telemetryTracer,
+		telemetryApp,
 	}
 }

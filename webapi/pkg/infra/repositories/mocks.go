@@ -1,14 +1,17 @@
 package repositories
 
 import (
+	"context"
 	"database/sql"
 	"log"
+	"net/http"
 	"time"
 	"webapi/pkg/app/interfaces"
 	"webapi/pkg/domain/entities"
 	"webapi/pkg/infra/logger"
 
 	"github.com/DATA-DOG/go-sqlmock"
+	"github.com/gin-gonic/gin"
 	"github.com/opentracing/opentracing-go"
 )
 
@@ -18,7 +21,7 @@ type userRepositoryToTest struct {
 	dbConnection *sql.DB
 	sqlMock      sqlmock.Sqlmock
 	mockedUser   entities.User
-	tracer       opentracing.Tracer
+	telemetry    interfaces.ITelemetry
 }
 
 func newUserRepositoryToTest() userRepositoryToTest {
@@ -28,7 +31,8 @@ func newUserRepositoryToTest() userRepositoryToTest {
 	}
 
 	loggerSpy := logger.NewLoggerSpy()
-	repository := NewUserRepository(loggerSpy, db, nil)
+	telemetry := newTelemetrySpy()
+	repository := NewUserRepository(loggerSpy, db, telemetry)
 
 	return userRepositoryToTest{
 		repo:         repository,
@@ -44,5 +48,30 @@ func newUserRepositoryToTest() userRepositoryToTest {
 			UpdatedAt: time.Now(),
 			DeletedAt: nil,
 		},
+		telemetry: telemetry,
 	}
+}
+
+type telemetrySpy struct{}
+
+func (telemetrySpy) GinMiddle() gin.HandlerFunc {
+	return func(ctx *gin.Context) {}
+}
+func (telemetrySpy) InstrumentQuery(ctx context.Context, sqlType string, sql string) opentracing.Span {
+	return opentracing.StartSpan("")
+}
+func (telemetrySpy) StartSpanFromRequest(header http.Header) opentracing.Span {
+	return opentracing.StartSpan("")
+}
+func (telemetrySpy) Inject(span opentracing.Span, request *http.Request) error {
+	return nil
+}
+func (telemetrySpy) Extract(header http.Header) (opentracing.SpanContext, error) {
+	return nil, nil
+}
+
+func (telemetrySpy) Dispatch() {}
+
+func newTelemetrySpy() interfaces.ITelemetry {
+	return telemetrySpy{}
 }
