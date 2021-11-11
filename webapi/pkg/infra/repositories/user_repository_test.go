@@ -9,6 +9,7 @@ import (
 )
 
 func Test_Should_Create_User_And_Returns_When_Execute_Correctly(t *testing.T) {
+
 	sut := newUserRepositoryToTest()
 
 	query := "INSERT INTO users \\(name, email, password\\) VALUES \\(\\$1, \\$2, \\$3\\) RETURNING \\*"

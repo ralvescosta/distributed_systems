@@ -6,24 +6,16 @@ import (
 	"webapi/pkg/app/interfaces"
 	"webapi/pkg/domain/dtos"
 	"webapi/pkg/domain/entities"
-
-	"github.com/opentracing/opentracing-go"
-	tags "github.com/opentracing/opentracing-go/ext"
+	"webapi/pkg/infra/telemetry"
 )
 
 type userRepository struct {
 	logger       interfaces.ILogger
 	dbConnection *sql.DB
-	tracer       opentracing.Tracer
+	telemetry    interfaces.ITelemetry
 }
 
 func (pst userRepository) FindById(ctx context.Context, id int) (*entities.User, error) {
-	span := opentracing.SpanFromContext(ctx)
-	span = pst.tracer.StartSpan("SQL SELECT", opentracing.ChildOf(span.Context()))
-	tags.SpanKindRPCClient.Set(span)
-	tags.PeerService.Set(span, "postgreSQL")
-	defer span.Finish()
-
 	sql := `SELECT 
 								id as Id,
 								name AS Name, 
@@ -36,13 +28,15 @@ func (pst userRepository) FindById(ctx context.Context, id int) (*entities.User,
 					WHERE id = $1
 					AND deleted_at IS NULL`
 
+	span := pst.telemetry.InstrumentQuery(ctx, telemetry.TAG_SQL_SELECT_USER, sql)
+	defer span.Finish()
+
 	prepare, err := pst.dbConnection.PrepareContext(ctx, sql)
 	if err != nil {
+		span.SetTag("error", true)
 		pst.logger.Error(err.Error())
 		return nil, err
 	}
-
-	span.SetTag("sql.query", sql)
 
 	entity := entities.User{}
 
@@ -64,6 +58,7 @@ func (pst userRepository) FindById(ctx context.Context, id int) (*entities.User,
 			return nil, nil
 		}
 
+		span.SetTag("error", true)
 		pst.logger.Error(err.Error())
 		return nil, err
 	}
@@ -71,12 +66,6 @@ func (pst userRepository) FindById(ctx context.Context, id int) (*entities.User,
 }
 
 func (pst userRepository) FindByEmail(ctx context.Context, email string) (*entities.User, error) {
-	span := opentracing.SpanFromContext(ctx)
-	span = pst.tracer.StartSpan("SQL SELECT", opentracing.ChildOf(span.Context()))
-	tags.SpanKindRPCClient.Set(span)
-	tags.PeerService.Set(span, "postgreSQL")
-	defer span.Finish()
-
 	sql := `SELECT 
 								id as Id,
 								name AS Name, 
@@ -89,13 +78,15 @@ func (pst userRepository) FindByEmail(ctx context.Context, email string) (*entit
 					WHERE email = $1
 					AND deleted_at IS NULL`
 
+	span := pst.telemetry.InstrumentQuery(ctx, telemetry.TAG_SQL_SELECT_USER, sql)
+	defer span.Finish()
+
 	prepare, err := pst.dbConnection.PrepareContext(ctx, sql)
 	if err != nil {
+		span.SetTag("error", true)
 		pst.logger.Error(err.Error())
 		return nil, err
 	}
-
-	span.SetTag("sql.query", sql)
 
 	entity := entities.User{}
 
@@ -117,6 +108,7 @@ func (pst userRepository) FindByEmail(ctx context.Context, email string) (*entit
 			return nil, nil
 		}
 
+		span.SetTag("error", true)
 		pst.logger.Error(err.Error())
 		return nil, err
 	}
@@ -130,8 +122,12 @@ func (pst userRepository) Create(ctx context.Context, dto dtos.CreateUserDto) (*
 								($1, $2, $3) 
 					RETURNING *`
 
+	span := pst.telemetry.InstrumentQuery(ctx, telemetry.TAG_SQL_INSERT_USER, sql)
+	defer span.Finish()
+
 	prepare, err := pst.dbConnection.PrepareContext(ctx, sql)
 	if err != nil {
+		span.SetTag("error", true)
 		pst.logger.Error(err.Error())
 		return nil, err
 	}
@@ -152,6 +148,7 @@ func (pst userRepository) Create(ctx context.Context, dto dtos.CreateUserDto) (*
 		&entity.UpdatedAt,
 		&entity.DeletedAt,
 	); err != nil {
+		span.SetTag("error", true)
 		pst.logger.Error(err.Error())
 		return nil, err
 	}
@@ -159,10 +156,10 @@ func (pst userRepository) Create(ctx context.Context, dto dtos.CreateUserDto) (*
 	return &entity, nil
 }
 
-func NewUserRepository(logger interfaces.ILogger, dbConnection *sql.DB, tracer opentracing.Tracer) interfaces.IUserRepository {
+func NewUserRepository(logger interfaces.ILogger, dbConnection *sql.DB, telemetry interfaces.ITelemetry) interfaces.IUserRepository {
 	return userRepository{
 		logger,
 		dbConnection,
-		tracer,
+		telemetry,
 	}
 }
