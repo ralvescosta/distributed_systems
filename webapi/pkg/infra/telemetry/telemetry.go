@@ -24,6 +24,7 @@ func NewTelemetry() interfaces.ITelemetry {
 	if err != nil {
 		panic(fmt.Sprintf("ERROR: failed to read config from env vars: %v\n", err))
 	}
+
 	tracer, closer, err := cfg.NewTracer(config.Logger(jaeger.StdLogger))
 	if err != nil {
 		panic(fmt.Sprintf("ERROR: cannot init Jaeger: %v\n", err))
