@@ -18,6 +18,7 @@ type sessionUseCase struct {
 }
 
 func (pst sessionUseCase) Perform(ctx context.Context, dto dtos.SignInDto) (dtos.SessionDto, error) {
+	pst.logger.Info("[SessionUseCase::Perform]")
 	user, err := pst.repository.FindByEmail(ctx, dto.Email)
 	if err != nil {
 		return dtos.SessionDto{}, err
