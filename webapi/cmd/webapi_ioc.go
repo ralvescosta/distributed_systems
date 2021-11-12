@@ -58,7 +58,7 @@ func NewContainer() webApiContainer {
 	usersHandler := handlers.NewUsersHandler(logger, createUserUseCase, validatoR)
 	usersRoutes := presenters.NewUsersRoutes(logger, usersHandler)
 
-	authenticationUserUseCase := appUseCases.NewSessionUseCase(userRepository, hasher, accessTokenManager)
+	authenticationUserUseCase := appUseCases.NewSessionUseCase(userRepository, hasher, accessTokenManager, logger)
 	authenticationHandler := handlers.NewSessionHandler(logger, authenticationUserUseCase, validatoR)
 	authenticationRoutes := presenters.NewSessionRoutes(logger, authenticationHandler)
 
