@@ -6,6 +6,7 @@ import (
 	"webapi/pkg/domain/dtos"
 	"webapi/pkg/domain/entities"
 	"webapi/pkg/domain/usecases"
+	"webapi/pkg/infra/logger"
 )
 
 type mockConfigure struct {
@@ -18,6 +19,7 @@ type createUserUseCaseToTest struct {
 	repo         interfaces.IUserRepository
 	hasher       interfaces.IHasher
 	tokenManager interfaces.ITokenManager
+	logger       interfaces.ILogger
 }
 
 func newCreateUserUseCaseToTest(configs map[string]mockConfigure) createUserUseCaseToTest {
@@ -45,8 +47,10 @@ func newCreateUserUseCaseToTest(configs map[string]mockConfigure) createUserUseC
 		tokenManager = tokenManagerSpy{}
 	}
 
+	logger := logger.NewLoggerSpy()
+
 	useCase := NewCreateUserUseCase(repo, hasher, tokenManager)
-	return createUserUseCaseToTest{useCase, repo, hasher, tokenManager}
+	return createUserUseCaseToTest{useCase, repo, hasher, tokenManager, logger}
 }
 
 type validationTokenUseCaseToTest struct {
@@ -108,7 +112,9 @@ func newSessionUsecaseToTest(configs map[string]mockConfigure) sessionUsecaseToT
 		tokenManager = tokenManagerSpy{}
 	}
 
-	useCase := NewSessionUseCase(repo, hasher, tokenManager)
+	logger := logger.NewLoggerSpy()
+
+	useCase := NewSessionUseCase(repo, hasher, tokenManager, logger)
 	return sessionUsecaseToTest{useCase, repo, hasher, tokenManager}
 }
 

@@ -1,6 +1,7 @@
 package logger
 
 import (
+	"bytes"
 	"fmt"
 	"io/ioutil"
 	"log"
@@ -26,13 +27,27 @@ func (l logger) GetHandleFunc() gin.HandlerFunc {
 	return gin.Logger()
 }
 
+type responseWriter struct {
+	gin.ResponseWriter
+	body *bytes.Buffer
+}
+
+func (w responseWriter) Write(b []byte) (int, error) {
+	w.body.Write(b)
+	return w.ResponseWriter.Write(b)
+}
+
 func (l logger) HttpRequestLogger(ctx *gin.Context) {
 	startTime := time.Now()
+
+	rw := &responseWriter{body: bytes.NewBufferString(""), ResponseWriter: ctx.Writer}
+	ctx.Writer = rw
+
 	ctx.Next()
 	endTime := time.Now()
 	latencyTimeInMileseconds := float64(endTime.Sub(startTime).Nanoseconds() / 1000)
 
-	body, _ := ioutil.ReadAll(ctx.Request.Body)
+	request, _ := ioutil.ReadAll(ctx.Request.Body)
 
 	l.Info("Request",
 		zapcore.Field{
@@ -61,9 +76,14 @@ func (l logger) HttpRequestLogger(ctx *gin.Context) {
 			String: ctx.Request.RequestURI,
 		},
 		zapcore.Field{
-			Key:    "body",
+			Key:    "request",
 			Type:   zapcore.StringType,
-			String: string(body),
+			String: string(request),
+		},
+		zapcore.Field{
+			Key:    "response",
+			Type:   zapcore.StringType,
+			String: rw.body.String(),
 		},
 	)
 }

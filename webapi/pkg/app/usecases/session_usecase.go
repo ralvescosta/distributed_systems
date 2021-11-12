@@ -14,9 +14,11 @@ type sessionUseCase struct {
 	repository   interfaces.IUserRepository
 	hasher       interfaces.IHasher
 	tokenManager interfaces.ITokenManager
+	logger       interfaces.ILogger
 }
 
 func (pst sessionUseCase) Perform(ctx context.Context, dto dtos.SignInDto) (dtos.SessionDto, error) {
+	pst.logger.Info("[SessionUseCase::Perform]")
 	user, err := pst.repository.FindByEmail(ctx, dto.Email)
 	if err != nil {
 		return dtos.SessionDto{}, err
@@ -48,10 +50,11 @@ func (pst sessionUseCase) Perform(ctx context.Context, dto dtos.SignInDto) (dtos
 
 }
 
-func NewSessionUseCase(repository interfaces.IUserRepository, hasher interfaces.IHasher, tokenManager interfaces.ITokenManager) usecases.ISessionUseCase {
+func NewSessionUseCase(repository interfaces.IUserRepository, hasher interfaces.IHasher, tokenManager interfaces.ITokenManager, logger interfaces.ILogger) usecases.ISessionUseCase {
 	return sessionUseCase{
 		repository,
 		hasher,
 		tokenManager,
+		logger,
 	}
 }
