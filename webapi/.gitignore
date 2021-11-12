@@ -2,3 +2,4 @@ coverage
 cert
 *bin
 *.out
+*.log
