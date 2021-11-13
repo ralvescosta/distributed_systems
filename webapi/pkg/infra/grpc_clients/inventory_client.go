@@ -3,32 +3,42 @@ package clients
 import (
 	"context"
 	"fmt"
+	"os"
 	"webapi/pkg/app/interfaces"
 	"webapi/pkg/infra/grpc_clients/proto"
 
 	"google.golang.org/grpc"
+	"google.golang.org/grpc/metadata"
 )
 
 type inventoryClient struct {
-	conn   grpc.ClientConn
-	logger interfaces.ILogger
+	logger    interfaces.ILogger
+	telemetry interfaces.ITelemetry
 }
 
-func (pst inventoryClient) GetInventoryById() {
-	client := proto.NewInventoryClient(&pst.conn)
+func (pst inventoryClient) GetProductById(ctx context.Context, id string) (*proto.ProductResponse, error) {
+	conn, err := grpc.DialContext(ctx, os.Getenv("INVENTORY_MS_URI"), []grpc.DialOption{grpc.WithInsecure()}...)
+	if err != nil {
+		panic("inventory client is down")
+	}
+	defer conn.Close()
 
-	response, err := client.GetProductById(context.Background(), &proto.GetByIdRequest{
-		Id: "1",
+	span, spanCtx := pst.telemetry.InstrumentGRPCClient(ctx, "Inventory Client")
+	defer span.Finish()
+
+	headersIn, _ := metadata.FromIncomingContext(spanCtx)
+	fmt.Printf("\nheadersIn: %s", headersIn)
+
+	client := proto.NewInventoryClient(conn)
+
+	return client.GetProductById(spanCtx, &proto.GetByIdRequest{
+		Id: id,
 	})
-
-	pst.logger.Debug("[InventoryClient::GetInventoryById]")
-	pst.logger.Debug(fmt.Sprintf("%v", response))
-	pst.logger.Debug(err.Error())
 }
 
-func NewInventoryClient(conn grpc.ClientConn, logger interfaces.ILogger) interfaces.IIventoryClient {
+func NewInventoryClient(logger interfaces.ILogger, telemetry interfaces.ITelemetry) interfaces.IIventoryClient {
 	return inventoryClient{
-		conn,
 		logger,
+		telemetry,
 	}
 }
