@@ -72,6 +72,14 @@ func (pst *telemetry) InstrumentQuery(ctx context.Context, sqlType string, sql s
 	return span
 }
 
+func (pst *telemetry) InstrumentGRPCClient(ctx context.Context, clientName string) (opentracing.Span, context.Context) {
+	span := opentracing.SpanFromContext(ctx)
+	span = pst.tracer.StartSpan(clientName, opentracing.ChildOf(span.Context()))
+	ext.SpanKindRPCClient.Set(span)
+	ext.PeerService.Set(span, "gRPC Client")
+	return span, opentracing.ContextWithSpan(ctx, span)
+}
+
 // StartSpanFromRequest extracts the parent span context from the inbound HTTP request
 // and starts a new child span if there is a parent span.
 func (pst *telemetry) StartSpanFromRequest(header http.Header) opentracing.Span {
