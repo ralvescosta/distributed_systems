@@ -12,13 +12,6 @@ services:
       - ./sql/create_users_table.sql:/docker-entrypoint-initdb.d/create_users_table.sql
     ports:
       - 5432:5432
-      
-  rabbitmq:
-    image: rabbitmq:3.6-management
-    container_name: rabbitmq
-    ports:
-      - 5672:5672
-      - 15672:15672
 
   jaeger:
       image: jaegertracing/all-in-one:latest
