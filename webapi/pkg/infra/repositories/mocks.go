@@ -60,6 +60,9 @@ func (telemetrySpy) GinMiddle() gin.HandlerFunc {
 func (telemetrySpy) InstrumentQuery(ctx context.Context, sqlType string, sql string) opentracing.Span {
 	return opentracing.StartSpan("")
 }
+func (telemetrySpy) InstrumentGRPCClient(ctx context.Context, clientName string) (opentracing.Span, context.Context) {
+	return nil, nil
+}
 func (telemetrySpy) StartSpanFromRequest(header http.Header) opentracing.Span {
 	return opentracing.StartSpan("")
 }

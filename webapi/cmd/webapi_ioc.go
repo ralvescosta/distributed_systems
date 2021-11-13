@@ -6,6 +6,7 @@ import (
 	"webapi/pkg/app/interfaces"
 	appUseCases "webapi/pkg/app/usecases"
 	"webapi/pkg/infra/database"
+	grpcClients "webapi/pkg/infra/grpc_clients"
 	"webapi/pkg/infra/hasher"
 	httpServer "webapi/pkg/infra/http_server"
 	"webapi/pkg/infra/logger"
@@ -65,7 +66,8 @@ func NewContainer() webApiContainer {
 	validationTokenUseCase := appUseCases.NewValidatinTokenUseCase(userRepository, accessTokenManager)
 	authenticationMiddleware := middlewares.NewAuthMiddleware(validationTokenUseCase)
 
-	getBookById := appUseCases.NewGetBookByIdUseCase()
+	inventoryClient := grpcClients.NewInventoryClient(logger, telemetryApp)
+	getBookById := appUseCases.NewGetBookByIdUseCase(inventoryClient)
 	inventoryHandler := handlers.NewInventoryHandler(logger, validatoR, getBookById)
 	inventoryRoutes := presenters.NewInventoryRoutes(logger, authenticationMiddleware, inventoryHandler)
 
