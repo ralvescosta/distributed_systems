@@ -550,10 +550,18 @@ dependencies = [
  "infra",
  "log",
  "mockall",
+ "opentelemetry",
+ "opentelemetry-jaeger",
  "prost",
  "tokio",
  "tonic",
  "tonic-build",
+ "tracing",
+ "tracing-bunyan-formatter",
+ "tracing-futures",
+ "tracing-log",
+ "tracing-opentelemetry",
+ "tracing-subscriber",
 ]
 
 [[package]]
@@ -745,6 +753,7 @@ dependencies = [
  "opentelemetry-jaeger",
  "serde",
  "tokio",
+ "tonic",
  "tracing",
  "tracing-bunyan-formatter",
  "tracing-futures",
