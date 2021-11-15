@@ -16,4 +16,5 @@ type ITelemetry interface {
 	Inject(span opentracing.Span, request *http.Request) error
 	Extract(header http.Header) (opentracing.SpanContext, error)
 	Dispatch()
+	GetTracer() opentracing.Tracer
 }
