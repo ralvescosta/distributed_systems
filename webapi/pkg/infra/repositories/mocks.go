@@ -72,8 +72,10 @@ func (telemetrySpy) Inject(span opentracing.Span, request *http.Request) error {
 func (telemetrySpy) Extract(header http.Header) (opentracing.SpanContext, error) {
 	return nil, nil
 }
-
 func (telemetrySpy) Dispatch() {}
+func (telemetrySpy) GetTracer() opentracing.Tracer {
+	return nil
+}
 
 func newTelemetrySpy() interfaces.ITelemetry {
 	return telemetrySpy{}

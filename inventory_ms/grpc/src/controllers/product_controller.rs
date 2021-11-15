@@ -1,8 +1,7 @@
-use infra::telemetry::telemetry;
-use opentelemetry::{global, propagation::Extractor, sdk::trace::Span};
+use opentelemetry::{global, propagation::Extractor, Context};
 use std::sync::Arc;
 use tonic::{Request, Response, Status};
-use tracing::info_span;
+use tracing::instrument;
 use tracing_futures::Instrument;
 use tracing_opentelemetry::OpenTelemetrySpanExt;
 
@@ -16,7 +15,7 @@ use crate::{
 use domain::usecases::{
     i_create_product::ICreateProductUseCase, i_get_product_by_id::IGetProductByIdUseCase,
 };
-
+#[derive(Debug)]
 pub struct ProductController {
     get_product_by_id_use_case: Arc<dyn IGetProductByIdUseCase>,
     create_product_use_case: Arc<dyn ICreateProductUseCase>,
@@ -36,14 +35,17 @@ impl ProductController {
 
 #[tonic::async_trait]
 impl Inventory for ProductController {
+    #[instrument(name = "gRPC getProductById")]
     async fn get_product_by_id(
         &self,
         request: Request<GetByIdRequest>,
     ) -> Result<Response<ProductResponse>, Status> {
-        let span = info_span!("get_product_by_id");
-        tracing::Span::current().set_parent(span.context());
+        let parent_cx = global::get_text_map_propagator(|prop| {
+            prop.extract(&GrpcExtractor(request.metadata()))
+        });
+        tracing::Span::current().set_parent(parent_cx);
 
-        log::info!("Ai Pai para...");
+        log::info!("Oi eu sou Goku!");
 
         let result = self
             .get_product_by_id_use_case
@@ -102,6 +104,21 @@ struct GrpcExtractor<'a>(&'a tonic::metadata::MetadataMap);
 impl<'a> Extractor for GrpcExtractor<'a> {
     /// Get a value for a key from the MetadataMap.  If the value can't be converted to &str, returns None
     fn get(&self, key: &str) -> Option<&str> {
+        println!("");
+        println!("[GrpcExtractor::get] KEY TO STRACT: {}\n", key);
+        if key == "tracestate" {
+            return self.0.get("uber-trace-id").and_then(|metadata| {
+                if let Some(trace) = metadata.to_str().ok() {
+                    let p = trace.split_terminator(":").collect::<Vec<&str>>();
+                    if p.len() != 4 {
+                        return None;
+                    }
+                    let a = format!("00-{}-{}-{}", p[0], p[1], p[2]);
+                    return Some(p[0]);
+                }
+                return None;
+            });
+        }
         self.0.get(key).and_then(|metadata| metadata.to_str().ok())
     }
 

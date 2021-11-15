@@ -103,3 +103,7 @@ func (pst *telemetry) Extract(header http.Header) (opentracing.SpanContext, erro
 		opentracing.HTTPHeaders,
 		opentracing.HTTPHeadersCarrier(header))
 }
+
+func (pst *telemetry) GetTracer() opentracing.Tracer {
+	return pst.tracer
+}

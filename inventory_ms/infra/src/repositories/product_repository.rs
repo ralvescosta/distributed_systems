@@ -1,13 +1,17 @@
 use async_trait::async_trait;
 use mongodb::bson::{doc, DateTime};
 use std::error::Error;
+use tracing::instrument;
 use uuid::Uuid;
+
+use tracing_futures::Instrument;
 
 use application::interfaces::i_product_repository::IProductRepository;
 use domain::{dtos::create_product_dto::CreateProductDto, entities::product_entity::ProductEntity};
 
 use crate::database::{connection::DbConnection, documents::product_documents::ProductDocument};
 
+#[derive(Debug)]
 pub struct ProductRepository {
     connection: DbConnection,
 }
@@ -20,18 +24,24 @@ impl ProductRepository {
 
 #[async_trait]
 impl IProductRepository for ProductRepository {
+    #[instrument(name = "MONGO SELECT PRODUCT")]
     async fn get_product_by_id(&self, id: String) -> Result<Option<ProductEntity>, Box<dyn Error>> {
         let collection = self
             .connection
             .get_collection::<ProductDocument>(&self.connection.inventory_collection_name);
 
         let filter = doc! { "id": id };
-        match collection.find_one(filter, None).await? {
+        match collection
+            .find_one(filter, None)
+            .instrument(tracing::Span::current())
+            .await?
+        {
             None => Ok(None),
             Some(document) => Ok(Some(document.to_entity())),
         }
     }
 
+    #[instrument(name = "MONGO CREATE PRODUCT")]
     async fn create(&self, dto: CreateProductDto) -> Result<ProductEntity, Box<dyn Error>> {
         let collection = self
             .connection

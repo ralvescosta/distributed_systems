@@ -1,3 +1,4 @@
+#[derive(Debug)]
 pub struct CreateProductDto {
     pub product_category: String,
     pub tag: String,
