@@ -1,6 +1,7 @@
 use mongodb::{options::ClientOptions, Client, Collection, Database};
 use std::{env, error::Error};
 
+#[derive(Debug)]
 pub struct DbConnection {
     pub client: Client,
     pub app_name: String,
