@@ -104,21 +104,6 @@ struct GrpcExtractor<'a>(&'a tonic::metadata::MetadataMap);
 impl<'a> Extractor for GrpcExtractor<'a> {
     /// Get a value for a key from the MetadataMap.  If the value can't be converted to &str, returns None
     fn get(&self, key: &str) -> Option<&str> {
-        println!("");
-        println!("[GrpcExtractor::get] KEY TO STRACT: {}\n", key);
-        if key == "tracestate" {
-            return self.0.get("uber-trace-id").and_then(|metadata| {
-                if let Some(trace) = metadata.to_str().ok() {
-                    let p = trace.split_terminator(":").collect::<Vec<&str>>();
-                    if p.len() != 4 {
-                        return None;
-                    }
-                    let a = format!("00-{}-{}-{}", p[0], p[1], p[2]);
-                    return Some(p[0]);
-                }
-                return None;
-            });
-        }
         self.0.get(key).and_then(|metadata| metadata.to_str().ok())
     }
 
