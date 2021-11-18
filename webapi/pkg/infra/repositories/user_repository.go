@@ -12,7 +12,7 @@ import (
 type userRepository struct {
 	logger       interfaces.ILogger
 	dbConnection *sql.DB
-	telemetry    interfaces.ITelemetry
+	telemetry    telemetry.ITelemetry
 }
 
 func (pst userRepository) FindById(ctx context.Context, id int) (*entities.User, error) {
@@ -156,7 +156,7 @@ func (pst userRepository) Create(ctx context.Context, dto dtos.CreateUserDto) (*
 	return &entity, nil
 }
 
-func NewUserRepository(logger interfaces.ILogger, dbConnection *sql.DB, telemetry interfaces.ITelemetry) interfaces.IUserRepository {
+func NewUserRepository(logger interfaces.ILogger, dbConnection *sql.DB, telemetry telemetry.ITelemetry) interfaces.IUserRepository {
 	return userRepository{
 		logger,
 		dbConnection,

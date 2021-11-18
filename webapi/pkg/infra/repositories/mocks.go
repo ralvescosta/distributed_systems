@@ -9,6 +9,7 @@ import (
 	"webapi/pkg/app/interfaces"
 	"webapi/pkg/domain/entities"
 	"webapi/pkg/infra/logger"
+	"webapi/pkg/infra/telemetry"
 
 	"github.com/DATA-DOG/go-sqlmock"
 	"github.com/gin-gonic/gin"
@@ -21,7 +22,7 @@ type userRepositoryToTest struct {
 	dbConnection *sql.DB
 	sqlMock      sqlmock.Sqlmock
 	mockedUser   entities.User
-	telemetry    interfaces.ITelemetry
+	telemetry    telemetry.ITelemetry
 }
 
 func newUserRepositoryToTest() userRepositoryToTest {
@@ -77,6 +78,6 @@ func (telemetrySpy) GetTracer() opentracing.Tracer {
 	return nil
 }
 
-func newTelemetrySpy() interfaces.ITelemetry {
+func newTelemetrySpy() telemetry.ITelemetry {
 	return telemetrySpy{}
 }
