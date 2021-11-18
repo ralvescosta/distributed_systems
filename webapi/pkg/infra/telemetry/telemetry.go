@@ -5,21 +5,32 @@ import (
 	"fmt"
 	"io"
 	"net/http"
-	"webapi/pkg/app/interfaces"
 
 	"github.com/gin-gonic/gin"
 	"github.com/opentracing/opentracing-go"
 	"github.com/opentracing/opentracing-go/ext"
 	"github.com/uber/jaeger-client-go"
 	"github.com/uber/jaeger-client-go/config"
+	"google.golang.org/grpc/metadata"
 )
+
+type ITelemetry interface {
+	GinMiddle() gin.HandlerFunc
+	InstrumentQuery(ctx context.Context, sqlType string, sql string) opentracing.Span
+	InstrumentGRPCClient(ctx context.Context, clientName string) (opentracing.Span, context.Context)
+	StartSpanFromRequest(header http.Header) opentracing.Span
+	Inject(span opentracing.Span, request *http.Request) error
+	Extract(header http.Header) (opentracing.SpanContext, error)
+	Dispatch()
+	GetTracer() opentracing.Tracer
+}
 
 type telemetry struct {
 	tracer opentracing.Tracer
 	closer io.Closer
 }
 
-func NewTelemetry() interfaces.ITelemetry {
+func NewTelemetry() ITelemetry {
 	cfg, err := config.FromEnv()
 	if err != nil {
 		panic(fmt.Sprintf("ERROR: failed to read config from env vars: %v\n", err))
@@ -75,9 +86,18 @@ func (pst *telemetry) InstrumentQuery(ctx context.Context, sqlType string, sql s
 func (pst *telemetry) InstrumentGRPCClient(ctx context.Context, clientName string) (opentracing.Span, context.Context) {
 	span := opentracing.SpanFromContext(ctx)
 	span = pst.tracer.StartSpan(clientName, opentracing.ChildOf(span.Context()))
+
 	ext.SpanKindRPCClient.Set(span)
 	ext.PeerService.Set(span, "gRPC Client")
-	return span, opentracing.ContextWithSpan(ctx, span)
+
+	jaegerCtx, _ := span.Context().(jaeger.SpanContext)
+
+	ctxWithHeaders := metadata.NewOutgoingContext(
+		opentracing.ContextWithSpan(ctx, span),
+		metadata.Pairs("traceparent", fmt.Sprintf("00-%s-%s-01", jaegerCtx.ParentID(), jaegerCtx.SpanID())),
+	)
+
+	return span, ctxWithHeaders
 }
 
 // StartSpanFromRequest extracts the parent span context from the inbound HTTP request

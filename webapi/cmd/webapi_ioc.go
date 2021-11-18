@@ -27,7 +27,7 @@ type webApiContainer struct {
 	authenticationRoutes presenters.ISessionRoutes
 	inventoryRoutes      presenters.IInventoryRoutes
 
-	telemetryApp interfaces.ITelemetry
+	telemetryApp telemetry.ITelemetry
 }
 
 func NewContainer() webApiContainer {
