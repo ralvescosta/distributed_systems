@@ -4,6 +4,7 @@ import (
 	"context"
 	"os"
 	"webapi/pkg/app/interfaces"
+	"webapi/pkg/domain/dtos"
 	"webapi/pkg/infra/grpc_clients/proto"
 	"webapi/pkg/infra/telemetry"
 
@@ -15,7 +16,7 @@ type inventoryClient struct {
 	telemetry telemetry.ITelemetry
 }
 
-func (pst inventoryClient) GetProductById(ctx context.Context, id string) (*proto.ProductResponse, error) {
+func (pst inventoryClient) GetProductById(ctx context.Context, id string) (dtos.ProductDto, error) {
 	gRPCConfigs := []grpc.DialOption{
 		grpc.WithInsecure(),
 	}
@@ -37,7 +38,15 @@ func (pst inventoryClient) GetProductById(ctx context.Context, id string) (*prot
 		span.SetTag("error", true)
 	}
 
-	return result, err
+	return toBookDto(result), err
+}
+
+func toBookDto(response *proto.ProductResponse) dtos.ProductDto {
+	if response == nil {
+		return dtos.ProductDto{}
+	}
+
+	return dtos.ProductDto{}
 }
 
 func NewInventoryClient(logger interfaces.ILogger, telemetry telemetry.ITelemetry) interfaces.IIventoryClient {
