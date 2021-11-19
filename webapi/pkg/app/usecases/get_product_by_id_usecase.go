@@ -12,9 +12,7 @@ type getProductByIdUseCase struct {
 }
 
 func (pst getProductByIdUseCase) Perform(ctx context.Context, id string) (dtos.ProductDto, error) {
-	pst.inventoryClient.GetProductById(ctx, id)
-
-	return dtos.ProductDto{}, nil
+	return pst.inventoryClient.GetProductById(ctx, id)
 }
 
 func NewGetProductByIdUseCase(inventoryClient interfaces.IIventoryClient) usecases.IGetProductByIdUseCase {

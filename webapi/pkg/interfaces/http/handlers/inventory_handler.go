@@ -29,7 +29,7 @@ func (pst inventoryHandler) GetById(httpRequest http.HttpRequest) http.HttpRespo
 		return http.ErrorResponseMapper(err, nil)
 	}
 
-	return http.Created(models.ToGetByIdResponse(result), nil)
+	return http.Ok(models.ToGetByIdResponse(result), nil)
 }
 
 func (pst inventoryHandler) Create(httpRequest http.HttpRequest) http.HttpResponse {
