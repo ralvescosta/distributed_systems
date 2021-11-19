@@ -15,7 +15,7 @@ type IInventoryHandler interface {
 type inventoryHandler struct {
 	logger    interfaces.ILogger
 	validator interfaces.IValidator
-	useCase   usecases.IGetBookByIdUseCase
+	useCase   usecases.IGetProductByIdUseCase
 }
 
 func (pst inventoryHandler) GetById(httpRequest http.HttpRequest) http.HttpResponse {
@@ -29,7 +29,7 @@ func (pst inventoryHandler) GetById(httpRequest http.HttpRequest) http.HttpRespo
 		return http.ErrorResponseMapper(err, nil)
 	}
 
-	return http.Created(models.ToGetByIdResponse(result), nil)
+	return http.Ok(models.ToGetByIdResponse(result), nil)
 }
 
 func (pst inventoryHandler) Create(httpRequest http.HttpRequest) http.HttpResponse {
@@ -37,7 +37,7 @@ func (pst inventoryHandler) Create(httpRequest http.HttpRequest) http.HttpRespon
 	return http.Created(nil, nil)
 }
 
-func NewInventoryHandler(logger interfaces.ILogger, validator interfaces.IValidator, useCase usecases.IGetBookByIdUseCase) IInventoryHandler {
+func NewInventoryHandler(logger interfaces.ILogger, validator interfaces.IValidator, useCase usecases.IGetProductByIdUseCase) IInventoryHandler {
 	return inventoryHandler{
 		logger,
 		validator,

@@ -10,29 +10,32 @@ use tracing_bunyan_formatter::{BunyanFormattingLayer, JsonStorageLayer};
 use tracing_opentelemetry::OpenTelemetrySpanExt;
 use tracing_subscriber::prelude::*;
 
+#[derive(Debug)]
 pub struct Telemetry {}
 
 impl Telemetry {
-    pub fn new() -> Result<(), Box<dyn Error>> {
+    pub fn new() -> Result<Telemetry, Box<dyn Error>> {
         let app_name = env::var("APP_NAME")?;
+        let log_level = env::var("RUST_LOG")?;
 
         global::set_text_map_propagator(TraceContextPropagator::new());
         let tracer = opentelemetry_jaeger::new_pipeline()
             .with_service_name(app_name)
             .install_batch(opentelemetry::runtime::Tokio)?;
 
-        let formatting_layer = BunyanFormattingLayer::new(String::from("info"), std::io::stdout);
+        let formatting_layer =
+            BunyanFormattingLayer::new(String::from(log_level.as_str()), std::io::stdout);
         tracing_subscriber::registry()
-            .with(tracing_subscriber::EnvFilter::new("info"))
+            .with(tracing_subscriber::EnvFilter::new(log_level.as_str()))
             .with(tracing_opentelemetry::layer().with_tracer(tracer))
             .with(JsonStorageLayer)
             .with(formatting_layer)
             .try_init()?;
 
-        Ok(())
+        Ok(Telemetry {})
     }
 
-    pub fn get_grpc_ctx<T>(request: &tonic::Request<T>) -> Context {
+    pub fn grpc_set_span_parent<T>(&self, request: &tonic::Request<T>) -> Context {
         let ctx = global::get_text_map_propagator(|prop| {
             prop.extract(&GrpcExtractor(request.metadata()))
         });

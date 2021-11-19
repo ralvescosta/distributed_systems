@@ -2,9 +2,9 @@ package interfaces
 
 import (
 	"context"
-	"webapi/pkg/infra/grpc_clients/proto"
+	"webapi/pkg/domain/dtos"
 )
 
 type IIventoryClient interface {
-	GetProductById(ctx context.Context, id string) (*proto.ProductResponse, error)
+	GetProductById(ctx context.Context, id string) (dtos.ProductDto, error)
 }

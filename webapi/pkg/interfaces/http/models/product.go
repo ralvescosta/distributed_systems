@@ -2,7 +2,7 @@ package models
 
 import "webapi/pkg/domain/dtos"
 
-type BookModel struct {
+type ProductModel struct {
 	Id              string   `json:"id"`
 	ProductCategory string   `json:"product_category"`
 	Tag             string   `json:"tag"`
@@ -16,6 +16,6 @@ type BookModel struct {
 	UpdatedAt       string   `json:"updated_at"`
 }
 
-func ToGetByIdResponse(dto dtos.BookDto) BookModel {
-	return BookModel{}
+func ToGetByIdResponse(dto dtos.ProductDto) ProductModel {
+	return ProductModel{}
 }
