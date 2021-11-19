@@ -22,7 +22,7 @@ mod models;
 async fn main() -> Result<(), Box<dyn std::error::Error>> {
     environments::env::register_env()?;
 
-    Telemetry::new()?;
+    let telemetry_app = Telemetry::new()?;
 
     let db_connection = database::connection::connect_to_database().await?;
 
@@ -32,8 +32,11 @@ async fn main() -> Result<(), Box<dyn std::error::Error>> {
     let get_product_by_id_use_case =
         Arc::new(GetProductByIdUseCase::new(product_repository.clone()));
     let create_product_use_case = Arc::new(CreateProductUseCase::new(product_repository));
-    let product_controller =
-        ProductController::new(get_product_by_id_use_case, create_product_use_case);
+    let product_controller = ProductController::new(
+        get_product_by_id_use_case,
+        create_product_use_case,
+        Arc::new(telemetry_app),
+    );
 
     info!("Server listening on {}", addr);
 
