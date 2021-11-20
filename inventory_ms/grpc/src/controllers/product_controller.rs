@@ -65,10 +65,13 @@ impl Inventory for ProductController {
         Ok(Response::new(ProductsResponse { value: vec![] }))
     }
 
+    #[instrument(name = "gRPC createProduct")]
     async fn create_product(
         &self,
         request: Request<CreateProductRequest>,
     ) -> Result<Response<ProductResponse>, Status> {
+        self.telemetry.grpc_set_span_parent(&request);
+
         match self
             .create_product_use_case
             .perform(ProductModel::create_request_to_dto(request.into_inner()))
