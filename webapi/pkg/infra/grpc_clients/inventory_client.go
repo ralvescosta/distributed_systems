@@ -75,7 +75,6 @@ func connectToGrpcServer(ctx context.Context) (*grpc.ClientConn, error) {
 		return nil, errors.NewInternalError("error whiling connect in inventory gRPC")
 	}
 	return conn, nil
-
 }
 
 func toCreateProductRequest(product dtos.ProductDto) *proto.CreateProductRequest {

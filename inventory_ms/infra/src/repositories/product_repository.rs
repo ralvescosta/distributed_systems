@@ -47,25 +47,40 @@ impl IProductRepository for ProductRepository {
             .connection
             .get_collection::<ProductDocument>(&self.connection.inventory_collection_name);
 
-        let guid = Uuid::new_v4().to_hyphenated().to_string();
-
-        let document = ProductDocument {
-            id: guid,
-            product_category: dto.product_category,
-            tag: dto.tag,
-            title: dto.title,
-            subtitle: dto.subtitle,
-            authors: dto.authors,
-            amount_in_stock: dto.amount_in_stock,
-            num_pages: dto.num_pages,
-            tags: dto.tags,
-            created_at: DateTime::now(),
-            updated_at: DateTime::now(),
+        let filter = doc! {
+            "title": dto.title.clone(),
+            "product_category": dto.product_category.clone()
         };
+        match collection
+            .find_one(filter, None)
+            .instrument(tracing::Span::current())
+            .await?
+        {
+            None => {
+                let guid = Uuid::new_v4().to_hyphenated().to_string();
+                let document = ProductDocument {
+                    id: guid,
+                    product_category: dto.product_category,
+                    tag: dto.tag,
+                    title: dto.title,
+                    subtitle: dto.subtitle,
+                    authors: dto.authors,
+                    amount_in_stock: dto.amount_in_stock,
+                    num_pages: dto.num_pages,
+                    tags: dto.tags,
+                    created_at: DateTime::now(),
+                    updated_at: DateTime::now(),
+                };
 
-        collection.insert_one(document.clone(), None).await?;
+                collection
+                    .insert_one(document.clone(), None)
+                    .instrument(tracing::Span::current())
+                    .await?;
 
-        Ok(document.to_entity())
+                Ok(document.to_entity())
+            }
+            Some(document) => Ok(document.to_entity()),
+        }
     }
 }
 
