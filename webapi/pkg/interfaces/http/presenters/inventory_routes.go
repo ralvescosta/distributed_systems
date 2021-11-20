@@ -25,6 +25,13 @@ func (pst inventoryRoutes) Register(httpServer server.IHttpServer) {
 		adapter.MiddlewareAdapt(pst.middlewares.Perform, pst.logger),
 		adapter.HandlerAdapt(pst.handlers.GetById, pst.logger),
 	)
+
+	httpServer.RegistreRoute(
+		"POST",
+		"/api/v1/inventory/",
+		adapter.MiddlewareAdapt(pst.middlewares.Perform, pst.logger),
+		adapter.HandlerAdapt(pst.handlers.CreateProduct, pst.logger),
+	)
 }
 
 func NewInventoryRoutes(logger interfaces.ILogger, middlewares middlewares.IAuthMiddleware, handlers handlers.IInventoryHandler) IInventoryRoutes {
