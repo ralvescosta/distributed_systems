@@ -4,15 +4,23 @@ package inventory;
 
 service Inventory {
   rpc GetProductById (GetByIdRequest) returns (ProductResponse);
-  rpc GetProducts (Empty) returns (ProductsResponse);
+  rpc GetProductsByType (GetByTypeRequest) returns (ProductsResponse);
+  rpc GetProducts (GetProductsRequest) returns (ProductsResponse);
   rpc CreateProduct (CreateProductRequest) returns (ProductResponse);
   rpc UpdateProduct(UpdateProductRequest) returns (ProductResponse);
 }
 
-message Empty {}
+message GetProductsRequest {
+  int64 limit = 1;
+  int64 offset = 2;
+}
 
 message GetByIdRequest {
   string id = 1;
+}
+
+message GetByTypeRequest {
+  string type = 1;
 }
 
 message CreateProductRequest {

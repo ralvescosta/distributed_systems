@@ -56,7 +56,7 @@ func (pst inventoryClient) RegisterProduct(ctx context.Context, product dtos.Pro
 
 	client := proto.NewInventoryClient(conn)
 
-	result, err := client.CreateProduct(spanCtx, &proto.CreateProductRequest{})
+	result, err := client.CreateProduct(spanCtx, toCreateProductRequest(product))
 
 	if err != nil {
 		span.SetTag("error", true)
@@ -76,6 +76,18 @@ func connectToGrpcServer(ctx context.Context) (*grpc.ClientConn, error) {
 	}
 	return conn, nil
 
+}
+
+func toCreateProductRequest(product dtos.ProductDto) *proto.CreateProductRequest {
+	return &proto.CreateProductRequest{
+		Tag:           product.Tag,
+		Title:         product.Title,
+		Subtitle:      product.Subtitle,
+		Authors:       product.Authors,
+		AmountInStock: int64(product.AmountInStock),
+		NumPages:      int64(product.NumPages),
+		Tags:          product.Tags,
+	}
 }
 
 func toProduct(response *proto.ProductResponse) dtos.ProductDto {
