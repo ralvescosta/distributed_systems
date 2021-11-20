@@ -21,12 +21,9 @@ type inventoryClient struct {
 }
 
 func (pst inventoryClient) GetProductById(ctx context.Context, id string) (dtos.ProductDto, error) {
-	gRPCConfigs := []grpc.DialOption{
-		grpc.WithInsecure(),
-	}
-	conn, err := grpc.DialContext(ctx, os.Getenv("INVENTORY_MS_URI"), gRPCConfigs...)
+	conn, err := connectToGrpcServer(ctx)
 	if err != nil {
-		return dtos.ProductDto{}, errors.NewInternalError("error whiling connect in inventory gRPC")
+		return dtos.ProductDto{}, err
 	}
 	defer conn.Close()
 
@@ -44,15 +41,61 @@ func (pst inventoryClient) GetProductById(ctx context.Context, id string) (dtos.
 		err = mapErrorToHttp(err)
 	}
 
-	return toBookDto(result), err
+	return toProduct(result), err
 }
 
-func toBookDto(response *proto.ProductResponse) dtos.ProductDto {
+func (pst inventoryClient) RegisterProduct(ctx context.Context, product dtos.ProductDto) (dtos.ProductDto, error) {
+	conn, err := connectToGrpcServer(ctx)
+	if err != nil {
+		return dtos.ProductDto{}, err
+	}
+	defer conn.Close()
+
+	span, spanCtx := pst.telemetry.InstrumentGRPCClient(ctx, "Inventory Client")
+	defer span.Finish()
+
+	client := proto.NewInventoryClient(conn)
+
+	result, err := client.CreateProduct(spanCtx, &proto.CreateProductRequest{})
+
+	if err != nil {
+		span.SetTag("error", true)
+		err = mapErrorToHttp(err)
+	}
+
+	return toProduct(result), err
+}
+
+func connectToGrpcServer(ctx context.Context) (*grpc.ClientConn, error) {
+	gRPCConfigs := []grpc.DialOption{
+		grpc.WithInsecure(),
+	}
+	conn, err := grpc.DialContext(ctx, os.Getenv("INVENTORY_MS_URI"), gRPCConfigs...)
+	if err != nil {
+		return nil, errors.NewInternalError("error whiling connect in inventory gRPC")
+	}
+	return conn, nil
+
+}
+
+func toProduct(response *proto.ProductResponse) dtos.ProductDto {
 	if response == nil {
 		return dtos.ProductDto{}
 	}
 
-	return dtos.ProductDto{}
+	return dtos.ProductDto{
+		Id:              response.Id,
+		ProductCategory: response.ProductCategory,
+		Tag:             response.Tag,
+		Title:           response.Title,
+		Subtitle:        response.Subtitle,
+		Authors:         response.Authors,
+		AmountInStock:   int(response.AmountInStock),
+		NumPages:        int(response.NumPages),
+		Tags:            response.Tags,
+		CreatedAt:       response.CreatedAt,
+		UpdatedAt:       response.UpdatedAt,
+	}
 }
 
 func mapErrorToHttp(grpcError error) error {

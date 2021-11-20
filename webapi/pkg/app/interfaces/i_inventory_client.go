@@ -7,4 +7,5 @@ import (
 
 type IIventoryClient interface {
 	GetProductById(ctx context.Context, id string) (dtos.ProductDto, error)
+	RegisterProduct(ctx context.Context, product dtos.ProductDto) (dtos.ProductDto, error)
 }
