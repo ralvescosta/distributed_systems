@@ -6,8 +6,8 @@ use tracing_futures::Instrument;
 
 use crate::{
     inventory::{
-        inventory_server::Inventory, CreateProductRequest, Empty, GetByIdRequest, ProductResponse,
-        ProductsResponse, UpdateProductRequest,
+        inventory_server::Inventory, CreateProductRequest, GetByIdRequest, GetByTypeRequest,
+        GetProductsRequest, ProductResponse, ProductsResponse, UpdateProductRequest,
     },
     models::product_model::ProductModel,
 };
@@ -58,9 +58,16 @@ impl Inventory for ProductController {
         }
     }
 
+    async fn get_products_by_type(
+        &self,
+        _request: Request<GetByTypeRequest>,
+    ) -> Result<Response<ProductsResponse>, Status> {
+        Ok(Response::new(ProductsResponse { value: vec![] }))
+    }
+
     async fn get_products(
         &self,
-        _request: Request<Empty>,
+        _request: Request<GetProductsRequest>,
     ) -> Result<Response<ProductsResponse>, Status> {
         Ok(Response::new(ProductsResponse { value: vec![] }))
     }
