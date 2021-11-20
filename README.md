@@ -23,8 +23,7 @@ These applications were built with the objective of studding a distributed syste
     - RabbitMQ Publisher
     - gRPC client
     - Cache in some Routes
-    - Newrelic
-
+    - Open Telemetry and Jaeger
 
 - Inventory ms: Built in RustLang
   - Responsible for story and management all books.
@@ -32,8 +31,7 @@ These applications were built with the objective of studding a distributed syste
     - Built in RustLang
     - MongoDB
     - gRPC Server
-    - RabbitMQ Subscriber
-    - Newrelic
+    - Open Telemetry and Jaeger
 
 
 - Purchase ms: Built in NodeJs
@@ -43,7 +41,7 @@ These applications were built with the objective of studding a distributed syste
     - MongoDB
     - gRPC Server
     - RabbitMQ Subscriber
-    - Newrelic
+    - Open Telemetry and Jaeger
 
 
 - Mailer ms: Built in GoLang
@@ -52,4 +50,4 @@ These applications were built with the objective of studding a distributed syste
     - Built in GoLang
     - MongoDB
     - RabbitMQ Subscriber
-    - Newrelic
+    - Open Telemetry and Jaeger

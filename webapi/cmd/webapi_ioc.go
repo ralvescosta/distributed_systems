@@ -67,8 +67,9 @@ func NewContainer() webApiContainer {
 	authenticationMiddleware := middlewares.NewAuthMiddleware(validationTokenUseCase)
 
 	inventoryClient := grpcClients.NewInventoryClient(logger, telemetryApp)
-	getBookById := appUseCases.NewGetProductByIdUseCase(inventoryClient)
-	inventoryHandler := handlers.NewInventoryHandler(logger, validatoR, getBookById)
+	getProductById := appUseCases.NewGetProductByIdUseCase(inventoryClient)
+	createProduct := appUseCases.NewCreateProductUseCase(inventoryClient)
+	inventoryHandler := handlers.NewInventoryHandler(logger, validatoR, getProductById, createProduct)
 	inventoryRoutes := presenters.NewInventoryRoutes(logger, authenticationMiddleware, inventoryHandler)
 
 	return webApiContainer{
