@@ -746,6 +746,7 @@ dependencies = [
  "domain",
  "dotenv",
  "env_logger",
+ "futures",
  "log",
  "mockall",
  "mongodb",
