@@ -11,4 +11,9 @@ pub trait IProductRepository: Send + Sync {
         &self,
         product_type: String,
     ) -> Result<Vec<ProductEntity>, Box<dyn Error>>;
+    async fn get_products(
+        &self,
+        limit: u32,
+        offset: u32,
+    ) -> Result<Vec<ProductEntity>, Box<dyn Error>>;
 }

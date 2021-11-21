@@ -1,6 +1,9 @@
 use async_trait::async_trait;
 use futures::stream::TryStreamExt;
-use mongodb::bson::{doc, DateTime};
+use mongodb::{
+    bson::{doc, DateTime},
+    options::FindOptions,
+};
 use std::error::Error;
 use tracing::instrument;
 use uuid::Uuid;
@@ -105,6 +108,32 @@ impl IProductRepository for ProductRepository {
             }
             Some(document) => Ok(document.to_entity()),
         }
+    }
+
+    async fn get_products(
+        &self,
+        limit: u32,
+        offset: u32,
+    ) -> Result<Vec<ProductEntity>, Box<dyn Error>> {
+        let collection = self
+            .connection
+            .get_collection::<ProductDocument>(&self.connection.inventory_collection_name);
+
+        let options = FindOptions::builder()
+            .limit(limit as i64)
+            .batch_size(offset)
+            .build();
+        let mut cursor = collection
+            .find(None, options)
+            .instrument(tracing::Span::current())
+            .await?;
+
+        let mut products: Vec<ProductEntity> = vec![];
+        while let Some(product) = cursor.try_next().await? {
+            products.push(product.to_entity());
+        }
+
+        Ok(products)
     }
 }
 
