@@ -12,7 +12,7 @@ pub struct GetProductByIdUseCase {
 }
 
 impl GetProductByIdUseCase {
-    pub fn new(repo: Arc<dyn IProductRepository>) -> GetProductByIdUseCase {
+    pub fn new(repo: Arc<dyn IProductRepository>) -> impl IGetProductByIdUseCase {
         GetProductByIdUseCase { repo }
     }
 }

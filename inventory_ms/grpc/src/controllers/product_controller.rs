@@ -44,8 +44,6 @@ impl Inventory for ProductController {
     ) -> Result<Response<ProductResponse>, Status> {
         self.telemetry.grpc_set_span_parent(&request);
 
-        log::info!("Oi eu sou Goku!");
-
         let result = self
             .get_product_by_id_use_case
             .perform(request.into_inner().id)
@@ -58,6 +56,7 @@ impl Inventory for ProductController {
         }
     }
 
+    #[instrument(name = "gRPC getProductByType")]
     async fn get_products_by_type(
         &self,
         _request: Request<GetByTypeRequest>,
