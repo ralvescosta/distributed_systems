@@ -1,4 +1,5 @@
 use async_trait::async_trait;
+use futures::stream::TryStreamExt;
 use mongodb::bson::{doc, DateTime};
 use std::error::Error;
 use tracing::instrument;
@@ -24,7 +25,7 @@ impl ProductRepository {
 
 #[async_trait]
 impl IProductRepository for ProductRepository {
-    #[instrument(name = "MONGO SELECT PRODUCT")]
+    #[instrument(name = "MONGO SELECT PRODUCT BY ID")]
     async fn get_product_by_id(&self, id: String) -> Result<Option<ProductEntity>, Box<dyn Error>> {
         let collection = self
             .connection
@@ -39,6 +40,29 @@ impl IProductRepository for ProductRepository {
             None => Ok(None),
             Some(document) => Ok(Some(document.to_entity())),
         }
+    }
+
+    #[instrument(name = "MONGO SELECT PRODUCT BY TYPE")]
+    async fn get_product_by_type(
+        &self,
+        product_type: String,
+    ) -> Result<Vec<ProductEntity>, Box<dyn Error>> {
+        let collection = self
+            .connection
+            .get_collection::<ProductDocument>(&self.connection.inventory_collection_name);
+
+        let filter = doc! { "type": product_type };
+        let mut cursor = collection
+            .find(filter, None)
+            .instrument(tracing::Span::current())
+            .await?;
+
+        let mut products: Vec<ProductEntity> = vec![];
+        while let Some(product) = cursor.try_next().await? {
+            products.push(product.to_entity());
+        }
+
+        Ok(products)
     }
 
     #[instrument(name = "MONGO CREATE PRODUCT")]
