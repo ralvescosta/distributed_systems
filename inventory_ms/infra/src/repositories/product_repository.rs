@@ -43,7 +43,7 @@ impl IProductRepository for ProductRepository {
     }
 
     #[instrument(name = "MONGO SELECT PRODUCT BY TYPE")]
-    async fn get_product_by_type(
+    async fn get_products_by_type(
         &self,
         product_type: String,
     ) -> Result<Vec<ProductEntity>, Box<dyn Error>> {

@@ -94,6 +94,9 @@ mod test {
             async fn create(&self, dto: CreateProductDto) -> Result<ProductEntity, Box<dyn std::error::Error>> {
                 todo!()
             }
+            async fn get_products_by_type(&self, product_type: String) -> Result<Vec<ProductEntity>, Box<dyn std::error::Error>> {
+                todo!()
+            }
         }
     }
 }

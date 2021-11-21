@@ -7,7 +7,7 @@ use domain::{dtos::create_product_dto::CreateProductDto, entities::product_entit
 pub trait IProductRepository: Send + Sync {
     async fn create(&self, dto: CreateProductDto) -> Result<ProductEntity, Box<dyn Error>>;
     async fn get_product_by_id(&self, id: String) -> Result<Option<ProductEntity>, Box<dyn Error>>;
-    async fn get_product_by_type(
+    async fn get_products_by_type(
         &self,
         product_type: String,
     ) -> Result<Vec<ProductEntity>, Box<dyn Error>>;
