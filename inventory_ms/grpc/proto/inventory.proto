@@ -20,7 +20,7 @@ message GetByIdRequest {
 }
 
 message GetByTypeRequest {
-  string type = 1;
+  string product_type = 1;
 }
 
 message CreateProductRequest {

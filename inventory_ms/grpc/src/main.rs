@@ -1,3 +1,5 @@
+use application::usecases::get_products::GetProductsUseCase;
+use application::usecases::get_products_by_type::GetProductsByTypeUseCase;
 use log::info;
 use std::sync::Arc;
 use tonic::transport::Server;
@@ -29,12 +31,22 @@ async fn main() -> Result<(), Box<dyn std::error::Error>> {
     let addr = "127.0.0.1:50051".parse().unwrap();
 
     let product_repository = Arc::new(ProductRepository::new(db_connection));
+
     let get_product_by_id_use_case =
         Arc::new(GetProductByIdUseCase::new(product_repository.clone()));
-    let create_product_use_case = Arc::new(CreateProductUseCase::new(product_repository));
+
+    let create_product_use_case = Arc::new(CreateProductUseCase::new(product_repository.clone()));
+
+    let get_products_by_tag_use_case =
+        Arc::new(GetProductsByTypeUseCase::new(product_repository.clone()));
+
+    let get_products_use_case = Arc::new(GetProductsUseCase::new(product_repository.clone()));
+
     let product_controller = ProductController::new(
         get_product_by_id_use_case,
         create_product_use_case,
+        get_products_by_tag_use_case,
+        get_products_use_case,
         Arc::new(telemetry_app),
     );
 

@@ -110,6 +110,7 @@ impl IProductRepository for ProductRepository {
         }
     }
 
+    #[instrument(name = "MONGO GET PRODUCTS WITH PAGINATION")]
     async fn get_products(
         &self,
         limit: u32,
