@@ -11,7 +11,7 @@ pub struct CreateProductUseCase {
 }
 
 impl CreateProductUseCase {
-    pub fn new(repo: Arc<dyn IProductRepository>) -> CreateProductUseCase {
+    pub fn new(repo: Arc<dyn IProductRepository>) -> impl ICreateProductUseCase {
         CreateProductUseCase { repo }
     }
 }
