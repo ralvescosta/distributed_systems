@@ -13,11 +13,14 @@ use crate::{
 };
 use domain::usecases::{
     i_create_product::ICreateProductUseCase, i_get_product_by_id::IGetProductByIdUseCase,
+    i_get_products::IGetProductsUseCase, i_get_products_by_type::IGetProductsByTypeUseCase,
 };
 #[derive(Debug)]
 pub struct ProductController {
     get_product_by_id_use_case: Arc<dyn IGetProductByIdUseCase>,
     create_product_use_case: Arc<dyn ICreateProductUseCase>,
+    get_products_by_tag_use_case: Arc<dyn IGetProductsByTypeUseCase>,
+    get_products_use_case: Arc<dyn IGetProductsUseCase>,
     telemetry: Arc<Telemetry>,
 }
 
@@ -25,11 +28,15 @@ impl ProductController {
     pub fn new(
         get_product_by_id_use_case: Arc<dyn IGetProductByIdUseCase>,
         create_product_use_case: Arc<dyn ICreateProductUseCase>,
+        get_products_by_tag_use_case: Arc<dyn IGetProductsByTypeUseCase>,
+        get_products_use_case: Arc<dyn IGetProductsUseCase>,
         telemetry: Arc<Telemetry>,
     ) -> ProductController {
         ProductController {
             get_product_by_id_use_case,
             create_product_use_case,
+            get_products_by_tag_use_case,
+            get_products_use_case,
             telemetry,
         }
     }
@@ -59,16 +66,51 @@ impl Inventory for ProductController {
     #[instrument(name = "gRPC getProductByType")]
     async fn get_products_by_type(
         &self,
-        _request: Request<GetByTypeRequest>,
+        request: Request<GetByTypeRequest>,
     ) -> Result<Response<ProductsResponse>, Status> {
-        Ok(Response::new(ProductsResponse { value: vec![] }))
+        self.telemetry.grpc_set_span_parent(&request);
+
+        let result = self
+            .get_products_by_tag_use_case
+            .perform(request.into_inner().product_type)
+            .instrument(tracing::Span::current())
+            .await;
+        match result {
+            Ok(product) => {
+                if product.len() == 0 {
+                    todo!()
+                }
+
+                todo!()
+            }
+            Err(err) => Err(Status::internal(format!("{:?}", err))),
+        }
     }
 
+    #[instrument(name = "gRPC getProducts")]
     async fn get_products(
         &self,
-        _request: Request<GetProductsRequest>,
+        request: Request<GetProductsRequest>,
     ) -> Result<Response<ProductsResponse>, Status> {
-        Ok(Response::new(ProductsResponse { value: vec![] }))
+        self.telemetry.grpc_set_span_parent(&request);
+
+        let request_data = request.into_inner();
+
+        let result = self
+            .get_products_use_case
+            .perform(request_data.limit, request_data.offset)
+            .instrument(tracing::Span::current())
+            .await;
+        match result {
+            Ok(product) => {
+                if product.len() == 0 {
+                    todo!()
+                }
+
+                todo!()
+            }
+            Err(err) => Err(Status::internal(format!("{:?}", err))),
+        }
     }
 
     #[instrument(name = "gRPC createProduct")]
