@@ -2,5 +2,25 @@
   "name": "payment_ms",
   "version": "1.0.0",
   "main": "index.js",
-  "license": "MIT"
+  "license": "MIT",
+  "dependencies": {
+    "awilix": "^6.0.0",
+    "dotenv": "^10.0.0",
+    "joi": "^17.4.2",
+    "mongoose": "^6.0.13",
+    "pino": "^7.3.0"
+  },
+  "devDependencies": {
+    "@types/node": "^16.11.9",
+    "@types/pino": "^7.0.5",
+    "eslint": "^7.32.0",
+    "eslint-config-standard": "^16.0.3",
+    "eslint-plugin-import": "^2.25.3",
+    "eslint-plugin-node": "^11.1.0",
+    "eslint-plugin-promise": "^5.1.1",
+    "jest": "^27.3.1",
+    "nodemon": "^2.0.15",
+    "pino-inspector": "^0.1.0",
+    "pino-pretty": "^7.2.0"
+  }
 }
