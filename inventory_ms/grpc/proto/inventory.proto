@@ -55,5 +55,5 @@ message ProductResponse {
 }
 
 message ProductsResponse {
-  repeated ProductResponse Value = 1;
+  repeated ProductResponse value = 1;
 }

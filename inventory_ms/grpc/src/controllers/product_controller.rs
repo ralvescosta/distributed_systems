@@ -75,13 +75,21 @@ impl Inventory for ProductController {
             .perform(request.into_inner().product_type)
             .instrument(tracing::Span::current())
             .await;
+
         match result {
-            Ok(product) => {
-                if product.len() == 0 {
-                    todo!()
+            Ok(products) => {
+                if products.len() == 0 {
+                    return Ok(Response::new(ProductsResponse::default()));
                 }
 
-                todo!()
+                let mut response = ProductsResponse::default();
+                for product in products {
+                    response
+                        .value
+                        .push(ProductModel::entity_to_response(product));
+                }
+
+                Ok(Response::new(response))
             }
             Err(err) => Err(Status::internal(format!("{:?}", err))),
         }
@@ -101,13 +109,21 @@ impl Inventory for ProductController {
             .perform(request_data.limit, request_data.offset)
             .instrument(tracing::Span::current())
             .await;
+
         match result {
-            Ok(product) => {
-                if product.len() == 0 {
-                    todo!()
+            Ok(products) => {
+                if products.len() == 0 {
+                    return Ok(Response::new(ProductsResponse::default()));
                 }
 
-                todo!()
+                let mut response = ProductsResponse::default();
+                for product in products {
+                    response
+                        .value
+                        .push(ProductModel::entity_to_response(product));
+                }
+
+                Ok(Response::new(response))
             }
             Err(err) => Err(Status::internal(format!("{:?}", err))),
         }
