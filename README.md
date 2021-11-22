@@ -11,7 +11,7 @@
 
 ## Resume
 
-These applications were built with the objective of studding a distributed systems using the most recent technics. The main ideia was create all applications using: **Clean Architecture**, **Distributed Logging**, **Distributed Tracing**, **Async Communication**, **CI/CD**, **Loading Balancer**, **Auto scale**, etc. The system context was a simple book store.
+These applications were built with the objective of studding a distributed systems using the most recent technics. The main ideia was create all applications using: **Clean Architecture**, **Distributed Logging**, **Distributed Tracing**, **Async Communication**, etc. The system context was a simple book store.
 
 ## Application Mapping
 
