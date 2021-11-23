@@ -3,6 +3,15 @@
   "version": "1.0.0",
   "main": "index.js",
   "license": "MIT",
+  "scripts": {
+    "start:dev": "NODE_ENV=development yarn nodemon src/main.js | pino-pretty",
+    "start": "NODE_ENV=production node dist/main.js",
+    "test": "NODE_ENV=test jest --passWithNoTests --noStackTrace --runInBand --detectOpenHandles",
+    "test:watch": "NODE_ENV=test jest --watchAll --noStackTrace --runInBand",
+    "test:staged": "NODE_ENV=test yarn test -- --findRelatedTests src/",
+    "test:cov": "NODE_ENV=test jest --coverage --detectOpenHandles",
+    "test:coveralls": "NODE_ENV=test yarn run test:ci && coveralls < coverage/lcov.info"
+  },
   "dependencies": {
     "amqplib": "^0.8.0",
     "awilix": "^6.0.0",
