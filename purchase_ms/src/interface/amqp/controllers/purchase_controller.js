@@ -1,11 +1,14 @@
+const { left } = require('../../../domain/entities/either')
 class PurchaseController {
-  constructor(logger) {
+  constructor(logger, purchaseUseCase) {
     this.logger = logger;
+    this.purchaseUseCase = purchaseUseCase;
   }
 
   handle() {
     this.logger.info("[PurchaseController::handle]")
-    return true
+    this.purchaseUseCase.perform()
+    return left('')
   }
 }
 
