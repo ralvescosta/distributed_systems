@@ -6,6 +6,7 @@ class PurchaseSubscriber {
   }
 
   subscribe() {
+    this.logger.info("[PurchaseSubscriber::subscribe]")
     const AMQP_QUEUE = process.env.AMQP_QUEUE
 
     this.messageBroker.sub(

@@ -52,30 +52,34 @@ class MessagingBroker {
     }
 
     if (!options.noAck) {
-      this._brokerChannel.consume(queueName, async (message) => {
-        // received on message per time
-        this._brokerChannel.prefetch(1)
-
-        const result = await controller.handle(message)
-        if (result) {
-          this._brokerChannel.ack(message)
-        } else {
-          this._brokerChannel.nack(message)
-        }
-      },
-      {
-        noAck: options.noAck
-      })
-    } else {
-      this._brokerChannel.consume(queueName, 
-        async (message) => {
-          await controller.handle(message)
-        },
-        {
-          noAck: options.noAck
-        }
-      )
+      this._noAckMessages(queueName, controller, options)
+      return
     }
+
+    this._brokerChannel.consume(queueName, 
+      async (message) => {
+        await controller.handle(message)
+      }, options)
+  }
+
+  _noAckMessages(queueName, controller, options) {
+    this._brokerChannel.consume(queueName, async (message) => {
+      // received on message per time
+      this._brokerChannel.prefetch(1)
+
+      const result = await controller.handle(message)
+      if (result.isRight()) {
+        this._brokerChannel.ack(message)
+        return
+      }
+
+      switch (result.value.error_code) {
+        case 500:
+        default:
+          this._brokerChannel.nack(message)
+      }
+      
+    }, options)
   }
 
   async closeConnection (){
@@ -112,6 +116,10 @@ class MessagingBroker {
     const AMQP_EXCHANGE_KIND = process.env.AMQP_EXCHANGE_KIND
     const AMQP_QUEUE = process.env.AMQP_QUEUE
     const AMQP_ROUTING_KEY = process.env.AMQP_ROUTING_KEY
+    const DEAD_LETTER_EXCHANGE = process.env.DEAD_LETTER_EXCHANGE
+    const DEAD_LETTER_QUEUE = process.env.DEAD_LETTER_QUEUE
+    const DEAD_LETTER_ROUTING_KEY = process.env.DEAD_LETTER_ROUTING_KEY
+
 
     return new Promise((resolve, rejects) => {
       this._connection.createChannel((channelError, channel) => {
@@ -121,7 +129,22 @@ class MessagingBroker {
           if (err) return rejects(err)
         })
 
-        channel.assertQueue(AMQP_QUEUE, { durable: true }, (err) => {
+        // Dead Letter
+        channel.assertExchange(DEAD_LETTER_EXCHANGE, AMQP_EXCHANGE_KIND, { durable: true }, (err) => {
+          if (err) return rejects(err)
+        })
+        channel.assertQueue(DEAD_LETTER_QUEUE, { durable: true }, (err) => {
+          if (err) return rejects(err)
+        })
+        channel.bindQueue(DEAD_LETTER_QUEUE, DEAD_LETTER_EXCHANGE, DEAD_LETTER_ROUTING_KEY, {}, (err) => {
+          if (err) return rejects(err)
+        })
+
+        channel.assertQueue(AMQP_QUEUE, { 
+          durable: true,  
+          'x-dead-letter-exchange': DEAD_LETTER_EXCHANGE,
+          'x-dead-letter-routing-key': DEAD_LETTER_ROUTING_KEY,
+        }, (err) => {
           if (err) return rejects(err)
         })
         channel.bindQueue(AMQP_QUEUE, AMQP_EXCHANGE, AMQP_ROUTING_KEY, {}, (err) => {
