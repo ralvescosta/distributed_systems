@@ -41,6 +41,7 @@ These applications were built with the objective of studding a distributed syste
     - MongoDB
     - gRPC Server
     - RabbitMQ Subscriber
+      - Dead Letter
     - Open Telemetry and Jaeger
 
 
@@ -50,4 +51,5 @@ These applications were built with the objective of studding a distributed syste
     - Built in GoLang
     - MongoDB
     - RabbitMQ Subscriber
+      - Dead Letter
     - Open Telemetry and Jaeger
