@@ -8,7 +8,7 @@ class PurchaseController {
   handle() {
     this.logger.info("[PurchaseController::handle]")
     this.purchaseUseCase.perform()
-    return left('')
+    return left({ error_code: 40 })
   }
 }
 
