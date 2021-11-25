@@ -1,6 +1,7 @@
 const amqp = require('amqplib/callback_api')
 
 const { left, right } = require('../../domain/entities/either')
+const { ErrorCodeEnum } = require('../../domain/enums/error_code')
 
 class MessagingBroker {
   constructor (logger) {
@@ -72,13 +73,18 @@ class MessagingBroker {
         this._brokerChannel.ack(message)
         return
       }
-
-      switch (result.value.error_code) {
-        case 500:
-        default:
-          this._brokerChannel.nack(message)
+      console.log(result.value.error_code)
+      if(result.value.error_code >= ErrorCodeEnum.InternalError) {
+        this._brokerChannel.nack(message)
+        return
       }
-      
+
+      const DEAD_LETTER_EXCHANGE = process.env.DEAD_LETTER_EXCHANGE
+      const DEAD_LETTER_ROUTING_KEY = process.env.DEAD_LETTER_ROUTING_KEY
+      // remove queue message
+      this._brokerChannel.ack(message)
+      // publish message into dead letter
+      this._brokerChannel.publish(DEAD_LETTER_EXCHANGE, DEAD_LETTER_ROUTING_KEY, message.content)
     }, options)
   }
 
@@ -142,8 +148,8 @@ class MessagingBroker {
 
         channel.assertQueue(AMQP_QUEUE, { 
           durable: true,  
-          'x-dead-letter-exchange': DEAD_LETTER_EXCHANGE,
-          'x-dead-letter-routing-key': DEAD_LETTER_ROUTING_KEY,
+          deadLetterExchange: DEAD_LETTER_EXCHANGE,
+          deadLetterRoutingKey: DEAD_LETTER_ROUTING_KEY,
         }, (err) => {
           if (err) return rejects(err)
         })
