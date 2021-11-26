@@ -3,6 +3,7 @@ const pinoInspector = require('pino-inspector');
 const { createContainer, InjectionMode, asValue, asClass, Lifetime } = require('awilix')
 
 const { MessagingBroker,  } = require('./infra/message_broker/message_broker')
+const { DbConnection } = require('./infra/database/connection')
 const { InventoryClient } = require('./infra/grpc_client/inventory_client')
 const { PaymentClient } = require('./infra/http_client/payment_client')
 const { PurchaseUseCase } = require('./application/usecases/purchase_usecase')
@@ -17,6 +18,7 @@ const registerInjections = () => {
   container.register({
     logger: asValue(createLoggerInstance()),
     messageBroker: asClass(MessagingBroker, { lifetime:  Lifetime.SINGLETON }),
+    dbConnection: asClass(DbConnection, { lifetime:  Lifetime.SINGLETON }),
     inventoryClient: asClass(InventoryClient, { lifetime:  Lifetime.SCOPED }),
     paymentClient: asClass(PaymentClient, { lifetime:  Lifetime.SCOPED }),
     purchaseUseCase: asClass(PurchaseUseCase, { lifetime:  Lifetime.SCOPED }),

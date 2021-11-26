@@ -5,10 +5,16 @@ const { registerInjections }  = require('./ioc')
   Environments.registerEnvironments()
   const container = registerInjections()
 
-  const { messageBroker, logger, purchaseSubscriber } = container.cradle;
+  const { logger, messageBroker, dbConnection, purchaseSubscriber } = container.cradle;
   
   const isConnected = await messageBroker.connectToBroker()
   if (isConnected.isLeft()) {
+    logger.error("Exiting...")
+    process.exit(1)
+  }
+
+  const isDbConnected = await dbConnection.connect()
+  if (isDbConnected.isLeft()) {
     logger.error("Exiting...")
     process.exit(1)
   }
