@@ -1,5 +1,7 @@
 const { InternalError } = require('../../application/errors/internal_error')
 const { right, left } = require('../../domain/entities/either')
+const { PurchaseModel } = require('../database/purchase_model')
+
 class PurchaseRepository {
   constructor(logger, dbConnection) {
     this.logger = logger;
@@ -8,7 +10,7 @@ class PurchaseRepository {
 
   findByOrderId(orderId) {
     try {
-      const result = this.dbConnection.findOne({ orderId})
+      const result = PurchaseModel.findOne({ orderId })
       return right(result)
     }catch (err) {
       return left(new InternalError("Error while find purchase by orderId", err))
@@ -17,7 +19,7 @@ class PurchaseRepository {
 
   create(purchase) {
     try {
-      const result = this.dbConnection.create(purchase)
+      const result = PurchaseModel.create(purchase)
       return right(result)
     }catch (err) {
       return left(new InternalError("Error while try to create purchase", err))
