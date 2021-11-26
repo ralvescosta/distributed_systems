@@ -1,10 +1,13 @@
+const { right } = require('../../domain/entities/either')
+
 class InventoryClient {
   constructor(logger) {
     this.logger = logger;
   }
 
-  doSomething() {
-    this.logger.info("[InventoryClient::doSomething]")
+  verifyAvailability() {
+    this.logger.info("[InventoryClient::verifyAvailability]")
+    return right(true)
   }
 }
 

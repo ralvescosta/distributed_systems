@@ -1,10 +1,14 @@
+const { right } = require('../../domain/entities')
+
 class PaymentClient {
   constructor(logger) {
     this.logger = logger;
   }
 
-  doSomething() {
-    this.logger.info("[PaymentClient::doSomething]")
+  payment() {
+    this.logger.info("[PaymentClient::payment]")
+
+    return right(true)
   }
 }
 
