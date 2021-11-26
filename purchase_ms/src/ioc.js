@@ -6,6 +6,7 @@ const { MessagingBroker,  } = require('./infra/message_broker/message_broker')
 const { DbConnection } = require('./infra/database/connection')
 const { InventoryClient } = require('./infra/grpc_client/inventory_client')
 const { PaymentClient } = require('./infra/http_client/payment_client')
+const { PubClient } = require('./infra/pub_client/pub_client')
 const { PurchaseUseCase } = require('./application/usecases/purchase_usecase')
 const { PurchaseSubscriber } = require('./interface/amqp/subscribers/purchase_subscriber')
 const { PurchaseController } = require('./interface/amqp/controllers/purchase_controller')
@@ -21,6 +22,7 @@ const registerInjections = () => {
     dbConnection: asClass(DbConnection, { lifetime:  Lifetime.SINGLETON }),
     inventoryClient: asClass(InventoryClient, { lifetime:  Lifetime.SCOPED }),
     paymentClient: asClass(PaymentClient, { lifetime:  Lifetime.SCOPED }),
+    pubClient: asClass(PubClient, { lifetime: Lifetime.SCOPED }),
     purchaseUseCase: asClass(PurchaseUseCase, { lifetime:  Lifetime.SCOPED }),
     purchaseController: asClass(PurchaseController, { lifetime:  Lifetime.SINGLETON }),
     purchaseSubscriber: asClass(PurchaseSubscriber, { lifetime:  Lifetime.SINGLETON }),
