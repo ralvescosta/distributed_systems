@@ -73,7 +73,7 @@ class MessagingBroker {
         this._brokerChannel.ack(message)
         return
       }
-      console.log(result.value.error_code)
+
       if(result.value.error_code >= ErrorCodeEnum.InternalError) {
         this._brokerChannel.nack(message)
         return

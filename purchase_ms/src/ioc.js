@@ -2,6 +2,7 @@ const pino = require('pino');
 const pinoInspector = require('pino-inspector');
 const { createContainer, InjectionMode, asValue, asClass, Lifetime } = require('awilix')
 
+const { Telemetry } = require('./infra/telemetry/telemetry')
 const { MessagingBroker,  } = require('./infra/message_broker/message_broker')
 const { DbConnection } = require('./infra/database/connection')
 const { InventoryClient } = require('./infra/grpc_client/inventory_client')
@@ -18,6 +19,7 @@ const container = createContainer({
 const registerInjections = () => {
   container.register({
     logger: asValue(createLoggerInstance()),
+    telemetry: asClass(Telemetry, { lifetime:  Lifetime.SINGLETON}),
     messageBroker: asClass(MessagingBroker, { lifetime:  Lifetime.SINGLETON }),
     dbConnection: asClass(DbConnection, { lifetime:  Lifetime.SINGLETON }),
     inventoryClient: asClass(InventoryClient, { lifetime:  Lifetime.SCOPED }),
@@ -39,7 +41,8 @@ const createLoggerInstance = () => {
     logger = pino({
       enabled: process.env.ENABLE_LOG === 'true',
       level: process.env.LOG_LEVEL || 'trace',
-      prettifier: pinoInspector
+      prettyPrint: true,
+      prettifier: pinoInspector,
     })
   } else {
     logger = pino({

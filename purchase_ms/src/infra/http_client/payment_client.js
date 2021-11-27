@@ -1,13 +1,11 @@
-const { right } = require('../../domain/entities')
+const { right } = require('../../domain/entities/either')
 
 class PaymentClient {
   constructor(logger) {
     this.logger = logger;
   }
 
-  payment() {
-    this.logger.info("[PaymentClient::payment]")
-
+  payment({ orderId, context }) {
     return right(true)
   }
 }

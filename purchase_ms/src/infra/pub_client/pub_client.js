@@ -1,11 +1,12 @@
 class PubClient {
-  constructor(logger) {
+  constructor(logger, messageBroker) {
     this.logger = logger;
+    this.messageBroker = messageBroker;
   }
 
-  updateInventory() {}
-  
-  purchaseEmail() {}
+  updateInventory({ order, payment, context }) {}
+
+  purchaseEmail({ order, payment, context }) {}
 }
 
 module.exports = { PubClient }
