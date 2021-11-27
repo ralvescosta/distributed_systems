@@ -1,0 +1,59 @@
+syntax = "proto3";
+
+package inventory;
+
+service Inventory {
+  rpc GetProductById (GetByIdRequest) returns (ProductResponse);
+  rpc GetProductsByType (GetByTypeRequest) returns (ProductsResponse);
+  rpc GetProducts (GetProductsRequest) returns (ProductsResponse);
+  rpc CreateProduct (CreateProductRequest) returns (ProductResponse);
+  rpc UpdateProduct(UpdateProductRequest) returns (ProductResponse);
+}
+
+message GetProductsRequest {
+  uint32 limit = 1;
+  uint32 offset = 2;
+}
+
+message GetByIdRequest {
+  string id = 1;
+}
+
+message GetByTypeRequest {
+  string product_type = 1;
+}
+
+message CreateProductRequest {
+  string tag = 1;
+  string title = 2;
+  string subtitle = 3;
+  repeated string authors = 4;
+  int64 amount_in_stock = 5;
+  int64 num_pages = 6;
+  repeated string tags = 7;
+}
+
+message UpdateProductRequest {
+  string tag = 1;
+  string title = 2;
+  string subtitle = 3;
+  int64 amount_in_stock = 4;
+}
+
+message ProductResponse {
+  string id = 1;
+  string product_category = 2;
+  string tag = 3;
+  string title = 4;
+  string subtitle = 5;
+  repeated string authors = 6;
+  int64 amount_in_stock = 7;
+  int64 num_pages = 8;
+  repeated string tags = 9;
+  string created_at = 10;
+  string updated_at = 11;
+}
+
+message ProductsResponse {
+  repeated ProductResponse value = 1;
+}
