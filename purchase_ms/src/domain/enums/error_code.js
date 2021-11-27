@@ -4,7 +4,8 @@ const ErrorCodeEnum = {
   ConflictError: 43,
   InternalError: 50,
   IntegrationError: 51,
-  TimeoutError: 52
+  TimeoutError: 52,
+  UnavailableServiceError: 53,
 }
 
 module.exports = { ErrorCodeEnum }
