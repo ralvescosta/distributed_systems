@@ -1,6 +1,7 @@
-// const { NodeTracerProvider } = require('@opentelemetry/node')
+const { Resource } = require('@opentelemetry/resources')
+const { SemanticResourceAttributes } = require('@opentelemetry/semantic-conventions')
 const { trace } = require('@opentelemetry/api')
-const { SimpleSpanProcessor, BasicTracerProvider } = require('@opentelemetry/tracing')
+const { BasicTracerProvider, BatchSpanProcessor } = require('@opentelemetry/tracing')
 const { JaegerExporter } = require('@opentelemetry/exporter-jaeger')
 
 class Telemetry {
@@ -9,15 +10,15 @@ class Telemetry {
   }
 
   start() {
-    const tracer = new BasicTracerProvider()
-  
+    const tracer = new BasicTracerProvider({
+      resource: new Resource({
+        [SemanticResourceAttributes.SERVICE_NAME]: process.env.APP_NAME
+      })
+    })
     const exporter = new JaegerExporter({
       host: process.env.JAEGER_HOST,
-      username: process.env.APP_NAME,
     })
-    
-    tracer.addSpanProcessor(new SimpleSpanProcessor(exporter))
-
+    tracer.addSpanProcessor(new BatchSpanProcessor(exporter))
     trace.setGlobalTracerProvider(tracer)
   }
 
@@ -25,8 +26,8 @@ class Telemetry {
     const cTracer = trace.getTracer(process.env.APP_NAME, '0.1.0');
     const span = cTracer.startSpan(`Queue: ${queue}`);
 
-    span.setAttributes('Exchange', exchange)
-    span.setAttributes('RoutingKey', routingKey)
+    span.setAttribute("amqp.exchange", exchange)
+    span.setAttribute("amqp.routingKey", routingKey)
 
     return span
   }
