@@ -8,22 +8,22 @@ class PurchaseRepository {
     this.dbConnection = dbConnection;
   }
 
-  findByOrderId(orderId) {
-    try {
-      const result = PurchaseModel.findOne({ orderId })
-      return right(result)
-    }catch (err) {
-      return left(new InternalError("Error while find purchase by orderId", err))
-    }
+  findByOrderId({ orderId, context }) {
+    // try {
+    //   const result = PurchaseModel.findOne({ orderId })
+    //   return right(result)
+    // }catch (err) {
+    //   return left(new InternalError("Error while find purchase by orderId", err))
+    // }
   }
 
-  create(purchase) {
-    try {
-      const result = PurchaseModel.create(purchase)
-      return right(result)
-    }catch (err) {
-      return left(new InternalError("Error while try to create purchase", err))
-    }
+  create({ order, payment, context }) {
+    // try {
+    //   const result = PurchaseModel.create(purchase)
+    //   return right(result)
+    // }catch (err) {
+    //   return left(new InternalError("Error while try to create purchase", err))
+    // }
   }
 }
 
