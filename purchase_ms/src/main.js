@@ -5,7 +5,7 @@ const { registerInjections }  = require('./ioc')
   Environments.registerEnvironments()
   const container = registerInjections()
 
-  const { logger, messageBroker, dbConnection, purchaseSubscriber } = container.cradle;
+  const { logger, telemetry, messageBroker, dbConnection, purchaseSubscriber } = container.cradle;
   
   const isConnected = await messageBroker.connectToBroker()
   if (isConnected.isLeft()) {
@@ -18,6 +18,8 @@ const { registerInjections }  = require('./ioc')
     logger.error("Exiting...")
     process.exit(1)
   }
+
+  telemetry.start()
 
   purchaseSubscriber.subscribe()
 })()
