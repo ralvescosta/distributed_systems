@@ -6,21 +6,24 @@ class PurchaseController {
     this.telemetry = telemetry;
   }
 
-  handle({ content }) { //fields, properties
+  async handle({ content }) { //fields, properties
     const span = this.telemetry.instrumentAmqp(
       process.env.AMQP_QUEUE, 
       process.env.AMQP_EXCHANGE, 
       process.env.AMQP_ROUTING_KEY,
     )
 
+    let order = {}
     try {
-      const order = JSON.parse(content)
-      this.purchaseUseCase.perform({ order, context: span.spanContext() })
+      order = JSON.parse(content)
     }catch(err) {
       this.logger.error("[PurchaseController::handle]")
     }
     
-    this.logger.info("[PurchaseController::handle]")
+    const result = await this.purchaseUseCase.perform({ order, context: span.spanContext() })
+    if (result.isLeft()) {
+      span.setAttribute("error", true)
+    }
 
     span.end();
     return left({ error_code: 40 })
