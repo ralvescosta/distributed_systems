@@ -6,6 +6,7 @@ const ErrorCodeEnum = {
   IntegrationError: 51,
   TimeoutError: 52,
   UnavailableServiceError: 53,
+  NotFoundError: 54,
 }
 
 module.exports = { ErrorCodeEnum }
