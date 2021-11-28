@@ -3,6 +3,7 @@ const { SemanticResourceAttributes } = require('@opentelemetry/semantic-conventi
 const { trace } = require('@opentelemetry/api')
 const { BasicTracerProvider, BatchSpanProcessor } = require('@opentelemetry/tracing')
 const { JaegerExporter } = require('@opentelemetry/exporter-jaeger')
+const { Metadata } = require('@grpc/grpc-js');
 
 class Telemetry {
   constructor(logger) {
@@ -30,6 +31,17 @@ class Telemetry {
     span.setAttribute("amqp.routingKey", routingKey)
 
     return span
+  }
+
+  grpcInjector(context) {
+    const metadata = new Metadata()
+    metadata.add("traceparent", `00-${context.traceId}-${context.spanId}-01`)
+
+    return metadata
+  }
+
+  amqpExtractor(headers) {
+    return headers
   }
 
   getTracer() {
