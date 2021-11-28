@@ -8,8 +8,8 @@ class PurchaseUseCase {
     this.pubClient = pubClient;
   }
 
-  async perform(order, context) {
-    const isAvailable = await this.inventoryClient.verifyAvailability({ order, context });
+  async perform({ order, context }) {
+    const isAvailable = await this.inventoryClient.verifyAvailability({ productId: order.productId, context });
     if(isAvailable.isLeft()) {
       return isAvailable;
     }

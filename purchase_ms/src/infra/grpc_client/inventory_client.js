@@ -1,5 +1,5 @@
 const { promisify } = require('util');
-const { right } = require('../../domain/entities/either')
+const { right, left } = require('../../domain/entities/either')
 const { GrpcClient } = require('./grpc_client')
 
 class InventoryClient extends GrpcClient {
@@ -9,15 +9,18 @@ class InventoryClient extends GrpcClient {
     this.loadProto('inventory.proto')
   }
 
-  async verifyAvailability(id) {
+  async verifyAvailability({ productId }) { //context
     const client = this.getClientInstance('inventory', 'Inventory', process.env.INVENTORY_MS_URL)
     
     if(client.isLeft())
       return client
 
-    const result = await promisify(client.value.getProductById)({ id })
-    this.logger.info("[InventoryClient::verifyAvailability]", result)
-    return right(true)
+    try {
+      const result = await promisify(client.value.getProductById.bind(client.value))({ id: productId })
+      return right(result)
+    }catch(err) {
+      return left(this.errorMapper(err))
+    }
   }
 }
 
