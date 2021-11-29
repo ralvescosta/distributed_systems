@@ -1,6 +1,6 @@
 const { Resource } = require('@opentelemetry/resources')
 const { SemanticResourceAttributes } = require('@opentelemetry/semantic-conventions')
-const { trace } = require('@opentelemetry/api')
+const { trace, context: aiPai } = require('@opentelemetry/api')
 const { BasicTracerProvider, BatchSpanProcessor } = require('@opentelemetry/tracing')
 const { JaegerExporter } = require('@opentelemetry/exporter-jaeger')
 const { Metadata } = require('@grpc/grpc-js');
@@ -33,11 +33,10 @@ class Telemetry {
     return span
   }
 
-  createChildrenSpan({ context, query }) {
+  createChildrenSpan({ context, name }) {
     const cTracer = trace.getTracer(process.env.APP_NAME, process.env.APP_VERSION);
-    const span = trace.wrapSpanContext(context)
-
-    return cTracer.startActiveSpan(query, span) 
+ 
+    return cTracer.startSpan(name, {}, aiPai.active())
   }
 
   grpcInjector(context) {
