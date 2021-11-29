@@ -1,9 +1,10 @@
 const { right } = require('../../domain/entities/either')
 
 class PurchaseUseCase {
-  constructor(logger, inventoryClient, paymentClient, pubClient) {
+  constructor(logger, inventoryClient, purchaseRepository, paymentClient, pubClient) {
     this.logger = logger;
     this.inventoryClient = inventoryClient;
+    this.purchaseRepository = purchaseRepository;
     this.paymentClient = paymentClient;
     this.pubClient = pubClient;
   }
@@ -11,7 +12,7 @@ class PurchaseUseCase {
   async perform({ order, context }) {
     const isAvailable = await this.inventoryClient.verifyAvailability({ productId: order.productId, context });
     if(isAvailable.isLeft()) {
-      return isAvailable;
+      // return isAvailable;
     }
 
     const orderAlreadyExist = await this.purchaseRepository.findByOrderId({ orderId: order.orderId, context })
