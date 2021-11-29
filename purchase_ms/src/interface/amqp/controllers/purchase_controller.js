@@ -6,12 +6,13 @@ class PurchaseController {
     this.telemetry = telemetry;
   }
 
-  async handle({ content }) { //fields, properties
-    const span = this.telemetry.instrumentAmqp(
-      process.env.AMQP_QUEUE, 
-      process.env.AMQP_EXCHANGE, 
-      process.env.AMQP_ROUTING_KEY,
-    )
+  async handle({ content, properties }) { //fields, properties
+    const span = this.telemetry.amqpExtractor({
+      headers: properties.headers,
+      queue: process.env.AMQP_QUEUE, 
+      exchange: process.env.AMQP_EXCHANGE, 
+      routingKey: process.env.AMQP_ROUTING_KEY,
+    })
 
     let order = {}
     try {

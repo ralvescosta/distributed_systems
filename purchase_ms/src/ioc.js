@@ -5,6 +5,7 @@ const { createContainer, InjectionMode, asValue, asClass, Lifetime } = require('
 const { Telemetry } = require('./infra/telemetry/telemetry')
 const { MessagingBroker,  } = require('./infra/message_broker/message_broker')
 const { DbConnection } = require('./infra/database/connection')
+const { PurchaseRepository } = require('./infra/repositories/purchase_repository')
 const { InventoryClient } = require('./infra/grpc_client/inventory_client')
 const { PaymentClient } = require('./infra/http_client/payment_client')
 const { PubClient } = require('./infra/pub_client/pub_client')
@@ -23,6 +24,7 @@ const registerInjections = () => {
     messageBroker: asClass(MessagingBroker, { lifetime:  Lifetime.SINGLETON }),
     dbConnection: asClass(DbConnection, { lifetime:  Lifetime.SINGLETON }),
     inventoryClient: asClass(InventoryClient, { lifetime:  Lifetime.SCOPED }),
+    purchaseRepository: asClass(PurchaseRepository, { lifetime:  Lifetime.SCOPED }),
     paymentClient: asClass(PaymentClient, { lifetime:  Lifetime.SCOPED }),
     pubClient: asClass(PubClient, { lifetime: Lifetime.SCOPED }),
     purchaseUseCase: asClass(PurchaseUseCase, { lifetime:  Lifetime.SCOPED }),
