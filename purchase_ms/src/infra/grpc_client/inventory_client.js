@@ -11,19 +11,25 @@ class InventoryClient extends GrpcClient {
     this.loadProto('inventory.proto')
   }
 
-  async verifyAvailability({ productId, context }) { //context
+  async verifyAvailability({ productId, context }) {
+    const { span, metadata } = this.telemetry.grpcInjector({ grpcCall: "grpcGetProductById", context })
+    
     const client = this.getClientInstance('inventory', 'Inventory', process.env.INVENTORY_MS_URL)
     
-    if(client.isLeft())
+    if(client.isLeft()){
+      span.setAttribute("error", true)
+      span.end()
       return client
-
-    const metadata = this.telemetry.grpcInjector(context)
-    
+    }
+      
     try {
       const result = await promisify(client.value.getProductById.bind(client.value))({ id: productId }, metadata)
       return right(result)
-    }catch(err) {
+    } catch(err) {
+      span.setAttribute("error", true)
       return left(this.errorMapper(err))
+    } finally {
+      span.end()
     }
   }
 }

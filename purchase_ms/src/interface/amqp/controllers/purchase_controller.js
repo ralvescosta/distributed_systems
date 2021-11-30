@@ -7,7 +7,7 @@ class PurchaseController {
   }
 
   async handle({ content, properties }) { //fields, properties
-    const span = this.telemetry.amqpExtractor({
+    const { span, context } = this.telemetry.amqpExtractor({
       headers: properties.headers,
       queue: process.env.AMQP_QUEUE, 
       exchange: process.env.AMQP_EXCHANGE, 
@@ -21,7 +21,7 @@ class PurchaseController {
       this.logger.error("[PurchaseController::handle]")
     }
     
-    const result = await this.purchaseUseCase.perform({ order, context: span.spanContext() })
+    const result = await this.purchaseUseCase.perform({ order, context })
     if (result.isLeft()) {
       span.setAttribute("error", true)
     }
