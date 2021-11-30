@@ -1,6 +1,6 @@
 const { Resource } = require('@opentelemetry/resources')
 const { SemanticResourceAttributes } = require('@opentelemetry/semantic-conventions')
-const { trace, context: aiPai } = require('@opentelemetry/api')
+const { trace, context: apiContext } = require('@opentelemetry/api')
 const { BasicTracerProvider, BatchSpanProcessor } = require('@opentelemetry/tracing')
 const { JaegerExporter } = require('@opentelemetry/exporter-jaeger')
 const { Metadata } = require('@grpc/grpc-js');
@@ -30,20 +30,26 @@ class Telemetry {
     span.setAttribute("amqp.exchange", exchange)
     span.setAttribute("amqp.routingKey", routingKey)
 
-    return span
+    const context = trace.setSpan(apiContext.active(), span)
+    return { span, context }
   }
 
-  createChildrenSpan({ context, name }) {
+  createChildrenSpan({ name, context }) {
     const cTracer = trace.getTracer(process.env.APP_NAME, process.env.APP_VERSION);
- 
-    return cTracer.startSpan(name, {}, aiPai.active())
+    
+    return cTracer.startSpan(name, undefined, context)
   }
 
-  grpcInjector(context) {
-    const metadata = new Metadata()
-    metadata.add("traceparent", `00-${context.traceId}-${context.spanId}-01`)
+  grpcInjector({ grpcCall, context }) {
+    const cTracer = trace.getTracer(process.env.APP_NAME, process.env.APP_VERSION);
 
-    return metadata
+    const span = cTracer.startSpan(grpcCall, undefined, context)
+    const spanContext = span.spanContext()
+    
+    const metadata = new Metadata()
+    metadata.add("traceparent", `00-${spanContext.traceId}-${spanContext.spanId}-01`)
+
+    return { span, metadata }
   }
 
   amqpExtractor({ headers = {}, queue, exchange, routingKey }) {
@@ -62,7 +68,9 @@ class Telemetry {
     span.setAttribute("amqp.exchange", exchange)
     span.setAttribute("amqp.routingKey", routingKey)
 
-    return span
+    const context = trace.setSpan(apiContext.active(), span)
+
+    return { span, context }
   }
 
   getTracer() {
