@@ -12,14 +12,9 @@ class DbConnection {
     const MONGO_CONNECTION_URI = process.env.MONGO_CONNECTION_URI
 
     try {
-      await promisify(mongoose.connect)(
-        MONGO_CONNECTION_URI, 
-        { 
-          useUnifiedTopology: true,
-        })
-
-        this.logger.info('Connected in Database!')
-        return right(true)
+      await promisify(mongoose.connect)(MONGO_CONNECTION_URI, { useUnifiedTopology: true })
+      this.logger.info('Connected in Database!')
+      return right(true)
     } catch (err) {
       this.logger.error(err)
       return left(new InternalError("Error whiling connect in MongoDb", err))

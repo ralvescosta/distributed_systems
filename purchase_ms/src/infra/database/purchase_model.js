@@ -9,12 +9,10 @@ const PurchaseSchema = new Schema({
     type: String,
     required: true,
   },
-  products: [
-    {
-      type: Object,
-      required: true,
-    },
-  ],
+  product_id: {
+    type: String,
+    required: true,
+  },
   created_at: {
     type: Date,
     default: new Date(),
