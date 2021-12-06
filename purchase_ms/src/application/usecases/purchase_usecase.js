@@ -1,4 +1,4 @@
-const { right } = require('../../domain/entities/either')
+const { right, left } = require('../../domain/entities/either')
 
 class PurchaseUseCase {
   constructor(logger, inventoryClient, purchaseRepository, paymentClient, pubClient) {
@@ -20,7 +20,7 @@ class PurchaseUseCase {
       return orderAlreadyExist;
     }
     if(orderAlreadyExist.value) {
-      return;
+      return left(new Error(''));
     }
 
     const payment = await this.paymentClient.payment({ order, context });
