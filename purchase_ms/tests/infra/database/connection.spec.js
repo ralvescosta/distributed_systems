@@ -25,6 +25,9 @@ jest.mock('mongoose', () => ({
 
 describe('INFRA :: DATABASE :: Connection', () => {
   describe('INFRA :: DATABASE :: Connection :: connect', () => {
+    beforeEach(() => {
+      jest.clearAllMocks()
+    })
     it('should connect in mongo db successfully', async () => {
       const { sut, loggerSpy } = makeSut()
 
