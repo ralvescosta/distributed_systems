@@ -1,4 +1,6 @@
-const { left } = require('../../../domain/entities/either')
+const { left, right } = require('../../../domain/entities/either')
+const { ContractError } = require('../../../application/errors/contract_error')
+
 class PurchaseController {
   constructor(logger, purchaseUseCase, telemetry) {
     this.logger = logger;
@@ -6,7 +8,7 @@ class PurchaseController {
     this.telemetry = telemetry;
   }
 
-  async handle({ content, properties }) { //fields, properties
+  async handle({ content, properties }) {
     const { span, context } = this.telemetry.amqpExtractor({
       headers: properties.headers,
       queue: process.env.AMQP_QUEUE, 
@@ -19,15 +21,18 @@ class PurchaseController {
       order = JSON.parse(content)
     }catch(err) {
       this.logger.error("[PurchaseController::handle]")
+      this.telemetry.handleError(span, err)
+      return left(new ContractError("Error whiling serialize content to json", err))
     }
     
     const result = await this.purchaseUseCase.perform({ order, context })
     if (result.isLeft()) {
-      span.setAttribute("error", true)
+      this.telemetry.handleError(span, result.value)
+      return result
     }
-
-    span.end();
-    return left({ error_code: 40 })
+    
+    span.end()
+    return right(true)
   }
 }
 
