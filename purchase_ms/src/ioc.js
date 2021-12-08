@@ -38,22 +38,19 @@ const registerInjections = () => {
 const createLoggerInstance = () => {
   const debug = process.env.LOG_LEVEL === 'trace' ||  process.env.LOG_LEVEL === 'debug'
   
-  let logger;
   if (debug) {
-    logger = pino({
+    return pino({
       enabled: process.env.ENABLE_LOG === 'true',
       level: process.env.LOG_LEVEL || 'trace',
       prettyPrint: true,
       prettifier: pinoInspector,
     })
-  } else {
-    logger = pino({
-      enabled: process.env.ENABLE_LOG === 'true',
-      level: process.env.LOG_LEVEL || 'warn'
-    })
   }
 
-  return logger;
+  return pino({
+    enabled: process.env.ENABLE_LOG === 'true',
+    level: process.env.LOG_LEVEL || 'warn'
+  })
 }
 
 module.exports = {

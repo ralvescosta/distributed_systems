@@ -74,7 +74,7 @@ class MessagingBroker {
         return
       }
 
-      if(result.value.error_code >= ErrorCodeEnum.InternalError) {
+      if(result.value.code >= ErrorCodeEnum.InternalError) {
         this._brokerChannel.nack(message)
         return
       }

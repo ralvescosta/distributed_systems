@@ -6,7 +6,8 @@ const { registerInjections }  = require('./ioc')
   const container = registerInjections()
 
   const { logger, telemetry, messageBroker, dbConnection, purchaseSubscriber } = container.cradle;
-  
+  telemetry.start()
+
   const isConnected = await messageBroker.connectToBroker()
   if (isConnected.isLeft()) {
     logger.error("Exiting...")
@@ -18,8 +19,6 @@ const { registerInjections }  = require('./ioc')
     logger.error("Exiting...")
     process.exit(1)
   }
-
-  telemetry.start()
 
   purchaseSubscriber.subscribe()
 })()

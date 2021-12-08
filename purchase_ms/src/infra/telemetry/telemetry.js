@@ -1,8 +1,12 @@
 const { Resource } = require('@opentelemetry/resources')
 const { SemanticResourceAttributes } = require('@opentelemetry/semantic-conventions')
-const { trace, context: apiContext, propagation } = require('@opentelemetry/api')
-const { BasicTracerProvider, BatchSpanProcessor } = require('@opentelemetry/tracing')
+const { trace, context: apiContext, propagation, SpanStatusCode } = require('@opentelemetry/api')
+const { NodeTracerProvider } = require('@opentelemetry/sdk-trace-node');
+const { BatchSpanProcessor } = require('@opentelemetry/tracing')
 const { JaegerExporter } = require('@opentelemetry/exporter-jaeger')
+const { PinoInstrumentation } = require('@opentelemetry/instrumentation-pino');
+const { registerInstrumentations } = require('@opentelemetry/instrumentation');
+
 const { Metadata } = require('@grpc/grpc-js');
 
 class Telemetry {
@@ -13,7 +17,7 @@ class Telemetry {
   }
 
   start() {
-    const tracer = new BasicTracerProvider({
+    const tracer = new NodeTracerProvider({
       resource: new Resource({
         [SemanticResourceAttributes.SERVICE_NAME]: this.appName
       })
@@ -21,8 +25,19 @@ class Telemetry {
     const exporter = new JaegerExporter({
       host: process.env.JAEGER_HOST,
     })
+    
     tracer.addSpanProcessor(new BatchSpanProcessor(exporter))
     trace.setGlobalTracerProvider(tracer)
+
+    registerInstrumentations({
+      instrumentations: [
+        new PinoInstrumentation({
+          logHook: (span, record) => {
+            record['resource.service.name'] = this.appName;
+          },
+        }),
+      ],
+    });
   }
 
   instrumentAmqp({ queue, exchange, routingKey}) {
@@ -96,6 +111,14 @@ class Telemetry {
     const spanContext = span.spanContext()
 
     return { span,  headers: { traceparent: `00-${spanContext.traceId}-${spanContext.spanId}-01`} }
+  }
+
+  handleError(span, error) {
+    span.setStatus({
+      code: SpanStatusCode.ERROR,
+      message: error.stack
+    })
+    span.end()
   }
 
   getTracer() {
