@@ -17,19 +17,17 @@ class InventoryClient extends GrpcClient {
     const client = this.getClientInstance('inventory', 'Inventory', process.env.INVENTORY_MS_URL)
     
     if(client.isLeft()){
-      span.setAttribute("error", true)
-      span.end()
+      this.telemetry.handleError(span, client.value)
       return client
     }
       
     try {
       const result = await promisify(client.value.getProductById.bind(client.value))({ id: productId }, metadata)
+      span.end()
       return right(result)
     } catch(err) {
-      span.setAttribute("error", true)
+      this.telemetry.handleError(span, err)
       return left(this.errorMapper(err))
-    } finally {
-      span.end()
     }
   }
 }
