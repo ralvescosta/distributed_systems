@@ -1,5 +1,5 @@
 const ErrorCodeEnum = {
-  MessageUnformatted: 40,
+  ContractError: 40,
   BusinessError: 42,
   ConflictError: 43,
   InternalError: 50,
