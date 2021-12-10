@@ -26,6 +26,7 @@ type webApiContainer struct {
 	usersRoutes          presenters.IUsersRoutes
 	authenticationRoutes presenters.ISessionRoutes
 	inventoryRoutes      presenters.IInventoryRoutes
+	purchaseRoutes       presenters.IPurchaseRoutes
 
 	telemetryApp telemetry.ITelemetry
 }
@@ -67,10 +68,14 @@ func NewContainer() webApiContainer {
 	authenticationMiddleware := middlewares.NewAuthMiddleware(validationTokenUseCase)
 
 	inventoryClient := grpcClients.NewInventoryClient(logger, telemetryApp)
-	getProductById := appUseCases.NewGetProductByIdUseCase(inventoryClient)
-	createProduct := appUseCases.NewCreateProductUseCase(inventoryClient)
-	inventoryHandler := handlers.NewInventoryHandler(logger, validatoR, getProductById, createProduct)
+	getProductByIdUseCase := appUseCases.NewGetProductByIdUseCase(inventoryClient)
+	createProductUseCase := appUseCases.NewCreateProductUseCase(inventoryClient)
+	inventoryHandler := handlers.NewInventoryHandler(logger, validatoR, getProductByIdUseCase, createProductUseCase)
 	inventoryRoutes := presenters.NewInventoryRoutes(logger, authenticationMiddleware, inventoryHandler)
+
+	pruchaseUseCase := appUseCases.NewPruchaseUseCase()
+	purchaseHandler := handlers.NewPurchaseHandler(pruchaseUseCase)
+	pruchaseRoutes := presenters.NewPruchaseRoutes(purchaseHandler, authenticationMiddleware, logger)
 
 	return webApiContainer{
 		logger,
@@ -79,6 +84,7 @@ func NewContainer() webApiContainer {
 		usersRoutes,
 		authenticationRoutes,
 		inventoryRoutes,
+		pruchaseRoutes,
 
 		telemetryApp,
 	}
