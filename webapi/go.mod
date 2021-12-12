@@ -34,6 +34,7 @@ require (
 	github.com/newrelic/go-agent/v3 v3.15.0 // indirect
 	github.com/pkg/errors v0.8.1 // indirect
 	github.com/pmezard/go-difflib v1.0.0 // indirect
+	github.com/streadway/amqp v1.0.0 // indirect
 	github.com/uber/jaeger-lib v2.4.1+incompatible // indirect
 	github.com/ugorji/go/codec v1.2.6 // indirect
 	go.uber.org/atomic v1.9.0 // indirect
