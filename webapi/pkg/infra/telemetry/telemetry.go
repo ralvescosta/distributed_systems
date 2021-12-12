@@ -18,6 +18,7 @@ type ITelemetry interface {
 	GinMiddle() gin.HandlerFunc
 	InstrumentQuery(ctx context.Context, sqlType string, sql string) opentracing.Span
 	InstrumentGRPCClient(ctx context.Context, clientName string) (opentracing.Span, context.Context)
+	InstrumentAMQPPublisher(ctx context.Context, exchangeName, queueName string) (opentracing.Span, context.Context)
 	StartSpanFromRequest(header http.Header) opentracing.Span
 	Inject(span opentracing.Span, request *http.Request) error
 	Extract(header http.Header) (opentracing.SpanContext, error)
@@ -89,6 +90,25 @@ func (pst *telemetry) InstrumentGRPCClient(ctx context.Context, clientName strin
 
 	ext.SpanKindRPCClient.Set(span)
 	ext.PeerService.Set(span, "gRPC Client")
+
+	jaegerCtx, _ := span.Context().(jaeger.SpanContext)
+
+	ctxWithHeaders := metadata.NewOutgoingContext(
+		opentracing.ContextWithSpan(ctx, span),
+		metadata.Pairs("traceparent", fmt.Sprintf("00-%s-%s-01", jaegerCtx.ParentID(), jaegerCtx.SpanID())),
+	)
+
+	return span, ctxWithHeaders
+}
+
+func (pst *telemetry) InstrumentAMQPPublisher(ctx context.Context, exchangeName, queueName string) (opentracing.Span, context.Context) {
+	span := opentracing.SpanFromContext(ctx)
+	span = pst.tracer.StartSpan(fmt.Sprintf("exchange: %s", exchangeName), opentracing.ChildOf(span.Context()))
+
+	ext.SpanKindRPCClient.Set(span)
+	ext.PeerService.Set(span, "AMQP Pub")
+	span.SetTag("amqp.exchange", exchangeName)
+	span.SetTag("amqp.queue", queueName)
 
 	jaegerCtx, _ := span.Context().(jaeger.SpanContext)
 
