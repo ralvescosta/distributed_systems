@@ -61,9 +61,9 @@ func (pst messageBroker) Publisher(
 	ctx context.Context,
 	exchangeName, exchangeType, queueName, routingKey string,
 	body interface{},
-	header map[string]interface{},
+	headers map[string]interface{},
 ) error {
-	span, _ := pst.telemetry.InstrumentAMQPPublisher(ctx, exchangeName, queueName)
+	span, spanCtx := pst.telemetry.InstrumentAMQPPublisher(ctx, exchangeName, queueName)
 	defer span.Finish()
 
 	ch, err := connect()
@@ -81,10 +81,12 @@ func (pst messageBroker) Publisher(
 		return errors.NewInternalError("body convert")
 	}
 
+	pst.telemetry.InjectAMQPHeader(headers, spanCtx)
+
 	err = ch.Publish(exchangeName, routingKey, false, false, amqp.Publishing{
 		ContentType: "application/json",
 		Body:        amqpBody,
-		Headers:     header,
+		Headers:     headers,
 	})
 	if err != nil {
 		return err

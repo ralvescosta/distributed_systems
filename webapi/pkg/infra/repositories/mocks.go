@@ -73,6 +73,12 @@ func (telemetrySpy) StartSpanFromRequest(header http.Header) opentracing.Span {
 func (telemetrySpy) Inject(span opentracing.Span, request *http.Request) error {
 	return nil
 }
+func (telemetrySpy) InjectAMQPHeader(header map[string]interface{}, ctx context.Context) error {
+	return nil
+}
+func (telemetrySpy) GetTraceparenteFromSpan(span opentracing.Span) string {
+	return ""
+}
 func (telemetrySpy) Extract(header http.Header) (opentracing.SpanContext, error) {
 	return nil, nil
 }
