@@ -5,6 +5,7 @@ import (
 	"fmt"
 	"io"
 	"net/http"
+	"webapi/pkg/app/errors"
 
 	"github.com/gin-gonic/gin"
 	"github.com/opentracing/opentracing-go"
@@ -21,6 +22,7 @@ type ITelemetry interface {
 	InstrumentAMQPPublisher(ctx context.Context, exchangeName, queueName string) (opentracing.Span, context.Context)
 	StartSpanFromRequest(header http.Header) opentracing.Span
 	Inject(span opentracing.Span, request *http.Request) error
+	InjectAMQPHeader(header map[string]interface{}, ctx context.Context) error
 	Extract(header http.Header) (opentracing.SpanContext, error)
 	Dispatch()
 	GetTracer() opentracing.Tracer
@@ -134,6 +136,19 @@ func (telemetry) Inject(span opentracing.Span, request *http.Request) error {
 		span.Context(),
 		opentracing.HTTPHeaders,
 		opentracing.HTTPHeadersCarrier(request.Header))
+}
+
+func (telemetry) InjectAMQPHeader(header map[string]interface{}, ctx context.Context) error {
+	span := opentracing.SpanFromContext(ctx)
+
+	jaegerCtx, ok := span.Context().(jaeger.SpanContext)
+	if !ok {
+		return errors.NewInternalError("error")
+	}
+
+	header["traceparent"] = fmt.Sprintf("00-%s-%s-01", jaegerCtx.ParentID(), jaegerCtx.SpanID())
+
+	return nil
 }
 
 // Extract extracts the inbound HTTP request to obtain the parent span's context to ensure
