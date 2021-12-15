@@ -6,19 +6,11 @@ import (
 	"fmt"
 	"os"
 	"webapi/pkg/app/errors"
+	"webapi/pkg/app/interfaces"
 	"webapi/pkg/infra/telemetry"
 
 	"github.com/streadway/amqp"
 )
-
-type IMessageBroker interface {
-	Publisher(
-		ctx context.Context,
-		exchangeName, exchangeType, queueName, routingKey string,
-		body interface{},
-		header map[string]interface{},
-	) error
-}
 
 type messageBroker struct {
 	telemetry telemetry.ITelemetry
@@ -66,6 +58,10 @@ func (pst messageBroker) Publisher(
 	span, spanCtx := pst.telemetry.InstrumentAMQPPublisher(ctx, exchangeName, queueName)
 	defer span.Finish()
 
+	if headers == nil {
+		headers = make(map[string]interface{})
+	}
+
 	ch, err := connect()
 	if err != nil {
 		return errors.NewInternalError("amqp connection error!")
@@ -95,6 +91,6 @@ func (pst messageBroker) Publisher(
 	return nil
 }
 
-func NewMessageBroker() IMessageBroker {
+func NewMessageBroker() interfaces.IMessageBroker {
 	return messageBroker{}
 }
