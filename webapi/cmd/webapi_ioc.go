@@ -74,7 +74,7 @@ func NewContainer() webApiContainer {
 	inventoryRoutes := presenters.NewInventoryRoutes(logger, authenticationMiddleware, inventoryHandler)
 
 	pruchaseUseCase := appUseCases.NewPruchaseUseCase()
-	purchaseHandler := handlers.NewPurchaseHandler(pruchaseUseCase)
+	purchaseHandler := handlers.NewPurchaseHandler(logger, validatoR, pruchaseUseCase)
 	pruchaseRoutes := presenters.NewPruchaseRoutes(purchaseHandler, authenticationMiddleware, logger)
 
 	return webApiContainer{
