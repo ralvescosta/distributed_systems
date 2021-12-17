@@ -8,7 +8,7 @@ import (
 	"github.com/stretchr/testify/assert"
 )
 
-func Test(t *testing.T) {
+func Test_CreateProductUC_Should_Execute_Correctly(t *testing.T) {
 	config := map[string]mockConfigure{
 		"inventoryClient": {
 			method:       "RegisterProduct",
