@@ -194,3 +194,40 @@ func (pst tokenManagerSpy) VerifyToken(token string) (*dtos.SessionDto, error) {
 
 	return &dtos.SessionDto{}, nil
 }
+
+type getProductByIdUsecaseToTest struct {
+	useCase usecases.IGetProductByIdUseCase
+}
+
+func newGetProductByIdUsecaseToTest(configs map[string]mockConfigure) getProductByIdUsecaseToTest {
+	inventoryClientConfig, ok := configs["inventoryClient"]
+	var inventoryClient interfaces.IIventoryClient
+	if ok {
+		inventoryClient = inventoryClientSpy{config: &inventoryClientConfig}
+	} else {
+		inventoryClient = inventoryClientSpy{}
+	}
+
+	useCase := NewGetProductByIdUseCase(inventoryClient)
+	return getProductByIdUsecaseToTest{useCase}
+}
+
+type inventoryClientSpy struct {
+	config *mockConfigure
+}
+
+func (pst inventoryClientSpy) GetProductById(ctx context.Context, id string) (dtos.ProductDto, error) {
+	if pst.config != nil && pst.config.method == "GetProductById" {
+		return pst.config.customResult.(dtos.ProductDto), pst.config.customError
+	}
+
+	return dtos.ProductDto{}, nil
+}
+
+func (pst inventoryClientSpy) RegisterProduct(ctx context.Context, product dtos.ProductDto) (dtos.ProductDto, error) {
+	if pst.config != nil && pst.config.method == "RegisterProduct" {
+		return pst.config.customResult.(dtos.ProductDto), pst.config.customError
+	}
+
+	return dtos.ProductDto{}, nil
+}
