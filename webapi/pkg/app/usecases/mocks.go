@@ -248,3 +248,37 @@ func newCreateProductUsecaseToTest(configs map[string]mockConfigure) createProdu
 	useCase := NewCreateProductUseCase(inventoryClient)
 	return createProductUsecaseToTest{useCase}
 }
+
+type createPurchaseUsecaseTest struct {
+	useCase usecases.IPurchaseUseCase
+}
+
+func newCreatePurchaseUsecaseTest(configs map[string]mockConfigure) createPurchaseUsecaseTest {
+	messageBrokerConfig, ok := configs["messageBroker"]
+	var messageBroker interfaces.IMessageBroker
+	if ok {
+		messageBroker = messageBrokerSpy{config: &messageBrokerConfig}
+	} else {
+		messageBroker = messageBrokerSpy{}
+	}
+
+	useCase := NewPruchaseUseCase(messageBroker)
+	return createPurchaseUsecaseTest{useCase}
+}
+
+type messageBrokerSpy struct {
+	config *mockConfigure
+}
+
+func (pst messageBrokerSpy) Publisher(
+	ctx context.Context,
+	exchangeName, exchangeType, queueName, routingKey string,
+	body interface{},
+	header map[string]interface{},
+) error {
+	if pst.config != nil && pst.config.method == "Publisher" {
+		return pst.config.customError
+	}
+
+	return nil
+}
