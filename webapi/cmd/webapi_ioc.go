@@ -10,6 +10,7 @@ import (
 	"webapi/pkg/infra/hasher"
 	httpServer "webapi/pkg/infra/http_server"
 	"webapi/pkg/infra/logger"
+	msgBroker "webapi/pkg/infra/message_broker"
 	"webapi/pkg/infra/repositories"
 	"webapi/pkg/infra/telemetry"
 	tokenManager "webapi/pkg/infra/token_manager"
@@ -20,8 +21,9 @@ import (
 )
 
 type webApiContainer struct {
-	logger     interfaces.ILogger
-	httpServer httpServer.IHttpServer
+	logger        interfaces.ILogger
+	httpServer    httpServer.IHttpServer
+	messageBroker interfaces.IMessageBroker
 
 	usersRoutes          presenters.IUsersRoutes
 	authenticationRoutes presenters.ISessionRoutes
@@ -52,6 +54,7 @@ func NewContainer() webApiContainer {
 	validatoR := validator.NewValidator()
 	httpServer := httpServer.NewHttpServer(logger)
 	telemetryApp := telemetry.NewTelemetry()
+	messageBroker := msgBroker.NewMessageBroker()
 
 	userRepository := repositories.NewUserRepository(logger, dbConnection, telemetryApp)
 	hasher := hasher.NewHahser(logger)
@@ -73,13 +76,14 @@ func NewContainer() webApiContainer {
 	inventoryHandler := handlers.NewInventoryHandler(logger, validatoR, getProductByIdUseCase, createProductUseCase)
 	inventoryRoutes := presenters.NewInventoryRoutes(logger, authenticationMiddleware, inventoryHandler)
 
-	pruchaseUseCase := appUseCases.NewPruchaseUseCase()
+	pruchaseUseCase := appUseCases.NewPruchaseUseCase(messageBroker)
 	purchaseHandler := handlers.NewPurchaseHandler(logger, validatoR, pruchaseUseCase)
 	pruchaseRoutes := presenters.NewPruchaseRoutes(purchaseHandler, authenticationMiddleware, logger)
 
 	return webApiContainer{
 		logger,
 		httpServer,
+		messageBroker,
 
 		usersRoutes,
 		authenticationRoutes,
