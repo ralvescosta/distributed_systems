@@ -21,6 +21,6 @@ func (pst purchaseUseCase) Perform(ctx context.Context, dto dtos.CreatePurchaseD
 	return pst.messageBroker.Publisher(ctx, exchange, kind, queue, routingKey, dto, nil)
 }
 
-func NewPruchaseUseCase() usecases.IPurchaseUseCase {
-	return purchaseUseCase{}
+func NewPruchaseUseCase(messageBroker interfaces.IMessageBroker) usecases.IPurchaseUseCase {
+	return purchaseUseCase{messageBroker}
 }

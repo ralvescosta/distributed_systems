@@ -194,3 +194,91 @@ func (pst tokenManagerSpy) VerifyToken(token string) (*dtos.SessionDto, error) {
 
 	return &dtos.SessionDto{}, nil
 }
+
+type getProductByIdUsecaseToTest struct {
+	useCase usecases.IGetProductByIdUseCase
+}
+
+func newGetProductByIdUsecaseToTest(configs map[string]mockConfigure) getProductByIdUsecaseToTest {
+	inventoryClientConfig, ok := configs["inventoryClient"]
+	var inventoryClient interfaces.IIventoryClient
+	if ok {
+		inventoryClient = inventoryClientSpy{config: &inventoryClientConfig}
+	} else {
+		inventoryClient = inventoryClientSpy{}
+	}
+
+	useCase := NewGetProductByIdUseCase(inventoryClient)
+	return getProductByIdUsecaseToTest{useCase}
+}
+
+type inventoryClientSpy struct {
+	config *mockConfigure
+}
+
+func (pst inventoryClientSpy) GetProductById(ctx context.Context, id string) (dtos.ProductDto, error) {
+	if pst.config != nil && pst.config.method == "GetProductById" {
+		return pst.config.customResult.(dtos.ProductDto), pst.config.customError
+	}
+
+	return dtos.ProductDto{}, nil
+}
+
+func (pst inventoryClientSpy) RegisterProduct(ctx context.Context, product dtos.ProductDto) (dtos.ProductDto, error) {
+	if pst.config != nil && pst.config.method == "RegisterProduct" {
+		return pst.config.customResult.(dtos.ProductDto), pst.config.customError
+	}
+
+	return dtos.ProductDto{}, nil
+}
+
+type createProductUsecaseToTest struct {
+	useCase usecases.ICreateProductUseCase
+}
+
+func newCreateProductUsecaseToTest(configs map[string]mockConfigure) createProductUsecaseToTest {
+	inventoryClientConfig, ok := configs["inventoryClient"]
+	var inventoryClient interfaces.IIventoryClient
+	if ok {
+		inventoryClient = inventoryClientSpy{config: &inventoryClientConfig}
+	} else {
+		inventoryClient = inventoryClientSpy{}
+	}
+
+	useCase := NewCreateProductUseCase(inventoryClient)
+	return createProductUsecaseToTest{useCase}
+}
+
+type createPurchaseUsecaseTest struct {
+	useCase usecases.IPurchaseUseCase
+}
+
+func newCreatePurchaseUsecaseTest(configs map[string]mockConfigure) createPurchaseUsecaseTest {
+	messageBrokerConfig, ok := configs["messageBroker"]
+	var messageBroker interfaces.IMessageBroker
+	if ok {
+		messageBroker = messageBrokerSpy{config: &messageBrokerConfig}
+	} else {
+		messageBroker = messageBrokerSpy{}
+	}
+
+	useCase := NewPruchaseUseCase(messageBroker)
+	return createPurchaseUsecaseTest{useCase}
+}
+
+type messageBrokerSpy struct {
+	config *mockConfigure
+}
+
+func (pst messageBrokerSpy) Publisher(
+	ctx context.Context,
+	exchangeName, exchangeType, queueName, routingKey string,
+	body interface{},
+	header map[string]interface{},
+) error {
+	if pst.config != nil && pst.config.method == "Publisher" {
+		return pst.config.customError
+	}
+
+	return nil
+}
