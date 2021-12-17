@@ -231,3 +231,20 @@ func (pst inventoryClientSpy) RegisterProduct(ctx context.Context, product dtos.
 
 	return dtos.ProductDto{}, nil
 }
+
+type createProductUsecaseToTest struct {
+	useCase usecases.ICreateProductUseCase
+}
+
+func newCreateProductUsecaseToTest(configs map[string]mockConfigure) createProductUsecaseToTest {
+	inventoryClientConfig, ok := configs["inventoryClient"]
+	var inventoryClient interfaces.IIventoryClient
+	if ok {
+		inventoryClient = inventoryClientSpy{config: &inventoryClientConfig}
+	} else {
+		inventoryClient = inventoryClientSpy{}
+	}
+
+	useCase := NewCreateProductUseCase(inventoryClient)
+	return createProductUsecaseToTest{useCase}
+}
