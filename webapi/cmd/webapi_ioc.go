@@ -54,7 +54,7 @@ func NewContainer() webApiContainer {
 	validatoR := validator.NewValidator()
 	httpServer := httpServer.NewHttpServer(logger)
 	telemetryApp := telemetry.NewTelemetry()
-	messageBroker := msgBroker.NewMessageBroker()
+	messageBroker := msgBroker.NewMessageBroker(telemetryApp)
 
 	userRepository := repositories.NewUserRepository(logger, dbConnection, telemetryApp)
 	hasher := hasher.NewHahser(logger)

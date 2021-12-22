@@ -17,7 +17,7 @@ type messageBroker struct {
 }
 
 func connect() (*amqp.Channel, error) {
-	host := os.Getenv("AMQP_BROKER_URL")
+	host := os.Getenv("AMQP_BROKER_HOST")
 	port := os.Getenv("AMQP_BROKER_PORT")
 	user := os.Getenv("AMQP_BROKER_USER")
 	password := os.Getenv("AMQP_BROKER_PASS")
@@ -30,13 +30,16 @@ func connect() (*amqp.Channel, error) {
 	return conn.Channel()
 }
 
-func asserts(ch *amqp.Channel, exchangeName, queueName, exchangeType, routingKey string) error {
+func asserts(ch *amqp.Channel, exchangeName, queueName, exchangeType, routingKey, deadLetterExchange, deadLetterRoutingKey string) error {
 	err := ch.ExchangeDeclare(exchangeName, exchangeType, true, false, false, false, nil)
 	if err != nil {
 		return errors.NewInternalError("amqp assert exchange!")
 	}
 
-	_, err = ch.QueueDeclare(queueName, true, false, false, false, nil)
+	_, err = ch.QueueDeclare(queueName, true, false, false, false, amqp.Table{
+		"x-dead-letter-exchange":    deadLetterExchange,
+		"x-dead-letter-routing-key": deadLetterRoutingKey,
+	})
 	if err != nil {
 		return errors.NewInternalError("amqp assert queue!")
 	}
@@ -51,7 +54,7 @@ func asserts(ch *amqp.Channel, exchangeName, queueName, exchangeType, routingKey
 
 func (pst messageBroker) Publisher(
 	ctx context.Context,
-	exchangeName, exchangeType, queueName, routingKey string,
+	exchangeName, exchangeType, queueName, routingKey, deadLetterExchange, deadLetterRoutingKey string,
 	body interface{},
 	headers map[string]interface{},
 ) error {
@@ -67,12 +70,11 @@ func (pst messageBroker) Publisher(
 		return errors.NewInternalError("amqp connection error!")
 	}
 
-	if err := asserts(ch, exchangeName, queueName, exchangeType, routingKey); err != nil {
+	if err := asserts(ch, exchangeName, queueName, exchangeType, routingKey, deadLetterExchange, deadLetterRoutingKey); err != nil {
 		return err
 	}
 
-	var amqpBody []byte
-	err = json.Unmarshal(amqpBody, body)
+	amqpBody, err := json.Marshal(body)
 	if err != nil {
 		return errors.NewInternalError("body convert")
 	}
@@ -91,6 +93,6 @@ func (pst messageBroker) Publisher(
 	return nil
 }
 
-func NewMessageBroker() interfaces.IMessageBroker {
-	return messageBroker{}
+func NewMessageBroker(telemetry telemetry.ITelemetry) interfaces.IMessageBroker {
+	return messageBroker{telemetry}
 }

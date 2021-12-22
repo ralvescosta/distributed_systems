@@ -40,7 +40,7 @@ class Telemetry {
     });
   }
 
-  instrumentAmqp({ queue, exchange, routingKey}) {
+  instrumentAmqp({ queue, exchange, routingKey }) {
     const cTracer = trace.getTracer(this.appName, this.appVersion);
     const span = cTracer.startSpan(`Queue: ${queue}`);
 
