@@ -1,5 +1,5 @@
 package dtos
 
 type CreatePurchaseDto struct {
-	OrderId string
+	OrderId string `json:"orderId"`
 }

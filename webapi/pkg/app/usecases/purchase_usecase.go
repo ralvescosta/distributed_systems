@@ -17,8 +17,10 @@ func (pst purchaseUseCase) Perform(ctx context.Context, dto dtos.CreatePurchaseD
 	exchange := os.Getenv("AMQP_PURCHASE_EXCHANGE")
 	kind := os.Getenv("AMQP_PURCHASE_EXCHANGE_KIND")
 	routingKey := os.Getenv("AMQP_PURCHASE_ROUTING_KEY")
+	deadLetterExchange := os.Getenv("DEAD_LETTER_EXCHANGE")
+	deadLetterRoutingKey := os.Getenv("DEAD_LETTER_ROUTING_KEY")
 
-	return pst.messageBroker.Publisher(ctx, exchange, kind, queue, routingKey, dto, nil)
+	return pst.messageBroker.Publisher(ctx, exchange, kind, queue, routingKey, deadLetterExchange, deadLetterRoutingKey, dto, nil)
 }
 
 func NewPruchaseUseCase(messageBroker interfaces.IMessageBroker) usecases.IPurchaseUseCase {
