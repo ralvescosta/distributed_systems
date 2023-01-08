@@ -11,7 +11,7 @@ infra = { path = "../infra" }
 log = { version = "0.4.14" }
 tonic = { version = "0.5.0", features = ["transport", "codegen", "tls", "tls-roots", "prost", "compression"] }
 prost = { version = "0.8" }
-tokio = { version = "1.0", features = ["full"] }
+tokio = { version = "1.16", features = ["full"] }
 
 tracing-log = { version = "0.1.2" }
 tracing-bunyan-formatter = { version = "0.3.0" }

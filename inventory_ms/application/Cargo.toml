@@ -11,5 +11,5 @@ async-trait = { version = "0.1.51" }
 log = { version = "0.4.14" }
 
 [dev-dependencies]
-tokio = { version = "1.0",  features = [ "full" ] }
+tokio = { version = "1.16",  features = [ "full" ] }
 mockall = { version = "0.10.2" }
