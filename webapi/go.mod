@@ -4,12 +4,13 @@ go 1.17
 
 require (
 	github.com/DATA-DOG/go-sqlmock v1.5.0
-	github.com/gin-gonic/gin v1.7.4
+	github.com/gin-gonic/gin v1.7.7
 	github.com/go-playground/validator/v10 v10.9.0
 	github.com/golang-jwt/jwt/v4 v4.1.0
 	github.com/newrelic/go-agent/v3/integrations/nrpq v1.1.1
 	github.com/opentracing/opentracing-go v1.2.0
 	github.com/ralvescosta/dotenv v1.0.4
+	github.com/streadway/amqp v1.0.0
 	github.com/stretchr/testify v1.7.0
 	github.com/uber/jaeger-client-go v2.29.1+incompatible
 	go.uber.org/zap v1.19.1
@@ -34,7 +35,6 @@ require (
 	github.com/newrelic/go-agent/v3 v3.15.0 // indirect
 	github.com/pkg/errors v0.8.1 // indirect
 	github.com/pmezard/go-difflib v1.0.0 // indirect
-	github.com/streadway/amqp v1.0.0 // indirect
 	github.com/uber/jaeger-lib v2.4.1+incompatible // indirect
 	github.com/ugorji/go/codec v1.2.6 // indirect
 	go.uber.org/atomic v1.9.0 // indirect
