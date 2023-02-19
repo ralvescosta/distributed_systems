@@ -39,7 +39,7 @@
     "eslint-plugin-node": "^11.1.0",
     "eslint-plugin-promise": "^5.1.1",
     "jest": "^27.3.1",
-    "nodemon": "^2.0.15",
+    "nodemon": "^2.0.20",
     "pino-inspector": "^0.1.0",
     "pino-pretty": "^7.2.0"
   }
