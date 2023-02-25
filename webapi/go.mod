@@ -10,6 +10,7 @@ require (
 	github.com/newrelic/go-agent/v3/integrations/nrpq v1.1.1
 	github.com/opentracing/opentracing-go v1.2.0
 	github.com/ralvescosta/dotenv v1.0.4
+	github.com/streadway/amqp v1.0.0
 	github.com/stretchr/testify v1.7.0
 	github.com/uber/jaeger-client-go v2.29.1+incompatible
 	go.uber.org/zap v1.19.1
@@ -34,13 +35,12 @@ require (
 	github.com/newrelic/go-agent/v3 v3.15.0 // indirect
 	github.com/pkg/errors v0.8.1 // indirect
 	github.com/pmezard/go-difflib v1.0.0 // indirect
-	github.com/streadway/amqp v1.0.0 // indirect
 	github.com/uber/jaeger-lib v2.4.1+incompatible // indirect
 	github.com/ugorji/go/codec v1.2.6 // indirect
 	go.uber.org/atomic v1.9.0 // indirect
 	go.uber.org/multierr v1.7.0 // indirect
 	golang.org/x/net v0.0.0-20211015210444-4f30a5c0130f // indirect
-	golang.org/x/sys v0.0.0-20211015200801-69063c4bb744 // indirect
+	golang.org/x/sys v0.1.0 // indirect
 	golang.org/x/text v0.3.7 // indirect
 	google.golang.org/genproto v0.0.0-20211016002631-37fc39342514 // indirect
 	gopkg.in/yaml.v2 v2.4.0 // indirect
